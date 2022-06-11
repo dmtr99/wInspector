@@ -29,10 +29,10 @@ oSettings_Default.MainGui := {
 }
 
 Class Styles {
-    __New(Style, Hex, DefaultValue, Description, OptionText:="",SkipHex := "", Skip := "") {
+    __New(Style, Hex, Description, OptionText:="",SkipHex := "", Skip := "") {
         this.Style := Style
         this.Hex := Hex
-        this.DefaultValue := DefaultValue
+
         this.OptionText := OptionText
         this.Description := Description
         this.SkipHex := SkipHex ; used to skip this option if SkipHex applies in the option definition
@@ -40,111 +40,149 @@ Class Styles {
     }
 }
 Global aoWinStyles := Array()
-aoWinStyles.Push(Styles("WS_BORDER", "0x800000", true,"+/-Border. Creates a window that has a thin-line border.", "Border","0xC00000"))
-aoWinStyles.Push(Styles("WS_POPUP", "0x80000000", true,"Creates a pop-up window. This style cannot be used with the WS_CHILD style.",,true))
-aoWinStyles.Push(Styles("WS_CAPTION", "0xC00000", true,"+/-Caption. Creates a window that has a title bar. This style is a numerical combination of WS_BORDER and WS_DLGFRAME.", "Caption")) 
-aoWinStyles.Push(Styles("WS_CLIPSIBLINGS", "0x4000000", true,"Clips child windows relative to each other; that is, when a particular child window receives a WM_PAINT message, the WS_CLIPSIBLINGS style clips all other overlapping child windows out of the region of the child window to be updated. If WS_CLIPSIBLINGS is not specified and child windows overlap, it is possible, when drawing within the client area of a child window, to draw within the client area of a neighboring child window.")) 
-aoWinStyles.Push(Styles("WS_DISABLED", "0x8000000", false,"+/-Disabled. Creates a window that is initially disabled.","Disabled")) 
-aoWinStyles.Push(Styles("WS_DLGFRAME", "0x400000", true,"Creates a window that has a border of a style typically used with dialog boxes.")) 
-aoWinStyles.Push(Styles("WS_GROUP", "0x20000", false, '+/-Group. Indicates that this control is the first one in a group of controls. This style is automatically applied to manage the " only one at a time " behavior of radio buttons. In the rare case where two groups of radio buttons are added consecutively (with no other control types in between them), this style may be applied manually to the first control of the second radio group, which splits it off from the first.', "Group"))
-aoWinStyles.Push(Styles("WS_HSCROLL", "0x100000", false, "Creates a window that has a horizontal scroll bar."))
-aoWinStyles.Push(Styles("WS_MAXIMIZE", "0x1000000", false, "Creates a window that is initially maximized."))
-aoWinStyles.Push(Styles("WS_MAXIMIZEBOX", "0x10000", true, "+/-MaximizeBox. Creates a window that has a maximize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.","MaximizeBox"))
-aoWinStyles.Push(Styles("WS_MINIMIZE", "0x20000000", false, "Creates a window that is initially minimized."))
-aoWinStyles.Push(Styles("WS_MINIMIZEBOX", "0x20000", true, "+/-MinimizeBox. Creates a window that has a minimize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.","MinimizeBox"))
-aoWinStyles.Push(Styles("WS_OVERLAPPED", "0x0", false, "Creates an overlapped window. An overlapped window has a title bar and a border. Same as the WS_TILED style."))
-aoWinStyles.Push(Styles("WS_OVERLAPPEDWINDOW", "0xCF0000", false, "Creates an overlapped window with the WS_OVERLAPPED, WS_CAPTION, WS_SYSMENU, WS_THICKFRAME, WS_MINIMIZEBOX, and WS_MAXIMIZEBOX styles. Same as the WS_TILEDWINDOW style.",,, true))
-aoWinStyles.Push(Styles("WS_POPUPWINDOW", "0x80880000", false, "Creates a pop-up window with WS_BORDER, WS_POPUP, and WS_SYSMENU styles. The WS_CAPTION and WS_POPUPWINDOW styles must be combined to make the window menu visible.",,,true))
-aoWinStyles.Push(Styles("WS_SIZEBOX", "0x40000", false, "+/-Resize. Creates a window that has a sizing border. Same as the WS_THICKFRAME style.","Resize"))
-aoWinStyles.Push(Styles("WS_SYSMENU", "0x80000", true, "+/-SysMenu. Creates a window that has a window menu on its title bar. The WS_CAPTION style must also be specified.","SysMenu"))
-aoWinStyles.Push(Styles("WS_THICKFRAME", "0x40000", false, "Creates a window that has a sizing border. Same as the WS_SIZEBOX style.",,"0x40000",true))
-aoWinStyles.Push(Styles("WS_VSCROLL", "0x200000", false, "Creates a window that has a vertical scroll bar."))
-aoWinStyles.Push(Styles("WS_VISIBLE", "0x10000000", true, "Creates a window that is initially visible."))
-aoWinStyles.Push(Styles("WS_CHILD", "0x40000000", false, "Creates a child window. A window with this style cannot have a menu bar. This style cannot be used with the WS_POPUP style."))
+aoWinStyles.Push(Styles("WS_BORDER", "0x800000","+/-Border. Creates a window that has a thin-line border.", "Border","0xC00000"))
+aoWinStyles.Push(Styles("WS_POPUP", "0x80000000","Creates a pop-up window. This style cannot be used with the WS_CHILD style.",,true))
+aoWinStyles.Push(Styles("WS_CAPTION", "0xC00000","+/-Caption. Creates a window that has a title bar. This style is a numerical combination of WS_BORDER and WS_DLGFRAME.", "Caption")) 
+aoWinStyles.Push(Styles("WS_CLIPSIBLINGS", "0x4000000","Clips child windows relative to each other; that is, when a particular child window receives a WM_PAINT message, the WS_CLIPSIBLINGS style clips all other overlapping child windows out of the region of the child window to be updated. If WS_CLIPSIBLINGS is not specified and child windows overlap, it is possible, when drawing within the client area of a child window, to draw within the client area of a neighboring child window.")) 
+aoWinStyles.Push(Styles("WS_DISABLED", "0x8000000","+/-Disabled. Creates a window that is initially disabled.","Disabled")) 
+aoWinStyles.Push(Styles("WS_DLGFRAME", "0x400000","Creates a window that has a border of a style typically used with dialog boxes.")) 
+aoWinStyles.Push(Styles("WS_HSCROLL", "0x100000", "Creates a window that has a horizontal scroll bar."))
+aoWinStyles.Push(Styles("WS_MAXIMIZE", "0x1000000", "Creates a window that is initially maximized."))
+aoWinStyles.Push(Styles("WS_MAXIMIZEBOX", "0x10000", "+/-MaximizeBox. Creates a window that has a maximize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.","MaximizeBox"))
+aoWinStyles.Push(Styles("WS_MINIMIZE", "0x20000000", "Creates a window that is initially minimized."))
+aoWinStyles.Push(Styles("WS_MINIMIZEBOX", "0x20000", "+/-MinimizeBox. Creates a window that has a minimize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.","MinimizeBox"))
+aoWinStyles.Push(Styles("WS_OVERLAPPED", "0x0", "Creates an overlapped window. An overlapped window has a title bar and a border. Same as the WS_TILED style."))
+aoWinStyles.Push(Styles("WS_OVERLAPPEDWINDOW", "0xCF0000", "Creates an overlapped window with the WS_OVERLAPPED, WS_CAPTION, WS_SYSMENU, WS_THICKFRAME, WS_MINIMIZEBOX, and WS_MAXIMIZEBOX styles. Same as the WS_TILEDWINDOW style.",,, true))
+aoWinStyles.Push(Styles("WS_POPUPWINDOW", "0x80880000", "Creates a pop-up window with WS_BORDER, WS_POPUP, and WS_SYSMENU styles. The WS_CAPTION and WS_POPUPWINDOW styles must be combined to make the window menu visible.",,,true))
+aoWinStyles.Push(Styles("WS_SIZEBOX", "0x40000", "+/-Resize. Creates a window that has a sizing border. Same as the WS_THICKFRAME style.","Resize"))
+aoWinStyles.Push(Styles("WS_SYSMENU", "0x80000", "+/-SysMenu. Creates a window that has a window menu on its title bar. The WS_CAPTION style must also be specified.","SysMenu"))
+aoWinStyles.Push(Styles("WS_VSCROLL", "0x200000", "Creates a window that has a vertical scroll bar."))
+aoWinStyles.Push(Styles("WS_VISIBLE", "0x10000000", "Creates a window that is initially visible."))
+aoWinStyles.Push(Styles("WS_CHILD", "0x40000000", "Creates a child window. A window with this style cannot have a menu bar. This style cannot be used with the WS_POPUP style."))
 
-
-aoWinStyles.Push(Styles("WS_TABSTOP", "0x10000", false, "+/-Tabstop. Specifies a control that can receive the keyboard focus when the user presses Tab. Pressing Tab changes the keyboard focus to the next control with the WS_TABSTOP style.","Tabstop"))
+Global aoControlStyles := Array()
+; stylest that seem double, for controls
+aoControlStyles.Push(Styles("WS_DISABLED", "0x8000000", "+/-Disabled. Creates a window that is initially disabled.", "Disabled"))
+aoControlStyles.Push(Styles("WS_TABSTOP", "0x10000", "+/-Tabstop. Specifies a control that can receive the keyboard focus when the user presses Tab. Pressing Tab changes the keyboard focus to the next control with the WS_TABSTOP style.","Tabstop"))
+aoControlStyles.Push(Styles("WS_GROUP", "0x20000", '+/-Group. Indicates that this control is the first one in a group of controls. This style is automatically applied to manage the " only one at a time " behavior of radio buttons. In the rare case where two groups of radio buttons are added consecutively (with no other control types in between them), this style may be applied manually to the first control of the second radio group, which splits it off from the first.', "Group"))
+aoControlStyles.Push(Styles("WS_THICKFRAME", "0x40000", "Creates a window that has a sizing border. Same as the WS_SIZEBOX style.",,"0x40000",true))
 
 Global aoWinExStyles := Array()
-aoWinExStyles.Push(Styles("WS_EX_ACCEPTFILES", "0x00000010", false, 'The window accepts drag-drop files.'))
-aoWinExStyles.Push(Styles("WS_EX_APPWINDOW", "0x00040000", false, 'Forces a top-level window onto the taskbar when the window is visible.'))
-aoWinExStyles.Push(Styles("WS_EX_CLIENTEDGE", "0x00000200", false, 'The window has a border with a sunken edge.'))
-aoWinExStyles.Push(Styles("WS_EX_COMPOSITED", "0x02000000", false, 'Paints all descendants of a window in bottom-to-top painting order using double-buffering. Bottom-to-top painting order allows a descendent window to have translucency (alpha) and transparency (color-key) effects, but only if the descendent window also has the WS_EX_TRANSPARENT bit set. Double-buffering allows the window and its descendents to be painted without flicker. This cannot be used if the window has a class style of either CS_OWNDC or CS_CLASSDC. Windows 2000: This style is not supported.'))
-aoWinExStyles.Push(Styles("WS_EX_CONTEXTHELP", "0x00000400", false, 'The title bar of the window includes a question mark. When the user clicks the question mark, the cursor changes to a question mark with a pointer. If the user then clicks a child window, the child receives a WM_HELP message. The child window should pass the message to the parent window procedure, which should call the WinHelp function using the HELP_WM_HELP command. The Help application displays a pop-up window that typically contains help for the child window. WS_EX_CONTEXTHELP cannot be used with the WS_MAXIMIZEBOX or WS_MINIMIZEBOX styles.'))
-aoWinExStyles.Push(Styles("WS_EX_CONTROLPARENT", "0x00010000", false, 'The window itself contains child windows that should take part in dialog box navigation. If this style is specified, the dialog manager recurses into children of this window when performing navigation operations such as handling the TAB key, an arrow key, or a keyboard mnemonic.'))
-aoWinExStyles.Push(Styles("WS_EX_DLGMODALFRAME", "0x00000001", false, 'The window has a double border; the window can, optionally, be created with a title bar by specifying the WS_CAPTION style in the dwStyle parameter.'))
-aoWinExStyles.Push(Styles("WS_EX_LAYERED", "0x00080000", false, 'The window is a layered window. This style cannot be used if the window has a class style of either CS_OWNDC or CS_CLASSDC. Windows 8: The WS_EX_LAYERED style is supported for top-level windows and child windows. Previous Windows versions support WS_EX_LAYERED only for top-level windows.'))
-aoWinExStyles.Push(Styles("WS_EX_LAYOUTRTL", "0x00400000", false, 'If the shell language is Hebrew, Arabic, or another language that supports reading order alignment, the horizontal origin of the window is on the right edge. Increasing horizontal values advance to the left.'))
-aoWinExStyles.Push(Styles("WS_EX_LEFT", "0x00000000", false, 'The window has generic left-aligned properties. This is the default.'))
-aoWinExStyles.Push(Styles("WS_EX_LEFTSCROLLBAR", "0x00004000", false, 'If the shell language is Hebrew, Arabic, or another language that supports reading order alignment, the vertical scroll bar (if present) is to the left of the client area. For other languages, the style is ignored.'))
-aoWinExStyles.Push(Styles("WS_EX_LTRREADING", "0x00000000", false, 'The window text is displayed using left-to-right reading-order properties. This is the default.'))
-aoWinExStyles.Push(Styles("WS_EX_MDICHILD", "0x00000040", false, 'The window is a MDI child window.'))
-aoWinExStyles.Push(Styles("WS_EX_NOACTIVATE", "0x08000000", false, 'A top-level window created with this style does not become the foreground window when the user clicks it. The system does not bring this window to the foreground when the user minimizes or closes the foreground window. The window should not be activated The window does not appear on the taskbar by default. To force the window to appear on the taskbar, use the WS_EX_APPWINDOW style. To activate the window, use the SetActiveWindow or SetForegroundWindow function. through programmatic access or via keyboard navigation by accessible technology, such as Narrator.'))
-aoWinExStyles.Push(Styles("WS_EX_NOINHERITLAYOUT", "0x00100000", false, 'The window does not pass its window layout to its child windows.'))
-aoWinExStyles.Push(Styles("WS_EX_NOPARENTNOTIFY", "0x00000004", false, 'The child window created with this style does not send the WM_PARENTNOTIFY message to its parent window when it is created or destroyed.'))
-aoWinExStyles.Push(Styles("WS_EX_NOREDIRECTIONBITMAP", "0x00200000", false, 'The window does not render to a redirection surface. This is for windows that do not have visible content or that use mechanisms other than surfaces to provide their visual.'))
-aoWinExStyles.Push(Styles("WS_EX_RIGHT", "0x00001000", false, 'The window has generic "right-aligned" properties. This depends on the window class. This style has an effect only if the shell language is Hebrew, Arabic, or another language that supports reading-order alignment; otherwise, the style is ignored. Using the WS_EX_RIGHT style for static or edit controls has the same effect as using the SS_RIGHT or ES_RIGHT style, respectively. Using this style with button controls has the same effect as using BS_RIGHT and BS_RIGHTBUTTON styles.'))
-aoWinExStyles.Push(Styles("WS_EX_RIGHTSCROLLBAR", "0x00000000", false, 'The vertical scroll bar (if present) is to the right of the client area. This is the default.'))
-aoWinExStyles.Push(Styles("WS_EX_RTLREADING", "0x00002000", false, 'If the shell language is Hebrew, Arabic, or another language that supports reading-order alignment, the window text is displayed using right-to-left reading-order properties. For other languages, the style is ignored.'))
-aoWinExStyles.Push(Styles("WS_EX_STATICEDGE", "0x00020000", false, 'The window has a three-dimensional border style intended to be used for items that do not accept user input.'))
-aoWinExStyles.Push(Styles("WS_EX_TOOLWINDOW", "0x00000080", false, 'The window is intended to be used as a floating toolbar. A tool window has a title bar that is shorter than a normal title bar, and the window title is drawn using a smaller font. A tool window does not appear in the taskbar or in the dialog that appears when the user presses ALT+TAB. If a tool window has a system menu, its icon is not displayed on the title bar. However, you can display the system menu by right-clicking or by typing ALT+SPACE.'))
-aoWinExStyles.Push(Styles("WS_EX_TOPMOST", "0x00000008", false, 'The window should be placed above all non-topmost windows and should stay above them, even when the window is deactivated. To add or remove this style, use the SetWindowPos function.'))
-aoWinExStyles.Push(Styles("WS_EX_TRANSPARENT", "0x00000020", false, 'The window should not be painted until siblings beneath the window (that were created by the same thread) have been painted. The window appears transparent because the bits of underlying sibling windows have already been painted. To achieve transparency without these restrictions, use the SetWindowRgn function.'))
-aoWinExStyles.Push(Styles("WS_EX_WINDOWEDGE", "0x00000100", false, 'The window has a border with a raised edge.'))
+aoWinExStyles.Push(Styles("WS_EX_ACCEPTFILES", "0x10", 'The window accepts drag-drop files.'))
+aoWinExStyles.Push(Styles("WS_EX_APPWINDOW", "0x40000", 'Forces a top-level window onto the taskbar when the window is visible.'))
+aoWinExStyles.Push(Styles("WS_EX_CLIENTEDGE", "0x200", 'The window has a border with a sunken edge.'))
+aoWinExStyles.Push(Styles("WS_EX_COMPOSITED", "0x2000000", 'Paints all descendants of a window in bottom-to-top painting order using double-buffering. Bottom-to-top painting order allows a descendent window to have translucency (alpha) and transparency (color-key) effects, but only if the descendent window also has the WS_EX_TRANSPARENT bit set. Double-buffering allows the window and its descendents to be painted without flicker. This cannot be used if the window has a class style of either CS_OWNDC or CS_CLASSDC. Windows 2000: This style is not supported.'))
+aoWinExStyles.Push(Styles("WS_EX_CONTEXTHELP", "0x400", 'The title bar of the window includes a question mark. When the user clicks the question mark, the cursor changes to a question mark with a pointer. If the user then clicks a child window, the child receives a WM_HELP message. The child window should pass the message to the parent window procedure, which should call the WinHelp function using the HELP_WM_HELP command. The Help application displays a pop-up window that typically contains help for the child window. WS_EX_CONTEXTHELP cannot be used with the WS_MAXIMIZEBOX or WS_MINIMIZEBOX styles.'))
+aoWinExStyles.Push(Styles("WS_EX_CONTROLPARENT", "0x10000", 'The window itself contains child windows that should take part in dialog box navigation. If this style is specified, the dialog manager recurses into children of this window when performing navigation operations such as handling the TAB key, an arrow key, or a keyboard mnemonic.'))
+aoWinExStyles.Push(Styles("WS_EX_DLGMODALFRAME", "0x1", 'The window has a double border; the window can, optionally, be created with a title bar by specifying the WS_CAPTION style in the dwStyle parameter.'))
+aoWinExStyles.Push(Styles("WS_EX_LAYERED", "0x80000", 'The window is a layered window. This style cannot be used if the window has a class style of either CS_OWNDC or CS_CLASSDC. Windows 8: The WS_EX_LAYERED style is supported for top-level windows and child windows. Previous Windows versions support WS_EX_LAYERED only for top-level windows.'))
+aoWinExStyles.Push(Styles("WS_EX_LAYOUTRTL", "0x400000", 'If the shell language is Hebrew, Arabic, or another language that supports reading order alignment, the horizontal origin of the window is on the right edge. Increasing horizontal values advance to the left.'))
+aoWinExStyles.Push(Styles("WS_EX_LEFT", "0x0", 'The window has generic left-aligned properties. This is the default.'))
+aoWinExStyles.Push(Styles("WS_EX_LEFTSCROLLBAR", "0x4000", 'If the shell language is Hebrew, Arabic, or another language that supports reading order alignment, the vertical scroll bar (if present) is to the left of the client area. For other languages, the style is ignored.'))
+aoWinExStyles.Push(Styles("WS_EX_LTRREADING", "0x0", 'The window text is displayed using left-to-right reading-order properties. This is the default.'))
+aoWinExStyles.Push(Styles("WS_EX_MDICHILD", "0x40", 'The window is a MDI child window.'))
+aoWinExStyles.Push(Styles("WS_EX_NOACTIVATE", "0x8000000", 'A top-level window created with this style does not become the foreground window when the user clicks it. The system does not bring this window to the foreground when the user minimizes or closes the foreground window. The window should not be activated The window does not appear on the taskbar by default. To force the window to appear on the taskbar, use the WS_EX_APPWINDOW style. To activate the window, use the SetActiveWindow or SetForegroundWindow function. through programmatic access or via keyboard navigation by accessible technology, such as Narrator.'))
+aoWinExStyles.Push(Styles("WS_EX_NOINHERITLAYOUT", "0x100000", 'The window does not pass its window layout to its child windows.'))
+aoWinExStyles.Push(Styles("WS_EX_NOPARENTNOTIFY", "0x4", 'The child window created with this style does not send the WM_PARENTNOTIFY message to its parent window when it is created or destroyed.'))
+aoWinExStyles.Push(Styles("WS_EX_NOREDIRECTIONBITMAP", "0x200000", 'The window does not render to a redirection surface. This is for windows that do not have visible content or that use mechanisms other than surfaces to provide their visual.'))
+aoWinExStyles.Push(Styles("WS_EX_RIGHT", "0x1000", 'The window has generic "right-aligned" properties. This depends on the window class. This style has an effect only if the shell language is Hebrew, Arabic, or another language that supports reading-order alignment; otherwise, the style is ignored. Using the WS_EX_RIGHT style for static or edit controls has the same effect as using the SS_RIGHT or ES_RIGHT style, respectively. Using this style with button controls has the same effect as using BS_RIGHT and BS_RIGHTBUTTON styles.'))
+aoWinExStyles.Push(Styles("WS_EX_RIGHTSCROLLBAR", "0x0", 'The vertical scroll bar (if present) is to the right of the client area. This is the default.'))
+aoWinExStyles.Push(Styles("WS_EX_RTLREADING", "0x2000", 'If the shell language is Hebrew, Arabic, or another language that supports reading-order alignment, the window text is displayed using right-to-left reading-order properties. For other languages, the style is ignored.'))
+aoWinExStyles.Push(Styles("WS_EX_STATICEDGE", "0x20000", 'The window has a three-dimensional border style intended to be used for items that do not accept user input.'))
+aoWinExStyles.Push(Styles("WS_EX_TOOLWINDOW", "0x80", 'The window is intended to be used as a floating toolbar. A tool window has a title bar that is shorter than a normal title bar, and the window title is drawn using a smaller font. A tool window does not appear in the taskbar or in the dialog that appears when the user presses ALT+TAB. If a tool window has a system menu, its icon is not displayed on the title bar. However, you can display the system menu by right-clicking or by typing ALT+SPACE.'))
+aoWinExStyles.Push(Styles("WS_EX_TOPMOST", "0x8", 'The window should be placed above all non-topmost windows and should stay above them, even when the window is deactivated. To add or remove this style, use the SetWindowPos function.'))
+aoWinExStyles.Push(Styles("WS_EX_TRANSPARENT", "0x20", 'The window should not be painted until siblings beneath the window (that were created by the same thread) have been painted. The window appears transparent because the bits of underlying sibling windows have already been painted. To achieve transparency without these restrictions, use the SetWindowRgn function.'))
+aoWinExStyles.Push(Styles("WS_EX_WINDOWEDGE", "0x100", 'The window has a border with a raised edge.'))
 
 global aoTextStyles := Array()
-aoTextStyles.Push(Styles("SS_BLACKFRAME", "0x7", false,'Specifies a box with a frame drawn in the same color as the window frames. This color is black in the default color scheme.'))
-aoTextStyles.Push(Styles("SS_BLACKRECT", "0x4", false,'Specifies a rectangle filled with the current window frame color. This color is black in the default color scheme.'))
-aoTextStyles.Push(Styles("SS_CENTER", "0x1", false,'+/-Center. Specifies a simple rectangle and centers the text in the rectangle. The control automatically wraps words that extend past the end of a line to the beginning of the next centered line.'))
-aoTextStyles.Push(Styles("SS_ETCHEDFRAME", "0x12", false,'Draws the frame of the static control using the EDGE_ETCHED edge style.'))
-aoTextStyles.Push(Styles("SS_ETCHEDHORZ", "0x10", false,'Draws the top and bottom edges of the static control using the EDGE_ETCHED edge style.'))
-aoTextStyles.Push(Styles("SS_ETCHEDVERT", "0x11", false,'Draws the left and right edges of the static control using the EDGE_ETCHED edge style.'))
-aoTextStyles.Push(Styles("SS_GRAYFRAME", "0x8", false,'Specifies a box with a frame drawn with the same color as the screen background (desktop). This color is gray in the default color scheme.'))
-aoTextStyles.Push(Styles("SS_GRAYRECT", "0x5", false,'Specifies a rectangle filled with the current screen background color. This color is gray in the default color scheme.'))
-aoTextStyles.Push(Styles("SS_LEFT", "0x0", false,'+/-Left. This is the default. It specifies a simple rectangle and left-aligns the text in the rectangle. The text is formatted before it is displayed. Words that extend past the end of a line are automatically wrapped to the beginning of the next left-aligned line. Words that are longer than the width of the control are truncated.'))
-aoTextStyles.Push(Styles("SS_LEFTNOWORDWRAP", "0xC", false,'+/-Wrap. Specifies a rectangle and left-aligns the text in the rectangle. Tabs are expanded, but words are not wrapped. Text that extends past the end of a line is clipped.'))
-aoTextStyles.Push(Styles("SS_NOPREFIX", "0x80", false,"Prevents interpretation of any ampersand (&) characters in the control's text as accelerator prefix characters. This can be useful when file names or other strings that might contain an ampersand (&) must be displayed within a text control."))
-aoTextStyles.Push(Styles("SS_NOTIFY", "0x100", false,'Sends the parent window the STN_CLICKED notification when the user clicks the control.'))
-aoTextStyles.Push(Styles("SS_RIGHT", "0x2", false,'+/-Right. Specifies a rectangle and right-aligns the specified text in the rectangle.'))
-aoTextStyles.Push(Styles("SS_SUNKEN", "0x1000", false,'Draws a half-sunken border around a static control.'))
-aoTextStyles.Push(Styles("SS_WHITEFRAME", "0x9", false,'Specifies a box with a frame drawn with the same color as the window background. This color is white in the default color scheme.'))
-aoTextStyles.Push(Styles("SS_WHITERECT", "0x6", false,'Specifies a rectangle filled with the current window background color. This color is white in the default color scheme.'))
+aoTextStyles.Push(Styles("SS_BLACKFRAME", "0x7",'Specifies a box with a frame drawn in the same color as the window frames. This color is black in the default color scheme.'))
+aoTextStyles.Push(Styles("SS_BLACKRECT", "0x4",'Specifies a rectangle filled with the current window frame color. This color is black in the default color scheme.'))
+aoTextStyles.Push(Styles("SS_CENTER", "0x1",'+/-Center. Specifies a simple rectangle and centers the text in the rectangle. The control automatically wraps words that extend past the end of a line to the beginning of the next centered line.', 'Center'))
+aoTextStyles.Push(Styles("SS_ETCHEDFRAME", "0x12",'Draws the frame of the static control using the EDGE_ETCHED edge style.'))
+aoTextStyles.Push(Styles("SS_ETCHEDHORZ", "0x10",'Draws the top and bottom edges of the static control using the EDGE_ETCHED edge style.'))
+aoTextStyles.Push(Styles("SS_ETCHEDVERT", "0x11",'Draws the left and right edges of the static control using the EDGE_ETCHED edge style.'))
+aoTextStyles.Push(Styles("SS_GRAYFRAME", "0x8",'Specifies a box with a frame drawn with the same color as the screen background (desktop). This color is gray in the default color scheme.'))
+aoTextStyles.Push(Styles("SS_GRAYRECT", "0x5",'Specifies a rectangle filled with the current screen background color. This color is gray in the default color scheme.'))
+aoTextStyles.Push(Styles("SS_LEFT", "0x0",'+/-Left. This is the default. It specifies a simple rectangle and left-aligns the text in the rectangle. The text is formatted before it is displayed. Words that extend past the end of a line are automatically wrapped to the beginning of the next left-aligned line. Words that are longer than the width of the control are truncated.', 'Left'))
+aoTextStyles.Push(Styles("SS_LEFTNOWORDWRAP", "0xC",'+/-Wrap. Specifies a rectangle and left-aligns the text in the rectangle. Tabs are expanded, but words are not wrapped. Text that extends past the end of a line is clipped.', 'Wrap'))
+aoTextStyles.Push(Styles("SS_NOPREFIX", "0x80","Prevents interpretation of any ampersand (&) characters in the control's text as accelerator prefix characters. This can be useful when file names or other strings that might contain an ampersand (&) must be displayed within a text control."))
+aoTextStyles.Push(Styles("SS_NOTIFY", "0x100",'Sends the parent window the STN_CLICKED notification when the user clicks the control.'))
+aoTextStyles.Push(Styles("SS_RIGHT", "0x2",'+/-Right. Specifies a rectangle and right-aligns the specified text in the rectangle.', 'Right'))
+aoTextStyles.Push(Styles("SS_SUNKEN", "0x1000",'Draws a half-sunken border around a static control.'))
+aoTextStyles.Push(Styles("SS_WHITEFRAME", "0x9",'Specifies a box with a frame drawn with the same color as the window background. This color is white in the default color scheme.'))
+aoTextStyles.Push(Styles("SS_WHITERECT", "0x6",'Specifies a rectangle filled with the current window background color. This color is white in the default color scheme.'))
 
 global aoEditStyles := Array()
-aoEditStyles.Push(Styles("ES_AUTOHSCROLL", "0x80", false,'+/-Wrap for multi-line edits, and +/-Limit for single-line edits. Automatically scrolls text to the right by 10 characters when the user types a character at the end of the line. When the user presses Enter, the control scrolls all text back to the zero position.'))
-aoEditStyles.Push(Styles("ES_AUTOVSCROLL", "0x40", false,'Scrolls text up one page when the user presses Enter on the last line.'))
-aoEditStyles.Push(Styles("ES_CENTER", "0x1", false,'+/-Center. Centers text in a multiline edit control.'))
-aoEditStyles.Push(Styles("ES_LOWERCASE", "0x10", false,'+/-Lowercase. Converts all characters to lowercase as they are typed into the edit control.'))
-aoEditStyles.Push(Styles("ES_NOHIDESEL", "0x100", false,'Negates the default behavior for an edit control. The default behavior hides the selection when the control loses the input focus and inverts the selection when the control receives the input focus. If you specify ES_NOHIDESEL, the selected text is inverted, even if the control does not have the focus.'))
-aoEditStyles.Push(Styles("ES_NUMBER", "0x2000", false,'+/-Number. Prevents the user from typing anything other than digits in the control.'))
-aoEditStyles.Push(Styles("ES_OEMCONVERT", "0x400", false,'This style is most useful for edit controls that contain file names.'))
-aoEditStyles.Push(Styles("ES_MULTILINE", "0x4", false,'+/-Multi. Designates a multiline edit control. The default is a single-line edit control.'))
-aoEditStyles.Push(Styles("ES_PASSWORD", "0x20", false,'+/-Password. Displays a masking character in place of each character that is typed into the edit control, which conceals the text.'))
-aoEditStyles.Push(Styles("ES_READONLY", "0x800", false,'+/-ReadOnly. Prevents the user from typing or editing text in the edit control.'))
-aoEditStyles.Push(Styles("ES_RIGHT", "0x2", false,'+/-Right. Right-aligns text in a multiline edit control.'))
-aoEditStyles.Push(Styles("ES_UPPERCASE", "0x8", false,'+/-Uppercase. Converts all characters to uppercase as they are typed into the edit control.'))
-aoEditStyles.Push(Styles("ES_WANTRETURN", "0x1000", false,"+/-WantReturn. Specifies that a carriage return be inserted when the user presses Enter while typing text into a multiline edit control in a dialog box. If you do not specify this style, pressing Enter has the same effect as pressing the dialog box's default push button. This style has no effect on a single-line edit control."))
+aoEditStyles.Push(Styles("ES_AUTOHSCROLL", "0x80",'+/-Wrap for multi-line edits, and +/-Limit for single-line edits. Automatically scrolls text to the right by 10 characters when the user types a character at the end of the line. When the user presses Enter, the control scrolls all text back to the zero position.','Limit'))
+aoEditStyles.Push(Styles("ES_AUTOVSCROLL", "0x40",'Scrolls text up one page when the user presses Enter on the last line.'))
+aoEditStyles.Push(Styles("ES_CENTER", "0x1",'+/-Center. Centers text in a multiline edit control.', 'Center'))
+aoEditStyles.Push(Styles("ES_LOWERCASE", "0x10",'+/-Lowercase. Converts all characters to lowercase as they are typed into the edit control.', 'Lowercase'))
+aoEditStyles.Push(Styles("ES_NOHIDESEL", "0x100",'Negates the default behavior for an edit control. The default behavior hides the selection when the control loses the input focus and inverts the selection when the control receives the input focus. If you specify ES_NOHIDESEL, the selected text is inverted, even if the control does not have the focus.'))
+aoEditStyles.Push(Styles("ES_NUMBER", "0x2000",'+/-Number. Prevents the user from typing anything other than digits in the control.', 'Number'))
+aoEditStyles.Push(Styles("ES_OEMCONVERT", "0x400",'This style is most useful for edit controls that contain file names.'))
+aoEditStyles.Push(Styles("ES_MULTILINE", "0x4",'+/-Multi. Designates a multiline edit control. The default is a single-line edit control.','Multi'))
+aoEditStyles.Push(Styles("ES_PASSWORD", "0x20",'+/-Password. Displays a masking character in place of each character that is typed into the edit control, which conceals the text.', 'Password'))
+aoEditStyles.Push(Styles("ES_READONLY", "0x800",'+/-ReadOnly. Prevents the user from typing or editing text in the edit control.', 'ReadOnly'))
+aoEditStyles.Push(Styles("ES_RIGHT", "0x2",'+/-Right. Right-aligns text in a multiline edit control.', 'Right'))
+aoEditStyles.Push(Styles("ES_UPPERCASE", "0x8",'+/-Uppercase. Converts all characters to uppercase as they are typed into the edit control.', 'Uppercase'))
+aoEditStyles.Push(Styles("ES_WANTRETURN", "0x1000","+/-WantReturn. Specifies that a carriage return be inserted when the user presses Enter while typing text into a multiline edit control in a dialog box. If you do not specify this style, pressing Enter has the same effect as pressing the dialog box's default push button. This style has no effect on a single-line edit control.", 'WantReturn'))
+
+global aoEditMultiLineStyles := Array()
+aoEditMultiLineStyles.Push(Styles("ES_AUTOHSCROLL", "0x80",'+/-Wrap for multi-line edits, and +/-Limit for single-line edits. Automatically scrolls text to the right by 10 characters when the user types a character at the end of the line. When the user presses Enter, the control scrolls all text back to the zero position.','Wrap'))
+aoEditMultiLineStyles.Push(Styles("ES_AUTOVSCROLL", "0x40",'Scrolls text up one page when the user presses Enter on the last line.'))
+aoEditMultiLineStyles.Push(Styles("ES_CENTER", "0x1",'+/-Center. Centers text in a multiline edit control.', 'Center'))
+aoEditMultiLineStyles.Push(Styles("ES_LOWERCASE", "0x10",'+/-Lowercase. Converts all characters to lowercase as they are typed into the edit control.', 'Lowercase'))
+aoEditMultiLineStyles.Push(Styles("ES_NOHIDESEL", "0x100",'Negates the default behavior for an edit control. The default behavior hides the selection when the control loses the input focus and inverts the selection when the control receives the input focus. If you specify ES_NOHIDESEL, the selected text is inverted, even if the control does not have the focus.'))
+aoEditMultiLineStyles.Push(Styles("ES_NUMBER", "0x2000",'+/-Number. Prevents the user from typing anything other than digits in the control.', 'Number'))
+aoEditMultiLineStyles.Push(Styles("ES_OEMCONVERT", "0x400",'This style is most useful for edit controls that contain file names.'))
+aoEditMultiLineStyles.Push(Styles("ES_MULTILINE", "0x4",'+/-Multi. Designates a multiline edit control. The default is a single-line edit control.','Multi'))
+aoEditMultiLineStyles.Push(Styles("ES_PASSWORD", "0x20",'+/-Password. Displays a masking character in place of each character that is typed into the edit control, which conceals the text.', 'Password'))
+aoEditMultiLineStyles.Push(Styles("ES_READONLY", "0x800",'+/-ReadOnly. Prevents the user from typing or editing text in the edit control.', 'ReadOnly'))
+aoEditMultiLineStyles.Push(Styles("ES_RIGHT", "0x2",'+/-Right. Right-aligns text in a multiline edit control.', 'Right'))
+aoEditMultiLineStyles.Push(Styles("ES_UPPERCASE", "0x8",'+/-Uppercase. Converts all characters to uppercase as they are typed into the edit control.', 'Uppercase'))
+aoEditMultiLineStyles.Push(Styles("ES_WANTRETURN", "0x1000","+/-WantReturn. Specifies that a carriage return be inserted when the user presses Enter while typing text into a multiline edit control in a dialog box. If you do not specify this style, pressing Enter has the same effect as pressing the dialog box's default push button. This style has no effect on a single-line edit control.", 'WantReturn'))
 
 global aoButtonStyles := Array()
-aoButtonStyles.Push(Styles("BS_AUTO3STATE", "0x6", false,'Creates a button that is the same as a three-state check box, except that the box changes its state when the user selects it. The state cycles through checked, indeterminate, and cleared.'))
-aoButtonStyles.Push(Styles("BS_AUTOCHECKBOX", "0x3", false,'Creates a button that is the same as a check box, except that the check state automatically toggles between checked and cleared each time the user selects the check box.'))
-aoButtonStyles.Push(Styles("BS_AUTORADIOBUTTON", "0x9", false,"Creates a button that is the same as a radio button, except that when the user selects it, the system automatically sets the button's check state to checked and automatically sets the check state for all other buttons in the same group to cleared."))
-aoButtonStyles.Push(Styles("BS_LEFT", "0x100", false,'+/-Left. Left-aligns the text.'))
-aoButtonStyles.Push(Styles("BS_PUSHBUTTON", "0x0", false,'Creates a push button that posts a WM_COMMAND message to the owner window when the user selects the button.'))
-aoButtonStyles.Push(Styles("BS_PUSHLIKE", "0x1000", false,"Makes a checkbox or radio button look and act like a push button. The button looks raised when it isn't pushed or checked, and sunken when it is pushed or checked."))
-aoButtonStyles.Push(Styles("BS_RIGHT", "0x200", false,'+/-Right. Right-aligns the text.'))
-aoButtonStyles.Push(Styles("BS_RIGHTBUTTON", "0x20", false,"+Right (i.e. +Right includes both BS_RIGHT and BS_RIGHTBUTTON, but -Right removes only BS_RIGHT, not BS_RIGHTBUTTON). Positions a checkbox square or radio button circle on the right side of the control's available width instead of the left."))
-aoButtonStyles.Push(Styles("BS_BOTTOM", "0x800", false,"Places the text at the bottom of the control's available height."))
-aoButtonStyles.Push(Styles("BS_CENTER", "0x300", false,'+/-Center. Centers the text horizontally within the control`'s available width.'))
-aoButtonStyles.Push(Styles("BS_DEFPUSHBUTTON", "0x1", true,'+/-Default. Creates a push button with a heavy black border. If the button is in a dialog box, the user can select the button by pressing Enter, even when the button does not have the input focus. This style is useful for enabling the user to quickly select the most likely option.'))
-aoButtonStyles.Push(Styles("BS_MULTILINE", "0x2000", false,'+/-Wrap. Wraps the text to multiple lines if the text is too long to fit on a single line in the control`'s available width. This also allows linefeed (``n) to start new lines of text.'))
-aoButtonStyles.Push(Styles("BS_NOTIFY", "0x4000", false,'Enables a button to send BN_KILLFOCUS and BN_SETFOCUS notification codes to its parent window. Note that buttons send the BN_CLICKED notification code regardless of whether it has this style. To get BN_DBLCLK notification codes, the button must have the BS_RADIOBUTTON or BS_OWNERDRAW style.'))
-aoButtonStyles.Push(Styles("BS_TOP", "0x400", false,'Places text at the top of the control`'s available height.'))
-aoButtonStyles.Push(Styles("BS_VCENTER", "0xC00", false,'Vertically centers text in the control`'s available height.'))
-aoButtonStyles.Push(Styles("BS_FLAT", "0x8000", false,'Specifies that the button is two-dimensional; it does not use the default shading to create a 3-D effect.'))
-aoButtonStyles.Push(Styles("BS_GROUPBOX", "0x7", false,'Creates a rectangle in which other controls can be grouped. Any text associated with this style is displayed in the rectangle`'s upper left corner.'))
+aoButtonStyles.Push(Styles("BS_AUTO3STATE", "0x6",'Creates a button that is the same as a three-state check box, except that the box changes its state when the user selects it. The state cycles through checked, indeterminate, and cleared.'))
+aoButtonStyles.Push(Styles("BS_AUTOCHECKBOX", "0x3",'Creates a button that is the same as a check box, except that the check state automatically toggles between checked and cleared each time the user selects the check box.'))
+aoButtonStyles.Push(Styles("BS_AUTORADIOBUTTON", "0x9","Creates a button that is the same as a radio button, except that when the user selects it, the system automatically sets the button's check state to checked and automatically sets the check state for all other buttons in the same group to cleared."))
+aoButtonStyles.Push(Styles("BS_LEFT", "0x100",'+/-Left. Left-aligns the text.', 'Left'))
+aoButtonStyles.Push(Styles("BS_PUSHBUTTON", "0x0",'Creates a push button that posts a WM_COMMAND message to the owner window when the user selects the button.'))
+aoButtonStyles.Push(Styles("BS_PUSHLIKE", "0x1000","Makes a checkbox or radio button look and act like a push button. The button looks raised when it isn't pushed or checked, and sunken when it is pushed or checked."))
+aoButtonStyles.Push(Styles("BS_RIGHT", "0x200",'+/-Right. Right-aligns the text.', 'Right'))
+aoButtonStyles.Push(Styles("BS_RIGHTBUTTON", "0x20","+Right (i.e. +Right includes both BS_RIGHT and BS_RIGHTBUTTON, but -Right removes only BS_RIGHT, not BS_RIGHTBUTTON). Positions a checkbox square or radio button circle on the right side of the control's available width instead of the left."))
+aoButtonStyles.Push(Styles("BS_BOTTOM", "0x800","Places the text at the bottom of the control's available height."))
+aoButtonStyles.Push(Styles("BS_CENTER", "0x300",'+/-Center. Centers the text horizontally within the control`'s available width.', 'Center'))
+aoButtonStyles.Push(Styles("BS_DEFPUSHBUTTON", "0x1",'+/-Default. Creates a push button with a heavy black border. If the button is in a dialog box, the user can select the button by pressing Enter, even when the button does not have the input focus. This style is useful for enabling the user to quickly select the most likely option.', 'Default'))
+aoButtonStyles.Push(Styles("BS_MULTILINE", "0x2000",'+/-Wrap. Wraps the text to multiple lines if the text is too long to fit on a single line in the control`'s available width. This also allows linefeed (``n) to start new lines of text.', 'Wrap'))
+aoButtonStyles.Push(Styles("BS_NOTIFY", "0x4000",'Enables a button to send BN_KILLFOCUS and BN_SETFOCUS notification codes to its parent window. Note that buttons send the BN_CLICKED notification code regardless of whether it has this style. To get BN_DBLCLK notification codes, the button must have the BS_RADIOBUTTON or BS_OWNERDRAW style.'))
+aoButtonStyles.Push(Styles("BS_TOP", "0x400",'Places text at the top of the control`'s available height.'))
+aoButtonStyles.Push(Styles("BS_VCENTER", "0xC00",'Vertically centers text in the control`'s available height.'))
+aoButtonStyles.Push(Styles("BS_FLAT", "0x8000",'Specifies that the button is two-dimensional; it does not use the default shading to create a 3-D effect.'))
+aoButtonStyles.Push(Styles("BS_GROUPBOX", "0x7",'Creates a rectangle in which other controls can be grouped. Any text associated with this style is displayed in the rectangle`'s upper left corner.'))
 
-
+Global aoDefaultStyles := Object()
+aoDefaultStyles.window := {style:0xffffffff94ca0000, exStyle:0x100}
+aoDefaultStyles.edit := {style:0x50010080, exStyle:0x200}
+aoDefaultStyles.editmultiLine := {style:0x50211040, exStyle:0x200}
+aoDefaultStyles.button := {style:0x50010000, exStyle:0x0}
+aoDefaultStyles.checkbox := {style:0x50010003, exStyle:0x0}
+aoDefaultStyles.monthcal := {style:0x50010000, exStyle:0x0}
+aoDefaultStyles.picture := {style:0x50000003, exStyle:0x0}
+aoDefaultStyles.process := {style:0x50000000, exStyle:0x0}
+aoDefaultStyles.radio := {style:0x50030009, exStyle:0x0}
+aoDefaultStyles.slider := {style:0x50030000, exStyle:0x0}
+aoDefaultStyles.tab3 := {style:0x54010240, exStyle:0x0}
+aoDefaultStyles.text := {style:0x50000000, exStyle:0x0}
+aoDefaultStyles.treeview := {style:0x50010027, exStyle:0x200}
+aoDefaultStyles.combobox := {style:0x50010242, exStyle:0x0}
+aoDefaultStyles.datetime := {style:0x5201000c, exStyle:0x0}
+aoDefaultStyles.dropdownlist := {style:0x50010203, exStyle:0x0}
+aoDefaultStyles.groupbox := {style:0x50000007, exStyle:0x0}
+aoDefaultStyles.link := {style:0x50010000, exStyle:0x0}
+aoDefaultStyles.listbox := {style:0x50010081, exStyle:0x200}
+aoDefaultStyles.listview := {style:0x500000c2, exStyle:0x0}
+aoDefaultStyles.statusbar := {style:0x50000800, exStyle:0x0}
 
 global SettingsFile := Regexreplace(A_scriptName, "(.*)\..*", "$1.ini")
 ;Load the existing settings 
@@ -167,6 +205,7 @@ MyGui.win_hwnd := 0
 MyGui.ctrl_hwnd := 0
 ogButton_Selector := MyGui.addButton("xm ym w60 vbtnSelector BackgroundTrans h20 w20 +0x4000", "+")
 ogButton_Selector.SetFont("s18", "Times New Roman")
+ogButton_Selector.statusbar := "Rclick and drag to select a specific control or window"
 
 ogGB_Window := MyGui.AddGroupBox("w300 h145 Section","Window")
 MyGui.AddText("xp+3 yp+18","Title")
@@ -245,14 +284,17 @@ xList := 310
 ogText_WinSearch := MyGui.AddText("x" xList+20 " ym+7", "WinSearch:")
 ogText_WinSearch.GroupBox := "List"
 ogEdit_win_search :=MyGui.AddEdit("yp-3 x+10 w200 vwin_seach")
+ogEdit_win_search.statusbar := "Type to filter the windows on specific words"
 ogEdit_win_search.OnEvent("Change",UpdateWinList)
 ogEdit_win_search.GroupBox := "List"
 ogCB_FilterWinVisible := MyGui.AddCheckbox("xp+210 yp+3 vfilter_win_visible Checked", "Visible") 
 ogCB_FilterWinVisible.OnEvent("Click",UpdateWinList)
 ogCB_FilterWinVisible.GroupBox := "List"
+ogCB_FilterWinVisible.Statusbar := "Filter on only visible windows"
 ogCB_FilterWinTitle := MyGui.AddCheckbox("xp+60 yp vfilter_win_title Checked", "Title") 
 ogCB_FilterWinTitle.OnEvent("Click", UpdateWinList)
 ogCB_FilterWinTitle.GroupBox := "List"
+ogCB_FilterWinTitle.Statusbar := "Filter on windows with a title"
 
 ogLV_WinList := MyGui.AddListView("x" xList " y+8 r15 w" (MyGui.Width - 8 * 3) / 2 " vWinList section AltSubmit", ["Title", "Process", "ID", "Visible", "X", "Y", "W", "H"])
 ogLV_WinList.Opt("Count400 -Multi")
@@ -273,10 +315,17 @@ ogText_CtrlSearch := MyGui.AddText("x" xList+20 " y+6", "ControlSearch:")
 ogText_CtrlSearch.GroupBox := "List"
 ogEdit_ctrl_search := MyGui.AddEdit("yp-3 x+10 w200 vctrl_search")
 ogEdit_ctrl_search.OnEvent("Change", UpdateCtrlList)
+ogEdit_ctrl_search.statusbar := "Type to filter the controls on specific words"
 ogEdit_ctrl_search.GroupBox := "List"
-ogCB_FilterCtrlText := MyGui.AddCheckbox("xp+210 yp+3 vfilter_ctrl_text", "Text visible") 
+ogCB_FilterCtrlVisible := MyGui.AddCheckbox("xp+210 yp+3 vfilter_ctrl_visible", "Visible")
+ogCB_FilterCtrlVisible.OnEvent("Click", UpdateCtrlList)
+ogCB_FilterCtrlVisible.GroupBox := "List"
+ogCB_FilterCtrlVisible.Statusbar := "Filter on only visible controls"
+
+ogCB_FilterCtrlText := MyGui.AddCheckbox("xp+60 yp vfilter_ctrl_text", "Text visible") 
 ogCB_FilterCtrlText.OnEvent("Click", UpdateCtrlList)
 ogCB_FilterCtrlText.GroupBox := "List"
+ogCB_FilterCtrlText.statusbar := "Filter on controls with text"
 ogLV_CtrlList := MyGui.AddListView("x" xList " y+8 r15 w" (MyGui.Width-8*3)/2 " vCtrlList section AltSubmit", ["Class(NN)", "Hwnd", "Text", "X", "Y", "W", "H","Visible"])
 ogLV_CtrlList.Opt("Count100 -Multi")
 ogLV_CtrlList.OnEvent("Click", DClickCtrlList)
@@ -732,7 +781,7 @@ UpdateCtrlList(*){
             ctrl_ClassNN := ControlGetClassNN(ctrl_hwnd)
             ControlGetPos(&ctrl_x, &ctrl_y, &ctrl_w, &ctrl_h, ctrl_hwnd)
             ctrl_Visible := ControlGetVisible(ctrl_hwnd)
-            if (ogCB_FilterCtrlText.value=1 and ctrl_text=""){
+            if ((ogCB_FilterCtrlText.value = 1 and ctrl_text = "") or (ogCB_FilterCtrlVisible.value = 1 and !ctrl_Visible)){
                  continue
             }
             if (ogEdit_ctrl_search.value="" or InStr(ctrl_ClassNN " " ctrl_hwnd " " ctrl_text,ogEdit_ctrl_search.value)){
@@ -800,56 +849,56 @@ Gui_Size(thisGui, MinMax, Width, Height) {
 }
 
 GuiStyles_Create(hwnd, ObjectType) {
-    win_style := WinGetStyle("ahk_id " hwnd)
+    object_Style := WinGetStyle("ahk_id " hwnd)
+    object_ExStyle := WinGetExStyle("ahk_id " hwnd)
     
-    GuiStyles := Gui(, "Styles - " ObjectType " - " format("0x{:x}",win_style))
+    ObjectType := (ObjectType="Edit" and object_Style & 0x4) ? "editmultiLine" : ObjectType
+
+    defaultStyle :=aoDefaultStyles.%ObjectType%.style
+    defaultExStyle :=aoDefaultStyles.%ObjectType%.exStyle
+
+    GuiStyles := Gui(, "Styles - " ObjectType " - " format("0x{:X}",object_Style))
+
     ogTab := GuiStyles.AddTab3("w400 h400",["Styles","Extended Styles"])
-    ogLVStyles := GuiStyles.Add("ListView", " h300 w300 Checked", ["Style", "Hex", "Description"])
+    ogEditStyle := GuiStyles.AddEdit("w150",format("0x{:X}", object_Style))
+    ogLVStyles := GuiStyles.Add("ListView", " h332 w375 Checked", ["Style", "Hex", "Default","Description"])
     ogTab.UseTab("Extended Styles")
-    ogLVExStyles := GuiStyles.Add("ListView", " h300 w300 Checked", ["Style", "Hex", "Description"])
+    ogEditExStyle := GuiStyles.AddEdit("w150", format("0x{:X}", object_ExStyle))
+    ogLVExStyles := GuiStyles.Add("ListView", "h332 w375 Checked", ["Style", "Hex", "Default", "Description"])
     ogTab.UseTab()
-    ogEditOptions := GuiStyles.AddEdit("w300")
+    ogEditOptions := GuiStyles.AddEdit("xm y410 w300")
     Options := ""
-    for index, oStyle in aoWinStyles{
-        ogLVStyles.Add(((win_style & oStyle.Hex)? "Check" : ""),oStyle.Style,oStyle.Hex,oStyle.Description)
-        if (((oStyle.SkipHex!="") and (win_style & oStyle.SkipHex)) or oStyle.Skip){
-            continue ; skip this option
-        }
-        Options .= (((!oStyle.DefaultValue && (win_style & oStyle.Hex)) || (oStyle.DefaultValue && !(win_style & oStyle.Hex))) ? ( " " (oStyle.DefaultValue ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText)) : "")
+
+    aoStyles := (ObjectType = "window") ? aoWinStyles : aoControlStyles
+
+    ; general style
+    for index, oStyle in aoStyles{
+        ogLVStyles.Add(((object_Style & oStyle.Hex) ? "Check" : ""),oStyle.Style,oStyle.Hex,(defaultStyle & oStyle.Hex) ? "true" : "false", oStyle.Description)
+        Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText) 
     }
-    if (ObjectType="text"){
-        for index, oStyle in aoTextStyles{
-            ogLVStyles.Add(((win_style & oStyle.Hex)? "Check" : ""),oStyle.Style,oStyle.Hex,oStyle.Description)
-            if (((oStyle.SkipHex!="") and (win_style & oStyle.SkipHex)) or oStyle.Skip){
-                continue ; skip this option
-            }
-            Options .= (((!oStyle.DefaultValue && (win_style & oStyle.Hex)) || (oStyle.DefaultValue && !(win_style & oStyle.Hex))) ? ( " " (oStyle.DefaultValue ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText)) : "")
-        }
-    }
-    if (ObjectType="Edit"){
-        for index, oStyle in aoEditStyles{
-            ogLVStyles.Add(((win_style & oStyle.Hex)? "Check" : ""),oStyle.Style,oStyle.Hex,oStyle.Description)
-            if (((oStyle.SkipHex!="") and (win_style & oStyle.SkipHex)) or oStyle.Skip){
-                continue ; skip this option
-            }
-            Options .= (((!oStyle.DefaultValue && (win_style & oStyle.Hex)) || (oStyle.DefaultValue && !(win_style & oStyle.Hex))) ? ( " " (oStyle.DefaultValue ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText)) : "")
+
+    aoStyles_extra := ""
+    aoStyles_extra := (ObjectType = "text") ? aoTextStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "Edit") ? aoEditStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "EditMultiline") ? aoEditMultilineStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType ~= "Button|CheckBox|Radio|GroupBox") ? aoButtonStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "text") ? aoTextStyles : aoStyles_extra
+
+    ; object specific styles
+    if (aoStyles_extra!=""){
+        for index, oStyle in aoStyles_extra{
+            ogLVStyles.Add(((object_Style & oStyle.Hex)? "Check" : ""),oStyle.Style,oStyle.Hex,(defaultStyle & oStyle.Hex) ? "true" : "false",oStyle.Description)
+            Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText) 
         }
     }
-    if (ObjectType~="Button|CheckBox|Radio|GroupBox"){
-        for index, oStyle in aoButtonStyles{
-            ogLVStyles.Add(((win_style & oStyle.Hex)? "Check" : ""),oStyle.Style,oStyle.Hex,oStyle.Description)
-            if (((oStyle.SkipHex!="") and (win_style & oStyle.SkipHex)) or oStyle.Skip){
-                continue ; skip this option
-            }
-            Options .= (((!oStyle.DefaultValue && (win_style & oStyle.Hex)) || (oStyle.DefaultValue && !(win_style & oStyle.Hex))) ? ( " " (oStyle.DefaultValue ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText)) : "")
-        }
-    }
+    
     for index, oExStyle in aoWinExStyles{
-        ogLVExStyles.Add(((win_style & oExStyle.Hex)? "Check" : ""),oExStyle.Style,oExStyle.Hex,oExStyle.Description)
-        if (((oExStyle.SkipHex!="") and (win_style & oExStyle.SkipHex)) or oExStyle.Skip){
-            continue ; skip this option
-        }
-        ;Options .= (((!oExStyle.DefaultValue && (win_style & oExStyle.Hex)) || (oExStyle.DefaultValue && !(win_style & oExStyle.Hex))) ? ( " " (oExStyle.DefaultValue ? "-" : "+") (oExStyle.OptionText="" ? "E" oExStyle.Hex : oExStyle.OptionText)) : "")
+        ogLVExStyles.Add(((object_ExStyle & oExStyle.Hex)? "Check" : ""),oExStyle.Style,oExStyle.Hex, (defaultExStyle & oExStyle.Hex) ? "true" : "false",oExStyle.Description)
+        ; if (((oExStyle.SkipHex!="") and (object_ExStyle & oExStyle.SkipHex)) or oExStyle.Skip){
+        ;     continue ; skip this option
+        ; }
+        ;Options .= (((!oExStyle.DefaultValue && (win_ExStyle & oExStyle.Hex)) || (oExStyle.DefaultValue && !(win_ExStyle & oExStyle.Hex))) ? ( " " (oExStyle.DefaultValue ? "-" : "+") (oExStyle.OptionText="" ? "E" oExStyle.Hex : oExStyle.OptionText)) : "")
+        Options .= (((defaultExStyle & oExStyle.Hex) && (object_ExStyle & oExStyle.Hex)) | (!(defaultExStyle & oExStyle.Hex) && !(object_ExStyle & oExStyle.Hex))) ? "" : " " ((defaultExStyle & oExStyle.Hex) ? "-E" : "+E") (oExStyle.OptionText="" ? oExStyle.Hex : oExStyle.OptionText) 
     }
    
     ogEditOptions.Value := Options
