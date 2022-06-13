@@ -340,9 +340,9 @@ GridSize_Change()
 
 oGui5.posRef := oGui4
 oGui5.posRule := "Xx Yyh Ww"
-ogGBMouse := oGui5.addGroupBox(,"Function")
-ogGBMouse.LeftMargin := 2
-ogGBMouse.BottomMargin := 2
+ogGBFunction := oGui5.addGroupBox(,"Function")
+ogGBFunction.LeftMargin := 2
+ogGBFunction.BottomMargin := 2
 
 moFunctions := Map()
 moFunctions["SendMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", result:true, description:"Sends a message to a window or control and waits for acknowledgement."}
@@ -975,7 +975,7 @@ GuiUpdate(*){
 GuiSection_Size(thisGui, MinMax, Width, Height) {
     if MinMax = -1	; The window has been minimized. No action needed.
         return
-    DllCall("LockWindowUpdate", "Uint", thisGui.Hwnd)
+    ;DllCall("LockWindowUpdate", "Uint", thisGui.Hwnd)
     ; SendMessage(0xB, false,,thisGui.Hwnd)
     For Hwnd, GuiCtrlObj in thisGui {
         if (GuiCtrlObj.HasProp("LeftMargin") && GuiCtrlObj.LeftMargin!="") {
@@ -995,9 +995,9 @@ GuiSection_Size(thisGui, MinMax, Width, Height) {
             GuiCtrlObj.Move(, , , Height - cY - GuiCtrlObj.BottomMargin)
         }
     }
-    DllCall("LockWindowUpdate", "Uint", 0)
+    ;DllCall("LockWindowUpdate", "Uint", 0)
     ; SendMessage(0xB, true,,thisGui.Hwnd)
-    WinRedraw(thisGui)
+    ;WinRedraw(thisGui)
 }
 
 ; Automatically change Sections
@@ -1709,7 +1709,27 @@ TranslateClassName(ClassName) {
         ogGbMsgList.Visible := oFunct.HasProp("var1") && oFunct.var1 = "msg"
         ogEdtSearch.Visible := oFunct.HasProp("var1") && oFunct.var1 = "msg"
         ogLvMessages.Visible := oFunct.HasProp("var1") && oFunct.var1 = "msg"
+
+        ; Autosize Groupbox
+        yMax := 0
+        ogGBFunction.GetPos(&xGB,&yGB,&wGB,&hGB)
+        for index, oControl in oGui5{
+            if !oControl.visible{
+                continue
+            }
+            if (ogGBFunction.hwnd=oControl.hwnd){
+                continue
+            }
+            ClassNN := ControlGetClassNN(oControl)
+            oControl.GetPos(&xC,&yC,&wC,&hC)
+            yMax := Max(yMax,yC+hC)
+        }
+        
+        WinGetPos(&xWin,&yWin,&wWin,&hWin, ogGBFunction.Gui)
+        
+        ControlMove(, , , yMax-yGB+5,ogGBFunction)
         oGui5.Show("Autosize")
+        Gui_Size(myGui)
     }
 
 }
