@@ -41,6 +41,53 @@ oSettings_Default.MainGui := {
     MouseGrid: 1
 }
 
+global IconLib := "Images.icl"
+
+Global oImageControls := {
+ActiveX: -33,
+Button: -9,
+CheckBox: -10,
+ComboBox: -11,
+DateTime: -12,
+DropDownList: -13,
+Edit: -14,
+GroupBox: -15,
+Hotkey: -16,
+Link: -17,
+ListBox:  -18,
+ListView:  -19,
+MonthCal:  -21,
+Picture: -22,
+Progress: -23,
+Radio: -24,
+Separator: -25,
+Slider: -26,
+StatusBar:27,
+Tab3: -28,
+Text: -29,
+ToolBar: -30,
+TreeView: -31,
+UpDown: -32,
+Custom: -34,
+CommandLink: -35,
+MenuBar: -35,
+ScrollBar: -32
+}
+index := 1
+for property, value in oImageControls.OwnProps(){
+    index++
+}
+
+ImageCtrlList := IL_Create(index+1)
+mILControls := Map()
+IconIndex1 := IL_Add(ImageCtrlList, "shell32.dll", 50) ; add empty image
+index := 1
+for property, value in oImageControls.OwnProps(){
+    index++
+    mILControls[Property] := IL_Add(ImageCtrlList, "Images.icl", value)
+}
+    
+
 Class Styles {
     __New(Style, Hex, Description, OptionText:="",SkipHex := "", Skip := "") {
         this.Style := Style
@@ -308,7 +355,7 @@ ogButton_cMove.OnEvent("Click", (*) => (ControlMove(ogEdit_cXPos.value, ogEdit_c
 
 oGui4.posRef := oGui3
 oGui4.posRule := "Xx Yyh Ww"
-ogGB_Mouse := ogGB_Mouse := oGui4.AddGroupBox("xm w300", "Mouse")
+ogGB_Mouse := oGui4.AddGroupBox("xm w300", "Mouse")
 ogGB_Mouse.LeftMargin := 2
 ogGB_Mouse.BottomMargin := 2
 oGui4.AddText("xp+3 yp+18", "Pos")
@@ -358,8 +405,9 @@ aFunctionList := Array()
 For Key, Value in moFunctions{
     aFunctionList.Push(Key)
 }
-DDLFunction := oGui5.Add("DropDownList", "x60 yp+18 Choose1", aFunctionList)
-DDLFunction.OnEvent("Change", UpdateControls)
+DDLFunction := oGui5.Add("DropDownList", "x60 yp+18 Choose", aFunctionList)
+DDLFunction.text := "ControlSend"
+DDLFunction.OnEvent("Change", UpdateFunctionControls)
 BtnRun := oGui5.Add("Button", "x+10 yp-1 w60", "Run")
 BtnRun.OnEvent("Click",ClickRun)
 BtnCopy := oGui5.Add("Button", "x+10 yp w20", "Copy")
@@ -528,8 +576,12 @@ UpdateWinList()
 
 MyGui.Show("x" oSet.WinX " y" oSet.WinY " w" oSet.WinW " h" oSet.WinH)
 
-GuiUpdate()
 
+UpdateFunctionControls()
+
+GroupBoxAutosize(ogGB_Mouse)
+ogGB_Mouse.Gui.Show("Autosize")
+GuiUpdate()
 ; Reset Cursor in case previous script gave error
 SetSystemCursor("Default")
 OnMessage(WM_LBUTTONDOWN := 0x0201, CheckButtonClick)
@@ -860,8 +912,11 @@ UpdateWinList(p*){
 }
 
 UpdateCtrlList(*){
-    
+    ;IconLib
     ogLV_CtrlList.Delete()
+
+    ogLV_CtrlList.SetImageList(ImageCtrlList)
+
     win_hwnd := MyGui.win_hwnd
     ogLV_CtrlList.Opt("-Redraw")
     selectedCtrl_hwnd := MyGui.ctrl_hwnd
@@ -872,19 +927,51 @@ UpdateCtrlList(*){
             }
             ctrl_text := ControlGetText(ctrl_hwnd)
             ctrl_ClassNN := ControlGetClassNN(ctrl_hwnd)
+            ctrl_AhkName := TranslateClassName(ctrl_ClassNN)
             ControlGetPos(&ctrl_x, &ctrl_y, &ctrl_w, &ctrl_h, ctrl_hwnd)
+            ControlType := ControlGetStyle(ctrl_hwnd) & 0xF
+            If (ctrl_AhkName = "Button") {
+                ; 1: BS_DEFPUSHBUTTON
+                ; 2: BS_CHECKBOX
+                ; 3: BS_AUTOCHECK
+                ; 4: BS_RADIOBUTTON
+                ; 5: BS_3STATE
+                ; 6: BS_AUTO3STATE
+                ; 9: BS_AUTORADIOBUTTON
+                If (ControlType == 1) {
+                    ctrl_AhkName := "Button"
+                } Else if (ControlType ~= "^(?i:2|3|5|6)$")
+                    ctrl_AhkName := "CheckBox"
+                Else if (ControlType ~= "^(?i:4|9)$")
+                    ctrl_AhkName := "Radio"
+                Else If (ControlType == 7)
+                    ctrl_AhkName := "GroupBox"
+
+            }  Else If (ctrl_AhkName == "Text") {
+                If (ControlType == 3 || ControlType == 14) {
+                    ; 3:  SS_ICON
+                    ; 14: SS_BITMAP
+                    ctrl_AhkName := "Picture"
+                }
+                If (ctrl_text == "" && ctrl_h == 2) {
+                    ctrl_AhkName := "Separator"
+                }
+            }
+
+            
             ctrl_Visible := ControlGetVisible(ctrl_hwnd)
             if ((ogCB_FilterCtrlText.value = 1 and ctrl_text = "") or (ogCB_FilterCtrlVisible.value = 1 and !ctrl_Visible)){
                  continue
             }
             if (ogEdit_ctrl_search.value="" or InStr(ctrl_ClassNN " " ctrl_hwnd " " ctrl_text,ogEdit_ctrl_search.value)){
-                NewRowNumber:= ogLV_CtrlList.Add(, ctrl_ClassNN, format("{:#x}", ctrl_hwnd), ctrl_text,ctrl_x , ctrl_y, ctrl_w, ctrl_h, ctrl_Visible ? "Visible" : "Hidden")
+                NewRowNumber:= ogLV_CtrlList.Add((mILControls.Has(ctrl_AhkName) ? "Icon" mILControls[ctrl_AhkName] : "" ) , ctrl_ClassNN, format("{:#x}", ctrl_hwnd), ctrl_text,ctrl_x , ctrl_y, ctrl_w, ctrl_h, ctrl_Visible ? "Visible" : "Hidden")
                 if (selectedCtrl_hwnd=ctrl_hwnd){
                     ogLV_CtrlList.Modify(NewRowNumber, "Select Vis")
                 }
             }
         }
     }
+    ; 
     ;SetSelectedControl(isSet(Hwnd_selected) ? Hwnd_selected : "")
     ogLV_CtrlList.ModifyCol()
     ogLV_CtrlList.ModifyCol(3,200)
@@ -901,7 +988,7 @@ GridSize_Change(*){
     ogText_Line2.Move(cx+ (oGui4.Grid + 1) * 16 / 2, cy+1, 1, oGui4.Grid * 16 - 2 )
     ogText_Line3.Move(cx+1, cy+ (oGui4.Grid - 1) * 16 / 2, oGui4.Grid * 16 - 2 )
     ogText_Line4.Move(cx+1, cy+ (oGui4.Grid + 1) * 16 / 2, oGui4.Grid * 16 - 2)
-    ogGB_Mouse.Move(,,,67+oGui4.Grid * 16)
+    GroupBoxAutosize(ogGB_Mouse)
     oGui4.Show("AutoSize")
     GuiUpdate()
 }
@@ -1241,6 +1328,62 @@ GetButtonType(hwndButton){
     return types[1 + (btnStyle & 0xF)]
 }
 
+TranslateClassName(ClassName) {
+    AhkName := ""
+    If (InStr(ClassName, "static")) {
+        AhkName := "Text"
+    } Else If (InStr(ClassName, "button")) {
+        AhkName := "Button"
+    } Else If (InStr(ClassName, "edit")) {
+        AhkName := "Edit"
+    } Else If (InStr(ClassName, "checkbox")) {
+        AhkName := "CheckBox"
+    } Else If (InStr(ClassName, "group")) {
+        AhkName := "GroupBox"
+    } Else If (InStr(ClassName, "radio")) {
+        AhkName := "Radio"
+    } Else If (InStr(ClassName, "combobox")) {
+        AhkName := "ComboBox"
+    } Else If (InStr(ClassName, "listview")) {
+        AhkName := "ListView"
+    } Else If (InStr(ClassName, "listbox")) {
+        AhkName := "ListBox"
+    } Else If (InStr(ClassName, "tree")) {
+        AhkName := "TreeView"
+    } Else If (InStr(ClassName, "status")) {
+        AhkName := "StatusBar"
+    } Else If (InStr(ClassName, "tab")) {
+        AhkName := "Tab3"
+    } Else If (InStr(ClassName, "updown")) {
+        AhkName := "UpDown"
+    } Else If (InStr(ClassName, "hotkey")) {
+        AhkName := "Hotkey"
+    } Else If (InStr(ClassName, "progress")) {
+        AhkName := "Progress"
+    } Else If (InStr(ClassName, "trackbar")) {
+        AhkName := "Slider"
+    } Else If (InStr(ClassName, "datetime")) {
+        AhkName := "DateTime"
+    } Else If (InStr(ClassName, "month")) {
+        AhkName := "MonthCal"
+    } Else If (InStr(ClassName, "link")) {
+        AhkName := "Link"
+    } Else If (InStr(ClassName, "richedit")) {
+        AhkName := "Edit"
+    } Else If (InStr(ClassName, "scintilla")) {
+        AhkName := "Edit"
+    } Else If (InStr(ClassName, "memo")) {
+        AhkName := "Edit"
+    } Else If (InStr(ClassName, "btn")) {
+        AhkName := "Button"
+    } Else If (InStr(ClassName, "toolbar")) {
+        AhkName := "ToolBar"
+    } Else If (InStr(ClassName, "ScrollBar")) {
+        AhkName := "ScrollBar"
+    }
+    Return AhkName
+}
+
 WM_MOUSEMOVE(wParam, lParam, Msg, Hwnd) {
     static PrevHwnd := 0
     currControl := GuiCtrlFromHwnd(Hwnd)
@@ -1300,60 +1443,7 @@ ReadINI(INI_File:="", oResult := "") {	; return 2D-array from INI-file
     return oResult
 }
 
-TranslateClassName(ClassName) {
-    AhkName := ""
-    If (InStr(ClassName, "static")) {
-        AhkName := "Text"
-    } Else If (InStr(ClassName, "button")) {
-        AhkName := "Button"
-    } Else If (InStr(ClassName, "edit")) {
-        AhkName := "Edit"
-    } Else If (InStr(ClassName, "checkbox")) {
-        AhkName := "CheckBox"
-    } Else If (InStr(ClassName, "group")) {
-        AhkName := "GroupBox"
-    } Else If (InStr(ClassName, "radio")) {
-        AhkName := "Radio"
-    } Else If (InStr(ClassName, "combobox")) {
-        AhkName := "ComboBox"
-    } Else If (InStr(ClassName, "listview")) {
-        AhkName := "ListView"
-    } Else If (InStr(ClassName, "listbox")) {
-        AhkName := "ListBox"
-    } Else If (InStr(ClassName, "tree")) {
-        AhkName := "TreeView"
-    } Else If (InStr(ClassName, "status")) {
-        AhkName := "StatusBar"
-    } Else If (InStr(ClassName, "tab")) {
-        AhkName := "Tab3"
-    } Else If (InStr(ClassName, "updown")) {
-        AhkName := "UpDown"
-    } Else If (InStr(ClassName, "hotkey")) {
-        AhkName := "Hotkey"
-    } Else If (InStr(ClassName, "progress")) {
-        AhkName := "Progress"
-    } Else If (InStr(ClassName, "trackbar")) {
-        AhkName := "Slider"
-    } Else If (InStr(ClassName, "datetime")) {
-        AhkName := "DateTime"
-    } Else If (InStr(ClassName, "month")) {
-        AhkName := "MonthCal"
-    } Else If (InStr(ClassName, "link")) {
-        AhkName := "Link"
-    } Else If (InStr(ClassName, "richedit")) {
-        AhkName := "Edit"
-    } Else If (InStr(ClassName, "scintilla")) {
-        AhkName := "Edit"
-    } Else If (InStr(ClassName, "memo")) {
-        AhkName := "Edit"
-    } Else If (InStr(ClassName, "btn")) {
-        AhkName := "Button"
-    }
-    Return AhkName
-}
-
-
-; Tester functions
+; Functions
 {
     DClickMsgList(LV, RowNumber) {
         ogEdtVar1.text := ogLvMessages.GetText(RowNumber, 2)	; convert to number
@@ -1681,7 +1771,8 @@ TranslateClassName(ClassName) {
         ogLvMessages.Opt("+Redraw")
     }
 
-    UpdateControls(*){
+    ; Update controls of function section
+    UpdateFunctionControls(*){
         SelFunction := DDLFunction.text
        
         oFunct := moFunctions[SelFunction]
@@ -1710,14 +1801,24 @@ TranslateClassName(ClassName) {
         ogEdtSearch.Visible := oFunct.HasProp("var1") && oFunct.var1 = "msg"
         ogLvMessages.Visible := oFunct.HasProp("var1") && oFunct.var1 = "msg"
 
+        GroupBoxAutosize(ogGBFunction)
+
+        oGui5.Show("Autosize")
+        Gui_Size(myGui)
+    }
+
+}
+
+; Resize size of GroupBox based on visible controls
+GroupBoxAutosize(ogGB){
         ; Autosize Groupbox
         yMax := 0
-        ogGBFunction.GetPos(&xGB,&yGB,&wGB,&hGB)
-        for index, oControl in oGui5{
+        ogGB.GetPos(&xGB,&yGB,&wGB,&hGB)
+        for index, oControl in ogGB.gui{
             if !oControl.visible{
                 continue
             }
-            if (ogGBFunction.hwnd=oControl.hwnd){
+            if (ogGB.hwnd=oControl.hwnd){
                 continue
             }
             ClassNN := ControlGetClassNN(oControl)
@@ -1725,11 +1826,7 @@ TranslateClassName(ClassName) {
             yMax := Max(yMax,yC+hC)
         }
         
-        WinGetPos(&xWin,&yWin,&wWin,&hWin, ogGBFunction.Gui)
+        WinGetPos(&xWin,&yWin,&wWin,&hWin, ogGB.Gui)
         
-        ControlMove(, , , yMax-yGB+5,ogGBFunction)
-        oGui5.Show("Autosize")
-        Gui_Size(myGui)
-    }
-
+        ControlMove(, , , yMax-yGB+5,ogGB)
 }
