@@ -1,3 +1,4 @@
+; Made by Ahk_user
 ; Based on AHK window info, but in V2 and with more features
 ; 2022-07-12 Added ChildGuis to handle different view options, included Function section to quickly run functions
 ; 2022-07-15 Added more functions and improved the function commands
@@ -9,6 +10,7 @@
 #Include lib\Gdip_All.ahk
 #Include lib\_GuiCtlExt.ahk
 #Include lib\ObjectGui.ah2
+#Include lib\Toolbar.ah2
 
 DetectHiddenWindows true
 SendMode "Input"  ; Recommended for new scripts due to its superior speed and reliability.
@@ -32,7 +34,7 @@ oSettings_Default.MainGui := {
     SectControl: true,
     SectMouse: true,
     SectFunction: true,
-    SectWinList: true,
+    SectWindowList: true,
     SectControlList: true,
     SectProcessList: true,
     ControlPar: "ClassNN",
@@ -108,24 +110,24 @@ for property, value in oImageControls.OwnProps(){
     aoWinStyles.Push(Styles("WS_DLGFRAME", "0x400000","Creates a window that has a border of a style typically used with dialog boxes.")) 
     aoWinStyles.Push(Styles("WS_HSCROLL", "0x100000", "Creates a window that has a horizontal scroll bar."))
     aoWinStyles.Push(Styles("WS_MAXIMIZE", "0x1000000", "Creates a window that is initially maximized."))
-    aoWinStyles.Push(Styles("WS_MAXIMIZEBOX", "0x10000", "+/-MaximizeBox. Creates a window that has a maximize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.","MaximizeBox"))
+    aoWinStyles.Push(Styles("WS_MAXIMIZEBOX", "0x10000", "+/-MaximizeBox. Creates a window that has a maximize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.","MaximizeBox"))
     aoWinStyles.Push(Styles("WS_MINIMIZE", "0x20000000", "Creates a window that is initially minimized."))
-    aoWinStyles.Push(Styles("WS_MINIMIZEBOX", "0x20000", "+/-MinimizeBox. Creates a window that has a minimize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.","MinimizeBox"))
+    aoWinStyles.Push(Styles("WS_MINIMIZEBOX", "0x20000", "+/-MinimizeBox. Creates a window that has a minimize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.","MinimizeBox"))
     aoWinStyles.Push(Styles("WS_OVERLAPPED", "0x0", "Creates an overlapped window. An overlapped window has a title bar and a border. Same as the WS_TILED style."))
-    aoWinStyles.Push(Styles("WS_OVERLAPPEDWINDOW", "0xCF0000", "Creates an overlapped window with the WS_OVERLAPPED, WS_CAPTION, WS_SYSMENU, WS_THICKFRAME, WS_MINIMIZEBOX, and WS_MAXIMIZEBOX styles. Same as the WS_TILEDWINDOW style.",,, true))
-    aoWinStyles.Push(Styles("WS_POPUPWINDOW", "0x80880000", "Creates a pop-up window with WS_BORDER, WS_POPUP, and WS_SYSMENU styles. The WS_CAPTION and WS_POPUPWINDOW styles must be combined to make the window menu visible.",,,true))
-    aoWinStyles.Push(Styles("WS_SIZEBOX", "0x40000", "+/-Resize. Creates a window that has a sizing border. Same as the WS_THICKFRAME style.","Resize","+MaximizeBox +E0x10000"))
-    aoWinStyles.Push(Styles("WS_SYSMENU", "0x80000", "+/-SysMenu. Creates a window that has a window menu on its title bar. The WS_CAPTION style must also be specified.","SysMenu"," +E0x10000"))
+    aoWinStyles.Push(Styles("WS_OVERLAPPEDWINDOW", "0xCF0000", "Creates an overlapped window with the WS_OVERLAPPED, WS_CAPTION, WS_SYSMENU, WS_THICKFRAME, WS_MINIMIZEBOX, and WS_MAXIMIZEBOX styles. Same as the WS_TILEDWINDOW style.",,, true))
+    aoWinStyles.Push(Styles("WS_POPUPWINDOW", "0x80880000", "Creates a pop-up window with WS_BORDER, WS_POPUP, and WS_SYSMENU styles. The WS_CAPTION and WS_POPUPWINDOW styles must be combined to make the window menu visible.",,,true))
+    aoWinStyles.Push(Styles("WS_SIZEBOX", "0x40000", "+/-Resize. Creates a window that has a sizing border. Same as the WS_THICKFRAME style.","Resize","+MaximizeBox +E0x10000"))
+    aoWinStyles.Push(Styles("WS_SYSMENU", "0x80000", "+/-SysMenu. Creates a window that has a window menu on its title bar. The WS_CAPTION style must also be specified.","SysMenu"," +E0x10000"))
     aoWinStyles.Push(Styles("WS_VSCROLL", "0x200000", "Creates a window that has a vertical scroll bar."))
     aoWinStyles.Push(Styles("WS_VISIBLE", "0x10000000", "Creates a window that is initially visible."))
-    aoWinStyles.Push(Styles("WS_CHILD", "0x40000000", "Creates a child window. A window with this style cannot have a menu bar. This style cannot be used with the WS_POPUP style."))
+    aoWinStyles.Push(Styles("WS_CHILD", "0x40000000", "Creates a child window. A window with this style cannot have a menu bar. This style cannot be used with the WS_POPUP style."))
 
     Global aoControlStyles := Array()
     ; stylest that seem double, for controls
     aoControlStyles.Push(Styles("WS_DISABLED", "0x8000000", "+/-Disabled. Creates a window that is initially disabled.", "Disabled"))
-    aoControlStyles.Push(Styles("WS_TABSTOP", "0x10000", "+/-Tabstop. Specifies a control that can receive the keyboard focus when the user presses Tab. Pressing Tab changes the keyboard focus to the next control with the WS_TABSTOP style.","Tabstop"))
+    aoControlStyles.Push(Styles("WS_TABSTOP", "0x10000", "+/-Tabstop. Specifies a control that can receive the keyboard focus when the user presses Tab. Pressing Tab changes the keyboard focus to the next control with the WS_TABSTOP style.","Tabstop"))
     aoControlStyles.Push(Styles("WS_GROUP", "0x20000", '+/-Group. Indicates that this control is the first one in a group of controls. This style is automatically applied to manage the " only one at a time " behavior of radio buttons. In the rare case where two groups of radio buttons are added consecutively (with no other control types in between them), this style may be applied manually to the first control of the second radio group, which splits it off from the first.', "Group"))
-    aoControlStyles.Push(Styles("WS_THICKFRAME", "0x40000", "Creates a window that has a sizing border. Same as the WS_SIZEBOX style.",,"0x40000",true))
+    aoControlStyles.Push(Styles("WS_THICKFRAME", "0x40000", "Creates a window that has a sizing border. Same as the WS_SIZEBOX style.",,"0x40000",true))
 
     Global aoWinExStyles := Array()
     aoWinExStyles.Push(Styles("WS_EX_ACCEPTFILES", "0x10", 'The window accepts drag-drop files.'))
@@ -173,11 +175,11 @@ for property, value in oImageControls.OwnProps(){
     aoTextStyles.Push(Styles("SS_WHITERECT", "0x6",'Specifies a rectangle filled with the current window background color. This color is white in the default color scheme.'))
 
     global aoEditStyles := Array()
-    aoEditStyles.Push(Styles("ES_AUTOHSCROLL", "0x80",'+/-Wrap for multi-line edits, and +/-Limit for single-line edits. Automatically scrolls text to the right by 10 characters when the user types a character at the end of the line. When the user presses Enter, the control scrolls all text back to the zero position.','Limit'))
-    aoEditStyles.Push(Styles("ES_AUTOVSCROLL", "0x40",'Scrolls text up one page when the user presses Enter on the last line.'))
+    aoEditStyles.Push(Styles("ES_AUTOHSCROLL", "0x80",'+/-Wrap for multi-line edits, and +/-Limit for single-line edits. Automatically scrolls text to the right by 10 characters when the user types a character at the end of the line. When the user presses Enter, the control scrolls all text back to the zero position.','Limit'))
+    aoEditStyles.Push(Styles("ES_AUTOVSCROLL", "0x40",'Scrolls text up one page when the user presses Enter on the last line.'))
     aoEditStyles.Push(Styles("ES_CENTER", "0x1",'+/-Center. Centers text in a multiline edit control.', 'Center'))
     aoEditStyles.Push(Styles("ES_LOWERCASE", "0x10",'+/-Lowercase. Converts all characters to lowercase as they are typed into the edit control.', 'Lowercase'))
-    aoEditStyles.Push(Styles("ES_NOHIDESEL", "0x100",'Negates the default behavior for an edit control. The default behavior hides the selection when the control loses the input focus and inverts the selection when the control receives the input focus. If you specify ES_NOHIDESEL, the selected text is inverted, even if the control does not have the focus.'))
+    aoEditStyles.Push(Styles("ES_NOHIDESEL", "0x100",'Negates the default behavior for an edit control. The default behavior hides the selection when the control loses the input focus and inverts the selection when the control receives the input focus. If you specify ES_NOHIDESEL, the selected text is inverted, even if the control does not have the focus.'))
     aoEditStyles.Push(Styles("ES_NUMBER", "0x2000",'+/-Number. Prevents the user from typing anything other than digits in the control.', 'Number'))
     aoEditStyles.Push(Styles("ES_OEMCONVERT", "0x400",'This style is most useful for edit controls that contain file names.'))
     aoEditStyles.Push(Styles("ES_MULTILINE", "0x4",'+/-Multi. Designates a multiline edit control. The default is a single-line edit control.','Multi'))
@@ -185,14 +187,14 @@ for property, value in oImageControls.OwnProps(){
     aoEditStyles.Push(Styles("ES_READONLY", "0x800",'+/-ReadOnly. Prevents the user from typing or editing text in the edit control.', 'ReadOnly'))
     aoEditStyles.Push(Styles("ES_RIGHT", "0x2",'+/-Right. Right-aligns text in a multiline edit control.', 'Right'))
     aoEditStyles.Push(Styles("ES_UPPERCASE", "0x8",'+/-Uppercase. Converts all characters to uppercase as they are typed into the edit control.', 'Uppercase'))
-    aoEditStyles.Push(Styles("ES_WANTRETURN", "0x1000","+/-WantReturn. Specifies that a carriage return be inserted when the user presses Enter while typing text into a multiline edit control in a dialog box. If you do not specify this style, pressing Enter has the same effect as pressing the dialog box's default push button. This style has no effect on a single-line edit control.", 'WantReturn'))
+    aoEditStyles.Push(Styles("ES_WANTRETURN", "0x1000","+/-WantReturn. Specifies that a carriage return be inserted when the user presses Enter while typing text into a multiline edit control in a dialog box. If you do not specify this style, pressing Enter has the same effect as pressing the dialog box's default push button. This style has no effect on a single-line edit control.", 'WantReturn'))
 
     global aoEditMultiLineStyles := Array()
-    aoEditMultiLineStyles.Push(Styles("ES_AUTOHSCROLL", "0x80",'+/-Wrap for multi-line edits, and +/-Limit for single-line edits. Automatically scrolls text to the right by 10 characters when the user types a character at the end of the line. When the user presses Enter, the control scrolls all text back to the zero position.','Wrap'))
-    aoEditMultiLineStyles.Push(Styles("ES_AUTOVSCROLL", "0x40",'Scrolls text up one page when the user presses Enter on the last line.'))
+    aoEditMultiLineStyles.Push(Styles("ES_AUTOHSCROLL", "0x80",'+/-Wrap for multi-line edits, and +/-Limit for single-line edits. Automatically scrolls text to the right by 10 characters when the user types a character at the end of the line. When the user presses Enter, the control scrolls all text back to the zero position.','Wrap'))
+    aoEditMultiLineStyles.Push(Styles("ES_AUTOVSCROLL", "0x40",'Scrolls text up one page when the user presses Enter on the last line.'))
     aoEditMultiLineStyles.Push(Styles("ES_CENTER", "0x1",'+/-Center. Centers text in a multiline edit control.', 'Center'))
     aoEditMultiLineStyles.Push(Styles("ES_LOWERCASE", "0x10",'+/-Lowercase. Converts all characters to lowercase as they are typed into the edit control.', 'Lowercase'))
-    aoEditMultiLineStyles.Push(Styles("ES_NOHIDESEL", "0x100",'Negates the default behavior for an edit control. The default behavior hides the selection when the control loses the input focus and inverts the selection when the control receives the input focus. If you specify ES_NOHIDESEL, the selected text is inverted, even if the control does not have the focus.'))
+    aoEditMultiLineStyles.Push(Styles("ES_NOHIDESEL", "0x100",'Negates the default behavior for an edit control. The default behavior hides the selection when the control loses the input focus and inverts the selection when the control receives the input focus. If you specify ES_NOHIDESEL, the selected text is inverted, even if the control does not have the focus.'))
     aoEditMultiLineStyles.Push(Styles("ES_NUMBER", "0x2000",'+/-Number. Prevents the user from typing anything other than digits in the control.', 'Number'))
     aoEditMultiLineStyles.Push(Styles("ES_OEMCONVERT", "0x400",'This style is most useful for edit controls that contain file names.'))
     aoEditMultiLineStyles.Push(Styles("ES_MULTILINE", "0x4",'+/-Multi. Designates a multiline edit control. The default is a single-line edit control.','Multi'))
@@ -200,7 +202,7 @@ for property, value in oImageControls.OwnProps(){
     aoEditMultiLineStyles.Push(Styles("ES_READONLY", "0x800",'+/-ReadOnly. Prevents the user from typing or editing text in the edit control.', 'ReadOnly'))
     aoEditMultiLineStyles.Push(Styles("ES_RIGHT", "0x2",'+/-Right. Right-aligns text in a multiline edit control.', 'Right'))
     aoEditMultiLineStyles.Push(Styles("ES_UPPERCASE", "0x8",'+/-Uppercase. Converts all characters to uppercase as they are typed into the edit control.', 'Uppercase'))
-    aoEditMultiLineStyles.Push(Styles("ES_WANTRETURN", "0x1000","+/-WantReturn. Specifies that a carriage return be inserted when the user presses Enter while typing text into a multiline edit control in a dialog box. If you do not specify this style, pressing Enter has the same effect as pressing the dialog box's default push button. This style has no effect on a single-line edit control.", 'WantReturn'))
+    aoEditMultiLineStyles.Push(Styles("ES_WANTRETURN", "0x1000","+/-WantReturn. Specifies that a carriage return be inserted when the user presses Enter while typing text into a multiline edit control in a dialog box. If you do not specify this style, pressing Enter has the same effect as pressing the dialog box's default push button. This style has no effect on a single-line edit control.", 'WantReturn'))
 
     global aoButtonStyles := Array()
     aoButtonStyles.Push(Styles("BS_AUTO3STATE", "0x6",'Creates a button that is the same as a three-state check box, except that the box changes its state when the user selects it. The state cycles through checked, indeterminate, and cleared.'))
@@ -210,10 +212,10 @@ for property, value in oImageControls.OwnProps(){
     aoButtonStyles.Push(Styles("BS_PUSHBUTTON", "0x0",'Creates a push button that posts a WM_COMMAND message to the owner window when the user selects the button.'))
     aoButtonStyles.Push(Styles("BS_PUSHLIKE", "0x1000","Makes a checkbox or radio button look and act like a push button. The button looks raised when it isn't pushed or checked, and sunken when it is pushed or checked."))
     aoButtonStyles.Push(Styles("BS_RIGHT", "0x200",'+/-Right. Right-aligns the text.', 'Right'))
-    aoButtonStyles.Push(Styles("BS_RIGHTBUTTON", "0x20","+Right (i.e. +Right includes both BS_RIGHT and BS_RIGHTBUTTON, but -Right removes only BS_RIGHT, not BS_RIGHTBUTTON). Positions a checkbox square or radio button circle on the right side of the control's available width instead of the left."))
+    aoButtonStyles.Push(Styles("BS_RIGHTBUTTON", "0x20","+Right (i.e. +Right includes both BS_RIGHT and BS_RIGHTBUTTON, but -Right removes only BS_RIGHT, not BS_RIGHTBUTTON). Positions a checkbox square or radio button circle on the right side of the control's available width instead of the left."))
     aoButtonStyles.Push(Styles("BS_BOTTOM", "0x800","Places the text at the bottom of the control's available height."))
     aoButtonStyles.Push(Styles("BS_CENTER", "0x300",'+/-Center. Centers the text horizontally within the control`'s available width.', 'Center'))
-    aoButtonStyles.Push(Styles("BS_DEFPUSHBUTTON", "0x1",'+/-Default. Creates a push button with a heavy black border. If the button is in a dialog box, the user can select the button by pressing Enter, even when the button does not have the input focus. This style is useful for enabling the user to quickly select the most likely option.', 'Default'))
+    aoButtonStyles.Push(Styles("BS_DEFPUSHBUTTON", "0x1",'+/-Default. Creates a push button with a heavy black border. If the button is in a dialog box, the user can select the button by pressing Enter, even when the button does not have the input focus. This style is useful for enabling the user to quickly select the most likely option.', 'Default'))
     aoButtonStyles.Push(Styles("BS_MULTILINE", "0x2000",'+/-Wrap. Wraps the text to multiple lines if the text is too long to fit on a single line in the control`'s available width. This also allows linefeed (``n) to start new lines of text.', 'Wrap'))
     aoButtonStyles.Push(Styles("BS_NOTIFY", "0x4000",'Enables a button to send BN_KILLFOCUS and BN_SETFOCUS notification codes to its parent window. Note that buttons send the BN_CLICKED notification code regardless of whether it has this style. To get BN_DBLCLK notification codes, the button must have the BS_RADIOBUTTON or BS_OWNERDRAW style.'))
     aoButtonStyles.Push(Styles("BS_TOP", "0x400",'Places text at the top of the control`'s available height.'))
@@ -268,6 +270,8 @@ ogButton_Selector := MyGui.addButton("xm y0 w60 vbtnSelector BackgroundTrans h24
 ogButton_Selector.SetFont("s20", "Times New Roman")
 ogButton_Selector.statusbar := "Rclick and drag to select a specific control or window"
 
+
+
 ChildOpt := "+Parent" myGui.hwnd " -Resize +AlwaysOnTop -Border -Caption -ToolWindow"
 ; ChildOpt := "+Parent" myGui.hwnd " +Resize +AlwaysOnTop -Border -Caption +ToolWindow" ; Borders visible for testing
 
@@ -276,11 +280,11 @@ oGuiWindow := Gui(, "Window")
 oGuiControl := Gui(, "Control")
 oGuiMouse := Gui(, "Mouse")
 oGuiFunction := Gui(, "Function")
-oGuiWinList := Gui(, "WinList")
-oGuiCtrlList := Gui(, "ControlList")
+oGuiWindowList := Gui(, "WindowList")
+oGuiControlList := Gui(, "ControlList")
 oGuiProcessList := Gui(, "ProcessList")
 
-myGui.aSections := [oGuiWindow, oGuiControl, oGuiMouse, oGuiFunction, oGuiProcessList, oGuiWinList, oGuiCtrlList]
+myGui.aSections := [oGuiWindow, oGuiControl, oGuiMouse, oGuiFunction, oGuiProcessList, oGuiWindowList, oGuiControlList]
 
 for index, oSection in myGui.aSections {
     ; Adding a visible property to the guis
@@ -395,8 +399,6 @@ ogGBFunction.LeftMargin := 2
 ogGBFunction.BottomMargin := 2
 
 moFunctions := Map()
-moFunctions["SendMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", control:true, result:true, description:"Sends a message to a window or control and waits for acknowledgement."}
-moFunctions["PostMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", control:true, result:true, description:"Places a message in the message queue of a window or control."}
 moFunctions["ControlAddItem"] := {var1:"String", var1Default: "", control:true, description:"Adds the specified string as a new entry at the bottom of a ListBox or ComboBox."}
 moFunctions["ControlClick"] := {control:true, description:"Sends a mouse button or mouse wheel event to a control."}
 moFunctions["ControlFocus"] := {control:true, description:"Sets input focus to a given control on a window."}
@@ -405,18 +407,20 @@ moFunctions["ControlSend"] := {var1:"Keys", var1Default: "", control:true, descr
 moFunctions["ControlSendText"] := {var1:"Keys", var1Default: "", control:true, description: "Sends text to a window or control."}
 moFunctions["ControlGetText"] := {control:true, description: "Retrieves text from a control.", result: true}
 moFunctions["ControlGetItems"] := {control:true, description: "Returns an array of items/rows from a ListBox, ComboBox, or DropDownList.", result: true}
-moFunctions["WinGetPID"] := {description: "Returns the Process ID number of the specified window.", result: true}
+moFunctions["SendMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", control:true, result:true, description:"Sends a message to a window or control and waits for acknowledgement."}
+moFunctions["PostMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", control:true, result:true, description:"Places a message in the message queue of a window or control."}
+moFunctions["WinGetControls"] := {description: "Returns the control names for all controls in the specified window.", result: true}
+moFunctions["WinGetCount"] := {description: "Returns the number of existing windows that match the specified criteria.", result: true}
 moFunctions["WinGetClass"] := {description: "Retrieves the specified window's class name.", result: true}
+moFunctions["WinGetPID"] := {description: "Returns the Process ID number of the specified window.", result: true}
 moFunctions["WinGetTitle"] := {description: "Retrieves the title of the specified window.", result: true}
 moFunctions["WinGetText"] := {description: "Retrieves the text from the specified window.", result: true}
-moFunctions["WinGetCount"] := {description: "Returns the number of existing windows that match the specified criteria.", result: true}
 moFunctions["WinGetStyle"] := {description: "Returns the style of the specified window.", result: true}
 moFunctions["WinGetExStyle"] := {description: "Returns the extended style of the specified window.", result: true}
 moFunctions["WinGetMinMax"] := {description: "Returns the state whether the specified window is maximized or minimized.", result: true}
+moFunctions["WinGetList"] := {description: "Returns the unique ID numbers of all existing windows that match the specified criteria.", result: true}
 moFunctions["WinGetProcessName"] := {description: "Returns the name of the process that owns the specified window.", result: true}
 moFunctions["WinGetProcessPath"] := {description: "Returns the full path and name of the process that owns the specified window.", result: true}
-moFunctions["WinGetList"] := {description: "Returns the unique ID numbers of all existing windows that match the specified criteria.", result: true}
-moFunctions["WinGetControls"] := {description: "Returns the control names for all controls in the specified window.", result: true}
 
 aFunctionList := Array()
 For Key, Value in moFunctions{
@@ -434,7 +438,7 @@ BtnRun.OnEvent("Click",ClickRun)
 BtnCopy := oGuiFunction.AddPicButton("x+6 yp w23 h23", "shell32.dll","icon135 w16 h16")
 BtnCopy.StatusBar := "Copy the Code"
 BtnCopy.OnEvent("Click",ClickCopy)
-BtnInfo := oGuiFunction.AddPicButton("x+6 yp w23 h23", "shell32.dll","icon24 w14 h14")
+BtnInfo := oGuiFunction.AddPicButton("x+6 yp w23 h23", "shell32.dll","icon278 w14 h14")
 BtnInfo.StatusBar := "Open the documentation of the function."
 BtnInfo.OnEvent("Click",(*)=>(run("https://lexikos.github.io/v2/docs/search.htm?q=" DDLFunction.text "&m=2")))
 
@@ -524,25 +528,25 @@ UpdateProcessList()
 
 ; WinList Section
 
-oGuiWinList.posRef := oGuiProcessList
-oGuiWinList.posRule := "Xx Yyh Ww"
-ogGBWinList := oGuiWinList.addGroupBox("h311","WinList")
+oGuiWindowList.posRef := oGuiProcessList
+oGuiWindowList.posRule := "Xx Yyh Ww"
+ogGBWinList := oGuiWindowList.addGroupBox("h311","WinList")
 ogGBWinList.LeftMargin := 2
 ogGBWinList.BottomMargin := 2
-oGuiWinList.LeftDistance := 0
-oGuiWinList.HeigthMultiplier := 0.3
+oGuiWindowList.LeftDistance := 0
+oGuiWindowList.HeigthMultiplier := 0.3
 
-ogEdit_win_search := oGuiWinList.AddEdit("xp+4 yp+15 w200 vwin_seach")
+ogEdit_win_search := oGuiWindowList.AddEdit("xp+4 yp+15 w200 vwin_seach")
 ogEdit_win_search.SetCueText("Search")
 ogEdit_win_search.statusbar := "Type to filter the windows on specific words"
 ogEdit_win_search.OnEvent("Change",UpdateWinList)
-ogCB_FilterWinVisible := oGuiWinList.AddCheckbox("xp+210 yp+3 vfilter_win_visible Checked", "Visible") 
+ogCB_FilterWinVisible := oGuiWindowList.AddCheckbox("xp+210 yp+3 vfilter_win_visible Checked", "Visible") 
 ogCB_FilterWinVisible.OnEvent("Click",UpdateWinList)
 ogCB_FilterWinVisible.Statusbar := "Filter on only visible windows"
-ogCB_FilterWinTitle := oGuiWinList.AddCheckbox("xp+60 yp vfilter_win_title Checked", "Title") 
+ogCB_FilterWinTitle := oGuiWindowList.AddCheckbox("xp+60 yp vfilter_win_title Checked", "Title") 
 ogCB_FilterWinTitle.OnEvent("Click", UpdateWinList)
 ogCB_FilterWinTitle.Statusbar := "Filter on windows with a title"
-ogLV_WinList := oGuiWinList.AddListView("xm+4 y+7 r14 w" (myGui.Width - 8 * 3) / 2 " vWinList section AltSubmit", ["Title", "Process", "ID", "Visible", "X", "Y", "W", "H"])
+ogLV_WinList := oGuiWindowList.AddListView("xm+4 y+7 r14 w" (myGui.Width - 8 * 3) / 2 " vWinList section AltSubmit", ["Title", "Process", "ID", "Visible", "X", "Y", "W", "H"])
 ogLV_WinList.Opt("Count400 -Multi")
 
 ogLV_WinList.ModifyCol()
@@ -560,27 +564,27 @@ ogLV_WinList.BottomMargin := 8
 
 ; ControlList Section
 
-oGuiCtrlList.posRef := oGuiWinList
-oGuiCtrlList.posRule := "Xx Yyh Ww"
-oGuiCtrlList.LeftDistance := 0
-oGuiCtrlList.BottomDistance := 0
-ogGBControlList := oGuiCtrlList.addGroupBox(, "ControlList")
+oGuiControlList.posRef := oGuiWindowList
+oGuiControlList.posRule := "Xx Yyh Ww"
+oGuiControlList.LeftDistance := 0
+oGuiControlList.BottomDistance := 0
+ogGBControlList := oGuiControlList.addGroupBox(, "ControlList")
 ogGBControlList.LeftMargin := 2
 ogGBControlList.BottomMargin := 24
 
-ogEdit_ctrl_search := oGuiCtrlList.AddEdit("xp+4 yp+15 w200 vctrl_search")
+ogEdit_ctrl_search := oGuiControlList.AddEdit("xp+4 yp+15 w200 vctrl_search")
 ogEdit_ctrl_search.SetCueText("Search")
 ogEdit_ctrl_search.OnEvent("Change", UpdateCtrlList)
 ogEdit_ctrl_search.statusbar := "Type to filter the controls on specific words"
 
-ogCB_FilterCtrlVisible := oGuiCtrlList.AddCheckbox("xp+210 yp+3 vfilter_ctrl_visible", "Visible")
+ogCB_FilterCtrlVisible := oGuiControlList.AddCheckbox("xp+210 yp+3 vfilter_ctrl_visible", "Visible")
 ogCB_FilterCtrlVisible.OnEvent("Click", UpdateCtrlList)
 ogCB_FilterCtrlVisible.Statusbar := "Filter on only visible controls"
 
-ogCB_FilterCtrlText := oGuiCtrlList.AddCheckbox("xp+60 yp vfilter_ctrl_text", "Text visible") 
+ogCB_FilterCtrlText := oGuiControlList.AddCheckbox("xp+60 yp vfilter_ctrl_text", "Text visible") 
 ogCB_FilterCtrlText.OnEvent("Click", UpdateCtrlList)
 ogCB_FilterCtrlText.statusbar := "Filter on controls with text"
-ogLV_CtrlList := oGuiCtrlList.AddListView("xm+4 y+7 r15 w" (myGui.Width-8*3)/2 " vCtrlList section AltSubmit", ["Class(NN)", "Hwnd", "Text", "X", "Y", "W", "H","Visible"])
+ogLV_CtrlList := oGuiControlList.AddListView("xm+4 y+7 r15 w" (myGui.Width-8*3)/2 " vCtrlList section AltSubmit", ["Class(NN)", "Hwnd", "Text", "X", "Y", "W", "H","Visible"])
 ogLV_CtrlList.Opt("Count100 -Multi")
 ogLV_CtrlList.OnEvent("Click", DClickCtrlList)
 ogLV_CtrlList.OnNotify(NM_RCLICK := -5, RClickCtrlList)
@@ -636,6 +640,25 @@ Menus.Add("&View", ViewMenu)
 Menus.Add( "&Reload", (*) => (Gui_Close(myGui), Reload()))
 MyGui.MenuBar := Menus
 
+; Toolbar
+oToolbar := Toolbar("Flat List Tooltips +0x2")
+
+oTbWindow := oToolbar.Add("", "Window", (*) => (ToggleSection("Window")), "shell32.dll", 3)
+oTbControl := oToolbar.Add("", "Control", (*) => (ToggleSection("Control")), "shell32.dll", 134)
+oTbMouse := oToolbar.Add("", "Mouse", (*) => (ToggleSection("Mouse")), "shell32.dll", 121)
+oTbFunction := oToolbar.Add("", "Function", (*) => (ToggleSection("Function")), "shell32.dll", 25)
+oToolbar.Add()
+oTbProcessList := oToolbar.Add("", "ProcessList", (*) => (ToggleSection("ProcessList")), "shell32.dll", 13)
+oTbWindowList := oToolbar.Add("", "WindowList", (*) => (ToggleSection("WindowList")), "shell32.dll", 3)
+oTbControlList := oToolbar.Add("", "ControlList", (*) => (ToggleSection("ControlList")), "shell32.dll", 96)
+; oButton.Styles := 0x2
+; oToolbar.Add("", "Button2", Callback1, "shell32.dll", 20)
+; oToolbar.Add()
+; oToolbar.Add("", "Button3", Callback2, "shell32.dll", 24)
+; oToolbar.Add("", "Button4", Callback2, "shell32.dll", 22)
+
+AddToolbar(oToolbar, MyGui, , "x30 y1 h24")
+
 ; Create a Status Bar to give info about the number of files and their total size:
 SB := MyGui.Add("StatusBar")
 ; SB.SetParts(300, 300)  ; Create three parts in the bar (the third part fills all the remaining width).
@@ -662,6 +685,19 @@ SetSystemCursor("Default")
 OnMessage(WM_LBUTTONDOWN := 0x0201, CheckButtonClick)
 OnMessage(0x200, WM_MOUSEMOVE)
 
+~LButton::{
+    if (isSet(GuiBox) and !WinActive("wInspector")){
+        GuiBox.hide()
+    }
+}
+
+ToggleSection(SectionTitle){
+    ViewMenu.ToggleCheck(SectionTitle)
+    oSet.Sect%SectionTitle% := !oSet.Sect%SectionTitle%
+    oGui%SectionTitle%.Visible := oSet.Sect%SectionTitle%
+    SectionCorrections() 
+    GuiUpdate()
+}
 
 CheckButtonClick(wParam , lParam, msg, hwnd){
     global MyGui
@@ -923,7 +959,7 @@ DClickWinList(p*) {
 SectionCorrections(){
     myGui.GetPos(&xWin,&yWin,&wWin,&hWin)
     WinGetClientPos(&XcmyGui, &YcmyGui, &WcmyGui, &HcmyGui, myGui)
-    if (oSet.SectWinList|oSet.SectControlList){
+    if (oSet.SectWindowList|oSet.SectControlList){
         oGuiProcessList.BottomDistance := ""
         ogGBProcessList.BottomMargin := 2
         ogLV_ProcessList.BottomMargin := 8
@@ -934,33 +970,33 @@ SectionCorrections(){
         oGuiProcessList.HeigthMultiplier := ""
     }
     if (oSet.SectControlList){
-        oGuiWinList.BottomDistance := ""
+        oGuiWindowList.BottomDistance := ""
         ogGBWinList.BottomMargin := 2
         ogLV_WinList.BottomMargin := 8
     } else {
-        oGuiWinList.BottomDistance := 24
+        oGuiWindowList.BottomDistance := 24
         ogGBWinList.BottomMargin := 24
         ogLV_WinList.BottomMargin := 28
-        oGuiWinList.HeigthMultiplier := ""
+        oGuiWindowList.HeigthMultiplier := ""
     }
-    if (oSet.SectProcessList && oSet.SectWinList && oSet.SectControlList){
+    if (oSet.SectProcessList && oSet.SectWindowList && oSet.SectControlList){
         oGuiProcessList.move(,,,HcmyGui/3)
-        oGuiWinList.move(,,,HcmyGui/3)
+        oGuiWindowList.move(,,,HcmyGui/3)
         oGuiProcessList.HeigthMultiplier := 0.3
-        oGuiWinList.HeigthMultiplier := 0.3
+        oGuiWindowList.HeigthMultiplier := 0.3
         
-    } else if (!oSet.SectProcessList && oSet.SectWinList && oSet.SectControlList){
-        oGuiWinList.move(,,,HcmyGui/2)
-        oGuiWinList.HeigthMultiplier := 0.4
-    } else if (oSet.SectProcessList && (oSet.SectWinList | oSet.SectControlList)){
+    } else if (!oSet.SectProcessList && oSet.SectWindowList && oSet.SectControlList){
+        oGuiWindowList.move(,,,HcmyGui/2)
+        oGuiWindowList.HeigthMultiplier := 0.4
+    } else if (oSet.SectProcessList && (oSet.SectWindowList | oSet.SectControlList)){
         oGuiProcessList.move(,,,HcmyGui/2)
         oGuiProcessList.HeigthMultiplier := 0.4
     }
-    if((oSet.SectProcessList | oSet.SectWinList | oSet.SectControlList) and wWin <700){
+    if((oSet.SectProcessList | oSet.SectWindowList | oSet.SectControlList) and wWin <700){
         MyGui.move(,,700)
     }
     
-    if (!oSet.SectWinList && !oSet.SectControlList  && !oSet.SectProcessList){
+    if (!oSet.SectWindowList && !oSet.SectControlList  && !oSet.SectProcessList){
         MyGui.move(,,320)
     }
     GroupBoxAutosize(ogGB_Mouse)
@@ -1382,7 +1418,7 @@ GuiRectangle(x:= 0, y:= 0 ,w:= 100 ,h:=100 , Color:="Blue",Thickness := 2){
     if IsObject(GuiBox){
         GuiBox.Destroy()
     }
-    GuiBox := Gui(" +ToolWindow -Caption +AlwaysOnTop +E0x20", "Background Test")
+    GuiBox := Gui(" +ToolWindow -Caption +AlwaysOnTop +E0x20", "Highlight")
     GuiBox.x := x
     GuiBox.y := y
     GuiBox.w := w
@@ -1687,8 +1723,10 @@ ReadINI(INI_File:="", oResult := "") {	; return 2D-array from INI-file
         if (Type(Result)="Array"){
             EditGui(Result)
             return
-        }
-        if InStr(Result,"`n"){
+        } else if (IsObject(Result)) {
+            ObjectGui(Result)
+            return
+        }else if InStr(Result,"`n"){
             ogEdtResult.Opt("+VScroll")
             ogEdtResult.Move(,,,7+5*13)
             ogGbResult.Move(,,,26+5*13)
