@@ -124,10 +124,13 @@ for property, value in oImageControls.OwnProps(){
 
     Global aoControlStyles := Array()
     ; stylest that seem double, for controls
+    aoControlStyles.Push(Styles("WS_BORDER", "0x800000","+/-Border. Creates a window that has a thin-line border.", "Border","0xC00000"))
     aoControlStyles.Push(Styles("WS_DISABLED", "0x8000000", "+/-Disabled. Creates a window that is initially disabled.", "Disabled"))
     aoControlStyles.Push(Styles("WS_TABSTOP", "0x10000", "+/-Tabstop. Specifies a control that can receive the keyboard focus when the user presses Tab. Pressing Tab changes the keyboard focus to the next control with the WS_TABSTOP style.","Tabstop"))
     aoControlStyles.Push(Styles("WS_GROUP", "0x20000", '+/-Group. Indicates that this control is the first one in a group of controls. This style is automatically applied to manage the " only one at a time " behavior of radio buttons. In the rare case where two groups of radio buttons are added consecutively (with no other control types in between them), this style may be applied manually to the first control of the second radio group, which splits it off from the first.', "Group"))
     aoControlStyles.Push(Styles("WS_THICKFRAME", "0x40000", "Creates a window that has a sizing border. Same as the WS_SIZEBOX style.",,"0x40000",true))
+    aoControlStyles.Push(Styles("WS_VSCROLL", "0x200000", "Creates a window that has a vertical scroll bar.","VScroll"))
+    aoControlStyles.Push(Styles("WS_HSCROLL", "0x100000", "Creates a window that has a horizontal scroll bar.","HScroll"))
 
     Global aoWinExStyles := Array()
     aoWinExStyles.Push(Styles("WS_EX_ACCEPTFILES", "0x10", 'The window accepts drag-drop files.'))
@@ -152,7 +155,7 @@ for property, value in oImageControls.OwnProps(){
     aoWinExStyles.Push(Styles("WS_EX_RTLREADING", "0x2000", 'If the shell language is Hebrew, Arabic, or another language that supports reading-order alignment, the window text is displayed using right-to-left reading-order properties. For other languages, the style is ignored.'))
     aoWinExStyles.Push(Styles("WS_EX_STATICEDGE", "0x20000", 'The window has a three-dimensional border style intended to be used for items that do not accept user input.'))
     aoWinExStyles.Push(Styles("WS_EX_TOOLWINDOW", "0x80", 'The window is intended to be used as a floating toolbar. A tool window has a title bar that is shorter than a normal title bar, and the window title is drawn using a smaller font. A tool window does not appear in the taskbar or in the dialog that appears when the user presses ALT+TAB. If a tool window has a system menu, its icon is not displayed on the title bar. However, you can display the system menu by right-clicking or by typing ALT+SPACE.',"ToolWindow","+E0x10000"))
-    aoWinExStyles.Push(Styles("WS_EX_TOPMOST", "0x8", 'The window should be placed above all non-topmost windows and should stay above them, even when the window is deactivated. To add or remove this style, use the SetWindowPos function.'))
+    aoWinExStyles.Push(Styles("WS_EX_TOPMOST", "0x8", 'The window should be placed above all non-topmost windows and should stay above them, even when the window is deactivated. To add or remove this style, use the SetWindowPos function.',"AlwaysOnTop"))
     aoWinExStyles.Push(Styles("WS_EX_TRANSPARENT", "0x20", 'The window should not be painted until siblings beneath the window (that were created by the same thread) have been painted. The window appears transparent because the bits of underlying sibling windows have already been painted. To achieve transparency without these restrictions, use the SetWindowRgn function.'))
     aoWinExStyles.Push(Styles("WS_EX_WINDOWEDGE", "0x100", 'The window has a border with a raised edge.'))
 
@@ -204,6 +207,37 @@ for property, value in oImageControls.OwnProps(){
     aoEditMultiLineStyles.Push(Styles("ES_UPPERCASE", "0x8",'+/-Uppercase. Converts all characters to uppercase as they are typed into the edit control.', 'Uppercase'))
     aoEditMultiLineStyles.Push(Styles("ES_WANTRETURN", "0x1000","+/-WantReturn. Specifies that a carriage return be inserted when the user presses Enter while typing text into a multiline edit control in a dialog box. If you do not specify this style, pressing Enter has the same effect as pressing the dialog box's default push button. This style has no effect on a single-line edit control.", 'WantReturn'))
 
+    global aoUpDownStyles := Array()
+    aoUpDownStyles.Push(Styles("UDS_WRAP", "0x1",'Named option "Wrap". Causes the control to wrap around to the other end of its range when the user attempts to go beyond the minimum or maximum. Without Wrap, the control stops when the minimum or maximum is reached.',"Wrap"))
+    aoUpDownStyles.Push(Styles("UDS_SETBUDDYINT", "0x2",'Causes the UpDown control to set the text of the buddy control (using the WM_SETTEXT message) when the position changes. However, if the buddy is a ListBox, the ListBox`'s current selection is changed instead.',""))
+    aoUpDownStyles.Push(Styles("UDS_ALIGNRIGHT", "0x4",'Named option "Right" (default). Positions UpDown on the right side of its buddy control.',"Right"))
+    aoUpDownStyles.Push(Styles("UDS_ALIGNLEFT", "0x8",'Named option "Left". Positions UpDown on the left side of its buddy control.',"Left"))
+    aoUpDownStyles.Push(Styles("UDS_AUTOBUDDY", "0x10",'Automatically selects the previous control in the z-order as the UpDown control`'s buddy control.',""))
+    aoUpDownStyles.Push(Styles("UDS_ARROWKEYS", "0x20",'Allows the user to press ↑ or ↓ on the keyboard to increase or decrease the UpDown control`'s position.',""))
+    aoUpDownStyles.Push(Styles("UDS_HORZ", "0x40",'Named option "Horz". Causes the control`'s arrows to point left and right instead of up and down.',"Horz"))
+    aoUpDownStyles.Push(Styles("UDS_NOTHOUSANDS", "0x80",'Does not insert a thousands separator between every three decimal digits in the buddy control.',""))
+    aoUpDownStyles.Push(Styles("UDS_HOTTRACK", "0x100",'Causes the control to exhibit "hot tracking" behavior. That is, it highlights the control`'s buttons as the mouse passes over them. This flag may be ignored if the desktop theme overrides it.',""))
+
+    global aoPicStyles := Array()
+    aoPicStyles.Push(Styles("SS_REALSIZECONTROL", "0x40",'Adjusts the bitmap to fit the size of the control.',""))
+    aoPicStyles.Push(Styles("SS_CENTERIMAGE", "0x200",'Centers the bitmap in the control. If the bitmap is too large, it will be clipped. For text controls, if the control contains a single line of text, the text is centered vertically within the available height of the control.',""))
+    aoPicStyles.Push(Styles("SS_BLACKFRAME", "0x7",'Specifies a box with a frame drawn in the same color as the window frames. This color is black in the default color scheme.'))
+    aoPicStyles.Push(Styles("SS_BLACKRECT", "0x4",'Specifies a rectangle filled with the current window frame color. This color is black in the default color scheme.'))
+    aoPicStyles.Push(Styles("SS_CENTER", "0x1",'+/-Center. Specifies a simple rectangle and centers the text in the rectangle. The control automatically wraps words that extend past the end of a line to the beginning of the next centered line.', 'Center'))
+    aoPicStyles.Push(Styles("SS_ETCHEDFRAME", "0x12",'Draws the frame of the static control using the EDGE_ETCHED edge style.'))
+    aoPicStyles.Push(Styles("SS_ETCHEDHORZ", "0x10",'Draws the top and bottom edges of the static control using the EDGE_ETCHED edge style.'))
+    aoPicStyles.Push(Styles("SS_ETCHEDVERT", "0x11",'Draws the left and right edges of the static control using the EDGE_ETCHED edge style.'))
+    aoPicStyles.Push(Styles("SS_GRAYFRAME", "0x8",'Specifies a box with a frame drawn with the same color as the screen background (desktop). This color is gray in the default color scheme.'))
+    aoPicStyles.Push(Styles("SS_GRAYRECT", "0x5",'Specifies a rectangle filled with the current screen background color. This color is gray in the default color scheme.'))
+    aoPicStyles.Push(Styles("SS_LEFT", "0x0",'+/-Left. This is the default. It specifies a simple rectangle and left-aligns the text in the rectangle. The text is formatted before it is displayed. Words that extend past the end of a line are automatically wrapped to the beginning of the next left-aligned line. Words that are longer than the width of the control are truncated.', 'Left'))
+    aoPicStyles.Push(Styles("SS_LEFTNOWORDWRAP", "0xC",'+/-Wrap. Specifies a rectangle and left-aligns the text in the rectangle. Tabs are expanded, but words are not wrapped. Text that extends past the end of a line is clipped.', 'Wrap'))
+    aoPicStyles.Push(Styles("SS_NOPREFIX", "0x80","Prevents interpretation of any ampersand (&) characters in the control's text as accelerator prefix characters. This can be useful when file names or other strings that might contain an ampersand (&) must be displayed within a text control."))
+    aoPicStyles.Push(Styles("SS_NOTIFY", "0x100",'Sends the parent window the STN_CLICKED notification when the user clicks the control.'))
+    aoPicStyles.Push(Styles("SS_RIGHT", "0x2",'+/-Right. Specifies a rectangle and right-aligns the specified text in the rectangle.', 'Right'))
+    aoPicStyles.Push(Styles("SS_SUNKEN", "0x1000",'Draws a half-sunken border around a static control.'))
+    aoPicStyles.Push(Styles("SS_WHITEFRAME", "0x9",'Specifies a box with a frame drawn with the same color as the window background. This color is white in the default color scheme.'))
+    aoPicStyles.Push(Styles("SS_WHITERECT", "0x6",'Specifies a rectangle filled with the current window background color. This color is white in the default color scheme.'))
+
     global aoButtonStyles := Array()
     aoButtonStyles.Push(Styles("BS_AUTO3STATE", "0x6",'Creates a button that is the same as a three-state check box, except that the box changes its state when the user selects it. The state cycles through checked, indeterminate, and cleared.'))
     aoButtonStyles.Push(Styles("BS_AUTOCHECKBOX", "0x3",'Creates a button that is the same as a check box, except that the check state automatically toggles between checked and cleared each time the user selects the check box.'))
@@ -223,12 +257,160 @@ for property, value in oImageControls.OwnProps(){
     aoButtonStyles.Push(Styles("BS_FLAT", "0x8000",'Specifies that the button is two-dimensional; it does not use the default shading to create a 3-D effect.'))
     aoButtonStyles.Push(Styles("BS_GROUPBOX", "0x7",'Creates a rectangle in which other controls can be grouped. Any text associated with this style is displayed in the rectangle`'s upper left corner.'))
 
+    global aoCBBStyles := Array()
+    aoCBBStyles.Push(Styles("CBS_AUTOHSCROLL", "0x40", '+/-Limit. Automatically scrolls the text in an edit control to the right when the user types a character at the end of the line. If this style is not set, only text that fits within the rectangular boundary is enabled.', "Limit"))
+    aoCBBStyles.Push(Styles("CBS_DISABLENOSCROLL", "0x800", 'Shows a disabled vertical scroll bar in the drop-down list when it does not contain enough items to scroll. Without this style, the scroll bar is hidden when the drop-down list does not contain enough items.', ""))
+    aoCBBStyles.Push(Styles("CBS_DROPDOWN", "0x2", 'Similar to CBS_SIMPLE, except that the list box is not displayed unless the user selects an icon next to the edit control.', ""))
+    aoCBBStyles.Push(Styles("CBS_DROPDOWNLIST", "0x3", 'Similar to CBS_DROPDOWN, except that the edit control is replaced by a static text item that displays the current selection in the list box.', ""))
+    aoCBBStyles.Push(Styles("CBS_LOWERCASE", "0x4000", '+/-Lowercase. Converts to lowercase any uppercase characters that are typed into the edit control of a combo box.', "Lowercase"))
+    aoCBBStyles.Push(Styles("CBS_NOINTEGRALHEIGHT", "0x400", 'Specifies that the combo box will be exactly the size specified by the application when it created the combo box. Usually, Windows CE sizes a combo box so that it does not display partial items.', ""))
+    aoCBBStyles.Push(Styles("CBS_OEMCONVERT", "0x80", 'Converts text typed in the combo box edit control from the Windows CE character set to the OEM character set and then back to the Windows CE set. This style is most useful for combo boxes that contain file names. It applies only to combo boxes created with the CBS_DROPDOWN style.', ""))
+    aoCBBStyles.Push(Styles("CBS_SIMPLE", "0x1", '+/-Simple (ComboBox only). Displays the drop-down list at all times. The current selection in the list is displayed in the edit control.', "Simple"))
+    aoCBBStyles.Push(Styles("CBS_SORT", "0x100", '+/-Sort. Sorts the items in the drop-list alphabetically.', "Sort"))
+    aoCBBStyles.Push(Styles("CBS_UPPERCASE", "0x2000", '+/-Uppercase. Converts to uppercase any lowercase characters that are typed into the edit control of a ComboBox.', "Uppercase"))
+
+    global aoLBStyles := Array()
+    aoLBStyles.Push(Styles("LBS_DISABLENOSCROLL", "0x1000", 'Shows a disabled vertical scroll bar for the list box when the box does not contain enough items to scroll. If you do not specify this style, the scroll bar is hidden when the list box does not contain enough items.', ""))
+    aoLBStyles.Push(Styles("LBS_NOINTEGRALHEIGHT", "0x100", 'Specifies that the list box will be exactly the size specified by the application when it created the list box.', ""))
+    aoLBStyles.Push(Styles("LBS_EXTENDEDSEL", "0x800", '+/-Multi. Allows multiple selections via control-click and shift-click.', "Multi"))
+    aoLBStyles.Push(Styles("LBS_MULTIPLESEL", "0x8", 'A simplified version of multi-select in which control-click and shift-click are not necessary because normal left clicks serve to extend the selection or de-select a selected item.', ""))
+    aoLBStyles.Push(Styles("LBS_NOSEL", "0x4000", '+/-ReadOnly. Specifies that the user can view list box strings but cannot select them.', "ReadOnly"))
+    aoLBStyles.Push(Styles("LBS_NOTIFY", "0x1", 'Causes the list box to send a notification code to the parent window whenever the user clicks a list box item (LBN_SELCHANGE), double-clicks an item (LBN_DBLCLK), or cancels the selection (LBN_SELCANCEL).', ""))
+    aoLBStyles.Push(Styles("LBS_SORT", "0x2", '+/-Sort. Sorts the items in the list box alphabetically.', "Sort"))
+    aoLBStyles.Push(Styles("LBS_USETABSTOPS", "0x80", 'Enables a ListBox to recognize and expand tab characters when drawing its strings. The default tab positions are 32 dialog box units apart. A dialog box unit is equal to one-fourth of the current dialog box base-width unit.', ""))
+
+    global aoLVStyles := Array()
+    aoLVStyles.Push(Styles("LVS_ALIGNLEFT", "0x800",'Items are left-aligned in icon and small icon view.',""))
+    aoLVStyles.Push(Styles("LVS_ALIGNTOP", "0x0",'Items are aligned with the top of the list-view control in icon and small icon view. This is the default.',""))
+    aoLVStyles.Push(Styles("LVS_AUTOARRANGE", "0x100",'Icons are automatically kept arranged in icon and small icon view.',""))
+    aoLVStyles.Push(Styles("LVS_EDITLABELS", "0x200",'+/-ReadOnly. Specifying -ReadOnly (or +0x200) allows the user to edit the first field of each row in place.',"ReadOnly"))
+    aoLVStyles.Push(Styles("LVS_ICON", "0x0",'+Icon. Specifies large-icon view.',"Icon"))
+    aoLVStyles.Push(Styles("LVS_LIST", "0x3",'+List. Specifies list view.',"List"))
+    aoLVStyles.Push(Styles("LVS_NOCOLUMNHEADER", "0x4000",'+/-Hdr. Avoids displaying column headers in report view.',"-Hdr"))
+    aoLVStyles.Push(Styles("LVS_NOLABELWRAP", "0x80",'Item text is displayed on a single line in icon view. By default, item text may wrap in icon view.',""))
+    aoLVStyles.Push(Styles("LVS_NOSCROLL", "0x2000",'Scrolling is disabled. All items must be within the client area. This style is not compatible with the LVS_LIST or LVS_REPORT styles.',""))
+    aoLVStyles.Push(Styles("LVS_NOSORTHEADER", "0x8000",'+/-NoSortHdr. Column headers do not work like buttons. This style can be used if clicking a column header in report view does not carry out an action, such as sorting.',"NoSortHdr"))
+    aoLVStyles.Push(Styles("LVS_OWNERDATA", "0x1000",'This style specifies a virtual list-view control (not directly supported by AutoHotkey).',""))
+    aoLVStyles.Push(Styles("LVS_OWNERDRAWFIXED", "0x400",'The owner window can paint items in report view in response to WM_DRAWITEM messages (not directly supported by AutoHotkey).',""))
+    aoLVStyles.Push(Styles("LVS_REPORT", "0x1",'+Report. Specifies report view.',"Report"))
+    aoLVStyles.Push(Styles("LVS_SHAREIMAGELISTS", "0x40",'The image list will not be deleted when the control is destroyed. This style enables the use of the same image lists with multiple list-view controls.',""))
+    aoLVStyles.Push(Styles("LVS_SHOWSELALWAYS", "0x8",'The selection, if any, is always shown, even if the control does not have keyboard focus.',""))
+    aoLVStyles.Push(Styles("LVS_SINGLESEL", "0x4",'+/-Multi. Only one item at a time can be selected. By default, multiple items can be selected.',"Multi"))
+    aoLVStyles.Push(Styles("LVS_SMALLICON", "0x2",'+IconSmall. Specifies small-icon view.',"IconSmall"))
+    aoLVStyles.Push(Styles("LVS_SORTASCENDING", "0x10",'+/-Sort. Rows are sorted in ascending order based on the contents of the first field.',"Sort"))
+    aoLVStyles.Push(Styles("LVS_SORTDESCENDING", "0x20",'+/-SortDesc. Same as above but in descending order.',"SortDesc."))
+
+    global aoLVExStyles := Array()
+    aoLVExStyles.Push(Styles("LVS_EX_BORDERSELECT", "LV0x8000",'When an item is selected, the border color of the item changes rather than the item being highlighted (might be non-functional in recent operating systems).',""))
+    aoLVExStyles.Push(Styles("LVS_EX_CHECKBOXES", "LV0x4",'+/-Checked. Displays a checkbox with each item. When set to this style, the control creates and sets a state image list with two images using DrawFrameControl. State image 1 is the unchecked box, and state image 2 is the checked box. Setting the state image to zero removes the check box altogether.',"Checked"))
+    aoLVExStyles.Push(Styles("LVS_EX_DOUBLEBUFFER", "LV0x10000",'Paints via double-buffering, which reduces flicker. This extended style also enables alpha-blended marquee selection on systems where it is supported.',""))
+    aoLVExStyles.Push(Styles("LVS_EX_FLATSB", "LV0x100",'Enables flat scroll bars in the list view.',""))
+    aoLVExStyles.Push(Styles("LVS_EX_FULLROWSELECT", "LV0x20",'When a row is selected, all its fields are highlighted. This style is available only in conjunction with the LVS_REPORT style.',""))
+    aoLVExStyles.Push(Styles("LVS_EX_GRIDLINES", "LV0x1",'+/-Grid. Displays gridlines around rows and columns. This style is available only in conjunction with the LVS_REPORT style.',"Grid"))
+    aoLVExStyles.Push(Styles("LVS_EX_HEADERDRAGDROP", "LV0x10",'Enables drag-and-drop reordering of columns in a list-view control. This style is only available to list-view controls that use the LVS_REPORT style.',""))
+    aoLVExStyles.Push(Styles("LVS_EX_INFOTIP", "LV0x400",'When a list-view control uses this style, the LVN_GETINFOTIP notification message is sent to the parent window before displaying an item`'s ToolTip.',""))
+    aoLVExStyles.Push(Styles("LVS_EX_LABELTIP", "LV0x4000",'If a partially hidden label in any list-view mode lacks ToolTip text, the list-view control will unfold the label. If this style is not set, the list-view control will unfold partly hidden labels only for the large icon mode. Note: On some versions of Windows, this style might not work properly if the GUI window is set to be always-on-top.',""))
+    aoLVExStyles.Push(Styles("LVS_EX_MULTIWORKAREAS", "LV0x2000",'If the list-view control has the LVS_AUTOARRANGE style, the control will not autoarrange its icons until one or more work areas are defined (see LVM_SETWORKAREAS). To be effective, this style must be set before any work areas are defined and any items have been added to the control.',""))
+    aoLVExStyles.Push(Styles("LVS_EX_ONECLICKACTIVATE", "LV0x40",'The list-view control sends an LVN_ITEMACTIVATE notification message to the parent window when the user clicks an item. This style also enables hot tracking in the list-view control. Hot tracking means that when the cursor moves over an item, it is highlighted but not selected.',""))
+    aoLVExStyles.Push(Styles("LVS_EX_REGIONAL", "LV0x200",'Sets the list-view window region to include only the item icons and text using SetWindowRgn. Any area that is not part of an item is excluded from the window region. This style is only available to list-view controls that use the LVS_ICON style.',""))
+    aoLVExStyles.Push(Styles("LVS_EX_SIMPLESELECT", "LV0x100000",'In icon view, moves the state image of the item to the top right of the large icon rendering. In views other than icon view there is no change. When the user changes the state by using the space bar, all selected items cycle over, not the item with the focus.',""))
+    aoLVExStyles.Push(Styles("LVS_EX_SUBITEMIMAGES", "LV0x2",'Allows images to be displayed for fields beyond the first. This style is available only in conjunction with the LVS_REPORT style.',""))
+    aoLVExStyles.Push(Styles("LVS_EX_TRACKSELECT", "LV0x8",'Enables hot-track selection in a list-view control. Hot track selection means that an item is automatically selected when the cursor remains over the item for a certain period of time. The delay can be changed from the default system setting with a LVM_SETHOVERTIME message. This style applies to all styles of list-view control. You can check whether hot-track selection is enabled by calling SystemParametersInfo.',""))
+    aoLVExStyles.Push(Styles("LVS_EX_TWOCLICKACTIVATE", "LV0x80",'The list-view control sends an LVN_ITEMACTIVATE notification message to the parent window when the user double-clicks an item. This style also enables hot tracking in the list-view control. Hot tracking means that when the cursor moves over an item, it is highlighted but not selected.',""))
+    aoLVExStyles.Push(Styles("LVS_EX_UNDERLINECOLD", "LV0x1000",'Causes those non-hot items that may be activated to be displayed with underlined text. This style requires that LVS_EX_TWOCLICKACTIVATE be set also.',""))
+    aoLVExStyles.Push(Styles("LVS_EX_UNDERLINEHOT", "LV0x800",'Causes those hot items that may be activated to be displayed with underlined text. This style requires that LVS_EX_ONECLICKACTIVATE or LVS_EX_TWOCLICKACTIVATE also be set.',""))
+
+
+    global aoTreeViewStyles := Array()
+    aoTreeViewStyles.Push(Styles("TVS_CHECKBOXES", "0x100",'+/-Checked. Displays a checkbox next to each item.',"Checked"))
+    aoTreeViewStyles.Push(Styles("TVS_DISABLEDRAGDROP", "0x10",'Prevents the tree-view control from sending TVN_BEGINDRAG notification messages.',""))
+    aoTreeViewStyles.Push(Styles("TVS_EDITLABELS", "0x8",'+/-ReadOnly. Allows the user to edit the names of tree-view items.',"ReadOnly"))
+    aoTreeViewStyles.Push(Styles("TVS_FULLROWSELECT", "0x1000",'Enables full-row selection in the tree view. The entire row of the selected item is highlighted, and clicking anywhere on an item`'s row causes it to be selected. This style cannot be used in conjunction with the TVS_HASLINES style.',""))
+    aoTreeViewStyles.Push(Styles("TVS_HASBUTTONS", "0x1",'+/-Buttons. Displays plus (+) and minus (-) buttons next to parent items. The user clicks the buttons to expand or collapse a parent item`'s list of child items. To include buttons with items at the root of the tree view, TVS_LINESATROOT must also be specified.',"Buttons"))
+    aoTreeViewStyles.Push(Styles("TVS_HASLINES", "0x2",'+/-Lines. Uses lines to show the hierarchy of items.',"Lines"))
+    aoTreeViewStyles.Push(Styles("TVS_INFOTIP", "0x800",'Obtains ToolTip information by sending the TVN_GETINFOTIP notification.',""))
+    aoTreeViewStyles.Push(Styles("TVS_LINESATROOT", "0x4",'+/-Lines. Uses lines to link items at the root of the tree-view control. This value is ignored if TVS_HASLINES is not also specified.',"Lines"))
+    aoTreeViewStyles.Push(Styles("TVS_NOHSCROLL", "0x8000",'+/-HScroll. Disables horizontal scrolling in the control. The control will not display any horizontal scroll bars.',"Hscroll"))
+    aoTreeViewStyles.Push(Styles("TVS_NONEVENHEIGHT", "0x4000",'Sets the height of the items to an odd height with the TVM_SETITEMHEIGHT message. By default, the height of items must be an even value.',""))
+    aoTreeViewStyles.Push(Styles("TVS_NOSCROLL", "0x2000",'Disables both horizontal and vertical scrolling in the control. The control will not display any scroll bars.',""))
+    aoTreeViewStyles.Push(Styles("TVS_NOTOOLTIPS", "0x80",'Disables tooltips.',""))
+    aoTreeViewStyles.Push(Styles("TVS_RTLREADING", "0x40",'Causes text to be displayed from right-to-left (RTL). Usually, windows display text left-to-right (LTR).',""))
+    aoTreeViewStyles.Push(Styles("TVS_SHOWSELALWAYS", "0x20",'Causes a selected item to remain selected when the tree-view control loses focus.',""))
+    aoTreeViewStyles.Push(Styles("TVS_SINGLEEXPAND", "0x400",'Causes the item being selected to expand and the item being unselected to collapse upon selection in the tree-view. If the user holds down Ctrl while selecting an item, the item being unselected will not be collapsed.',""))
+    aoTreeViewStyles.Push(Styles("TVS_TRACKSELECT", "0x200",'Enables hot tracking of the mouse in a tree-view control.',""))
+
+
+    global aoDateTimeStyles := Array()
+    aoDateTimeStyles.Push(Styles("DTS_UPDOWN", "0x1",'Provides an up-down control to the right of the control to modify date-time values, which replaces the of the drop-down month calendar that would otherwise be available.',""))
+    aoDateTimeStyles.Push(Styles("DTS_SHOWNONE", "0x2",'Displays a checkbox inside the control that users can uncheck to make the control have no date/time selected. Whenever the control has no date/time, Gui.Submit and GuiCtrl.Value will retrieve a blank value (empty string).',""))
+    aoDateTimeStyles.Push(Styles("DTS_SHORTDATEFORMAT", "0x0",'Displays the date in short format. In some locales, it looks like 6/1/05 or 6/1/2005. On older operating systems, a two-digit year might be displayed. This is why DTS_SHORTDATECENTURYFORMAT is the default and not DTS_SHORTDATEFORMAT.',""))
+    aoDateTimeStyles.Push(Styles("DTS_LONGDATEFORMAT", "0x4",'Format option "LongDate". Displays the date in long format. In some locales, it looks like Wednesday, June 01, 2005.',""))
+    aoDateTimeStyles.Push(Styles("DTS_SHORTDATECENTURYFORMAT", "0xC",'Format option blank/omitted. Displays the date in short format with four-digit year. In some locales, it looks like 6/1/2005. If the system`'s version of Comctl32.dll is older than 5.8, this style is not supported and DTS_SHORTDATEFORMAT is automatically substituted.',""))
+    aoDateTimeStyles.Push(Styles("DTS_TIMEFORMAT", "0x9",'Format option "Time". Displays only the time, which in some locales looks like 5:31:42 PM.',""))
+    aoDateTimeStyles.Push(Styles("DTS_APPCANPARSE", "0x10",'Not yet supported. Allows the owner to parse user input and take necessary action. It enables users to edit within the client area of the control when they press F2. The control sends DTN_USERSTRING notification messages when users are finished.',""))
+    aoDateTimeStyles.Push(Styles("DTS_RIGHTALIGN", "0x20",'+/-Right. The calendar will drop down on the right side of the control instead of the left.',"Right"))
+
+
+    global aoMonthCalStyles := Array()
+    aoMonthCalStyles.Push(Styles("MCS_DAYSTATE", "0x1",'Makes the control send MCN_GETDAYSTATE notifications to request information about which days should be displayed in bold. [Not yet supported]',""))
+    aoMonthCalStyles.Push(Styles("MCS_WEEKNUMBERS", "0x4",'Displays week numbers (1-52) to the left of each row of days. Week 1 is defined as the first week that contains at least four days.',""))
+    aoMonthCalStyles.Push(Styles("MCS_NOTODAYCIRCLE", "0x8",'Prevents the circling of today`'s date within the control.',""))
+    aoMonthCalStyles.Push(Styles("MCS_NOTODAY", "0x10",'Prevents the display of today`'s date at the bottom of the control.',""))
+
+
+    global aoSliderStyles := Array()
+    aoSliderStyles.Push(Styles("TBS_VERT", "0x2",'+/-Vertical. The control is oriented vertically.',"Vertical"))
+    aoSliderStyles.Push(Styles("TBS_LEFT", "0x4",'+/-Left. The control displays tick marks at the top of the control (or to its left if TBS_VERT is present). Same as TBS_TOP.',"Left"))
+    aoSliderStyles.Push(Styles("TBS_TOP", "0x4",'same as TBS_LEFT.',""))
+    aoSliderStyles.Push(Styles("TBS_BOTH", "0x8",'+/-Center. The control displays tick marks on both sides of the control. This will be both top and bottom when used with TBS_HORZ or both left and right if used with TBS_VERT.',"Center"))
+    aoSliderStyles.Push(Styles("TBS_AUTOTICKS", "0x1",'The control has a tick mark for each increment in its range of values. Use +/-TickInterval to have more flexibility.',""))
+    aoSliderStyles.Push(Styles("TBS_ENABLESELRANGE", "0x20",'The control displays a selection range only. The tick marks at the starting and ending positions of a selection range are displayed as triangles (instead of vertical dashes), and the selection range is highlighted (highlighting might require that the theme be removed via GuiObj.Opt("-Theme")).',""))
+    aoSliderStyles.Push(Styles("TBS_FIXEDLENGTH", "0x40",'+/-Thick. Allows the thumb`'s size to be changed.',"Thick"))
+    aoSliderStyles.Push(Styles("TBS_NOTHUMB", "0x80",'The control does not display the moveable bar.',""))
+    aoSliderStyles.Push(Styles("TBS_NOTICKS", "0x10",'+/-NoTicks. The control does not display any tick marks.',"NoTicks"))
+    aoSliderStyles.Push(Styles("TBS_TOOLTIPS", "0x100",'+/-ToolTip. The control supports tooltips. When a control is created using this style, it automatically creates a default ToolTip control that displays the slider`'s current position. You can change where the tooltips are displayed by using the TBM_SETTIPSIDE message.',"ToolTip"))
+    aoSliderStyles.Push(Styles("TBS_REVERSED", "0x200",'Unfortunately, this style has no effect on the actual behavior of the control, so there is probably no point in using it (instead, use +Invert in the control`'s options to reverse it). Depending on OS version, this style might require Internet Explorer 5.0 or greater.',""))
+    aoSliderStyles.Push(Styles("TBS_DOWNISLEFT", "0x400",'Unfortunately, this style has no effect on the actual behavior of the control, so there is probably no point in using it. Depending on OS version, this style might require Internet Explorer 5.01 or greater.',""))
+
+
+    global aoProgressStyles := Array()
+    aoProgressStyles.Push(Styles("PBS_SMOOTH", "0x1",'+/-Smooth. The progress bar displays progress status in a smooth scrolling bar instead of the default segmented bar. When this style is present, the control automatically reverts to the Classic Theme appearance.',"Smooth"))
+    aoProgressStyles.Push(Styles("PBS_VERTICAL", "0x4",'+/-Vertical. The progress bar displays progress status vertically, from bottom to top.',"Vertical"))
+    aoProgressStyles.Push(Styles("PBS_MARQUEE", "0x8",'The progress bar moves like a marquee; that is, each change to its position causes the bar to slide further along its available length until it wraps around to the other side. A bar with this style has no defined position. Each attempt to change its position will instead slide the bar by one increment. This style is typically used to indicate an ongoing operation whose completion time is unknown.',""))
+    
+    global aoTabStyles := Array()
+    aoTabStyles.Push(Styles("TCS_SCROLLOPPOSITE", "0x1", 'Unneeded tabs scroll to the opposite side of the control when a tab is selected.', ""))
+    aoTabStyles.Push(Styles("TCS_BOTTOM", "0x2", '+/-Bottom. Tabs appear at the bottom of the control instead of the top.', "Bottom"))
+    aoTabStyles.Push(Styles("TCS_RIGHT", "0x2", 'Tabs appear vertically on the right side of controls that use the TCS_VERTICAL style.', ""))
+    aoTabStyles.Push(Styles("TCS_MULTISELECT", "0x4", 'Multiple tabs can be selected by holding down Ctrl when clicking. This style must be used with the TCS_BUTTONS style.', ""))
+    aoTabStyles.Push(Styles("TCS_FLATBUTTONS", "0x8", 'Selected tabs appear as being indented into the background while other tabs appear as being on the same plane as the background. This style only affects tab controls with the TCS_BUTTONS style.', ""))
+    aoTabStyles.Push(Styles("TCS_FORCEICONLEFT", "0x10", 'Icons are aligned with the left edge of each fixed-width tab. This style can only be used with the TCS_FIXEDWIDTH style.', ""))
+    aoTabStyles.Push(Styles("TCS_FORCELABELLEFT", "0x20", 'Labels are aligned with the left edge of each fixed-width tab; that is, the label is displayed immediately to the right of the icon instead of being centered. This style can only be used with the TCS_FIXEDWIDTH style, and it implies the TCS_FORCEICONLEFT style.', ""))
+    aoTabStyles.Push(Styles("TCS_HOTTRACK", "0x40", 'Items under the pointer are automatically highlighted.', ""))
+    aoTabStyles.Push(Styles("TCS_VERTICAL", "0x80", '+/-Left or +/-Right. Tabs appear at the left side of the control, with tab text displayed vertically. This style is valid only when used with the TCS_MULTILINE style. To make tabs appear on the right side of the control, also use the TCS_RIGHT style.', "Left"))
+    aoTabStyles.Push(Styles("TCS_BUTTONS", "0x100", '+/-Buttons. Tabs appear as buttons, and no border is drawn around the display area.', "Buttons"))
+    aoTabStyles.Push(Styles("TCS_SINGLELINE", "0x0", '+/-Wrap. Only one row of tabs is displayed. The user can scroll to see more tabs, if necessary. This style is the default.', "Wrap"))
+    aoTabStyles.Push(Styles("TCS_MULTILINE", "0x200", '+/-Wrap. Multiple rows of tabs are displayed, if necessary, so all tabs are visible at once.', "Wrap"))
+    aoTabStyles.Push(Styles("TCS_RIGHTJUSTIFY", "0x0", 'This is the default. The width of each tab is increased, if necessary, so that each row of tabs fills the entire width of the tab control. This style will not correctly display the tabs if a custom background color or text color is in effect. To workaround this, specify -Background and/or cDefault in the tab control`'s options. This window style is ignored unless the TCS_MULTILINE style is also specified.', ""))
+    aoTabStyles.Push(Styles("TCS_FIXEDWIDTH", "0x400", 'All tabs are the same width. This style cannot be combined with the TCS_RIGHTJUSTIFY style.', ""))
+    aoTabStyles.Push(Styles("TCS_RAGGEDRIGHT", "0x800", 'Rows of tabs will not be stretched to fill the entire width of the control. This style is the default.', ""))
+    aoTabStyles.Push(Styles("TCS_FOCUSONBUTTONDOWN", "0x1000", 'The tab control receives the input focus when clicked.', ""))
+    aoTabStyles.Push(Styles("TCS_OWNERDRAWFIXED", "0x2000", 'The parent window is responsible for drawing tabs.', ""))
+    aoTabStyles.Push(Styles("TCS_TOOLTIPS", "0x4000", 'The tab control has a tooltip control associated with it.', ""))
+    aoTabStyles.Push(Styles("TCS_FOCUSNEVER", "0x8000", 'The tab control does not receive the input focus when clicked.', ""))
+
+    global aoStatusbarStyles := Array()
+    aoStatusbarStyles.Push(Styles("SBARS_TOOLTIPS", "0x800",'Displays a tooltip when the mouse hovers over a part of the status bar that: 1) has too much text to be fully displayed; or 2) has an icon but no text. The text of the tooltip can be set via: SendMessage 0x0410, 0, "Text to display", "msctls_statusbar321", MyGui The bold 0 above is the zero-based part number. To use a part other than the first, specify 1 for second, 2 for the third, etc. NOTE: The tooltip might never appear on certain OS versions.',""))
+    aoStatusbarStyles.Push(Styles("SBARS_SIZEGRIP", "0x100",'Includes a sizing grip at the right end of the status bar. A sizing grip is similar to a sizing border; it is a rectangular area that the user can click and drag to resize the parent window.',""))
+
     Global aoDefaultStyles := Object()
     aoDefaultStyles.window := {style:0xffffffff94ca0000, exStyle:0x100}
+    aoDefaultStyles.gui := {style:0xffffffff94ca0000, exStyle:0x100}
     aoDefaultStyles.edit := {style:0x50010080, exStyle:0x200}
     aoDefaultStyles.editmultiLine := {style:0x50211040, exStyle:0x200}
     aoDefaultStyles.button := {style:0x50010000, exStyle:0x0}
     aoDefaultStyles.checkbox := {style:0x50010003, exStyle:0x0}
+    aoDefaultStyles.hotkey := {style:0x50010000, exStyle:0x200}
     aoDefaultStyles.monthcal := {style:0x50010000, exStyle:0x0}
     aoDefaultStyles.picture := {style:0x50000003, exStyle:0x0}
     aoDefaultStyles.progress := {style:0x50000000, exStyle:0x0}
@@ -243,8 +425,9 @@ for property, value in oImageControls.OwnProps(){
     aoDefaultStyles.groupbox := {style:0x50000007, exStyle:0x0}
     aoDefaultStyles.link := {style:0x50010000, exStyle:0x0}
     aoDefaultStyles.listbox := {style:0x50010081, exStyle:0x200}
-    aoDefaultStyles.listview := {style:0x500000c2, exStyle:0x0}
+    aoDefaultStyles.listview := {style:0x50010009, exStyle:0x0}
     aoDefaultStyles.statusbar := {style:0x50000800, exStyle:0x0}
+    aoDefaultStyles.separator := {style:0x50000000, exStyle:0x0}
 }
 
 global SettingsFile := Regexreplace(A_scriptName, "(.*)\..*", "$1.ini")
@@ -304,18 +487,18 @@ ogGB_Window.BottomMargin := 2
 oGuiWindow.AddText("xp+3 yp+18", "Title")
 ogEdit_wTitle := oGuiWindow.AddEdit("x42 yp-3 w255", "")
 ogEdit_wTitle.StatusBar := "WinGetTitle(WinTitle, WinText, ExcludeTitle, ExcludeText)"
-oGuiWindow.AddText("x6 yp+26", "Class")
+oGuiWindow.AddText("x6 y+5", "Class")
 ogEdit_wClass := oGuiWindow.AddEdit("x42 yp-3 w170 vwClass +ReadOnly")
 ogEdit_wClass.StatusBar := "WinGetClass(WinTitle, WinText, ExcludeTitle, ExcludeText)"
 oGuiWindow.AddText("x+4 yp+3", "ID")
 ogEdit_wID := oGuiWindow.AddEdit("x237 yp-3 Right vwID w60 +ReadOnly")
 ogEdit_wID.StatusBar := "WinGetID(WinTitle, WinText, ExcludeTitle, ExcludeText)"
-oGuiWindow.AddText("x4 yp+26", "Process")
+oGuiWindow.AddText("x4 y+5", "Process")
 ogEdit_wProcess := oGuiWindow.AddEdit("x42 yp-3 w170 vwProcess +ReadOnly")
 oGuiWindow.AddText("x+3 yp+3", "PID")
 ogEdit_wPID := oGuiWindow.AddEdit("x237 yp-3 w60 Right vwPID +ReadOnly")
 
-oGuiWindow.AddText("x30 yp+26", "X")
+oGuiWindow.AddText("x30 y+5", "X")
 ogEdit_wXPos := oGuiWindow.AddEdit("x42 yp-3 Right Number vwXPos w40")
 oGuiWindow.AddText("x+5 yp+3", "Y")
 ogEdit_wYPos := oGuiWindow.AddEdit("x+2 yp-3 Right Number vwYPos w40")
@@ -340,14 +523,14 @@ ogGB_Control.BottomMargin := 2
 oGuiControl.AddText("xp+3 yp+18", "Text")
 ogEdit_cText := oGuiControl.AddEdit("x42 yp-3 w255", "")
 ogEdit_cText.StatusBar := "ControlGetText(Control, WinTitle, WinText, ExcludeTitle, ExcludeText)"
-oGuiControl.AddText("x6 yp+26", "Class")
+oGuiControl.AddText("x6 y+5", "Class")
 ogEdit_cClass := oGuiControl.AddEdit("x42 yp-3 w178 vccClass +ReadOnly")
 ogEdit_cClass.StatusBar := "ControlGetClassNN(Control , WinTitle, WinText, ExcludeTitle, ExcludeText)"
 oGuiControl.AddText("x+4 yp+3", "ID")
 ogEdit_cID := oGuiControl.AddEdit("x237 yp-3 w60 Right vcID +ReadOnly")
 ogEdit_cID.StatusBar := "ControlGetHwnd(Control, WinTitle, WinText, ExcludeTitle, ExcludeText)"
 
-oGuiControl.AddText("x30 yp+26", "X")
+oGuiControl.AddText("x30 y+5", "X")
 ogEdit_cXPos := oGuiControl.AddEdit("x42 yp-3 Right Number vcXPos w40")
 oGuiControl.AddText("x+5 yp+3", "Y")
 ogEdit_cYPos := oGuiControl.AddEdit("x+2 yp-3 Right Number vcYPos w40")
@@ -400,18 +583,24 @@ ogGBFunction.BottomMargin := 2
 
 moFunctions := Map()
 moFunctions["ControlAddItem"] := {var1:"String", var1Default: "", control:true, description:"Adds the specified string as a new entry at the bottom of a ListBox or ComboBox."}
+moFunctions["ControlChooseIndex"] := {var1:"N", var1Default: "0", control:true, description:"Sets the selection in a ListBox, ComboBox or Tab control to be the specified entry or tab number."}
+moFunctions["ControlChooseString"] := {var1:"String", var1Default: "0", control:true, description:"Sets the selection in a ListBox or ComboBox to be the first entry whose leading part matches the specified string."}
 moFunctions["ControlClick"] := {control:true, description:"Sends a mouse button or mouse wheel event to a control."}
 moFunctions["ControlFocus"] := {control:true, description:"Sets input focus to a given control on a window."}
-moFunctions["ControlSetText"] := {var1:"NewText", var1Default: "", control:true, description:"Changes the text of a control."}
-moFunctions["ControlSend"] := {var1:"Keys", var1Default: "", control:true, description:"Sends simulated keystrokes to a window or control."}
-moFunctions["ControlSendText"] := {var1:"Keys", var1Default: "", control:true, description: "Sends text to a window or control."}
+moFunctions["ControlGetChecked"] := {control:true, description: "Returns a non-zero value if the checkbox or radio button is checked.", result: true}
+moFunctions["ControlGetChoice"] := {control:true, description: "Returns the name of the currently selected entry in a ListBox or ComboBox.", result: true}
 moFunctions["ControlGetText"] := {control:true, description: "Retrieves text from a control.", result: true}
 moFunctions["ControlGetItems"] := {control:true, description: "Returns an array of items/rows from a ListBox, ComboBox, or DropDownList.", result: true}
+moFunctions["ControlGetIndex"] := {control:true, description: "Returns the index of the currently selected entry or tab in a ListBox, ComboBox or Tab control.", result: true}
+moFunctions["ControlSend"] := {var1:"Keys", var1Default: "", control:true, description:"Sends simulated keystrokes to a window or control."}
+moFunctions["ControlSendText"] := {var1:"Keys", var1Default: "", control:true, description: "Sends text to a window or control."}
+moFunctions["ControlSetText"] := {var1:"NewText", var1Default: "", control:true, description:"Changes the text of a control."}
+moFunctions["ControlSetEnabled"] := {var1:"Value", var1Default: "1", control:true, description:"Enables or disables the specified control."}
 moFunctions["SendMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", control:true, result:true, description:"Sends a message to a window or control and waits for acknowledgement."}
 moFunctions["PostMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", control:true, result:true, description:"Places a message in the message queue of a window or control."}
 moFunctions["WinGetControls"] := {description: "Returns the control names for all controls in the specified window.", result: true}
 moFunctions["WinGetCount"] := {description: "Returns the number of existing windows that match the specified criteria.", result: true}
-moFunctions["WinGetClass"] := {description: "Retrieves the specified window's class name.", result: true}
+moFunctions["WinGetClass"] := {description: "Retrieves the specified window`'s class name.", result: true}
 moFunctions["WinGetPID"] := {description: "Returns the Process ID number of the specified window.", result: true}
 moFunctions["WinGetTitle"] := {description: "Retrieves the title of the specified window.", result: true}
 moFunctions["WinGetText"] := {description: "Retrieves the text from the specified window.", result: true}
@@ -446,28 +635,28 @@ ogTxtVar1 := oGuiFunction.AddText("xm+2 y+4 w50", "Msg")
 ogEdtVar1 := oGuiFunction.AddEdit("x60 yp-3 w237 right", "")
 ogTxtVar2 := oGuiFunction.AddText("xm+2 y+6 w50 Hidden", "wParam")
 ogTxtVar2.posRef := ogTxtVar1
-ogTxtVar2.yOffset := 23
+ogTxtVar2.yMargin := 10
 ogEdtVar2 := oGuiFunction.AddEdit("x60 yp-4 w86 right Hidden", 0)
 ogEdtVar2.posRef := ogEdtVar1
-ogEdtVar2.yOffset := 23
+ogEdtVar2.yMargin := 2
 
 ogTxtVar3 := oGuiFunction.AddText("x+5 yp+3 w50 Hidden", "lParam")
 ogEdtVar3 := oGuiFunction.AddEdit("xp+60 yp-3 w86 right Hidden", 0)
 ogTxtControl := oGuiFunction.AddText("xm+2 y+6 ", "Control")
 ogTxtControl.posRef := ogTxtVar2
-ogTxtControl.yOffset := 23
+ogTxtControl.yMargin := 10
 
 ogEdtControl := oGuiFunction.AddEdit("yp-3 x60 w237 right", )
 ogEdtControl.posRef := ogEdtVar2
-ogEdtControl.yOffset := 23
+ogEdtControl.yMargin := 2
 
 ogTxtWindow := oGuiFunction.AddText("xm+2 y+6 ", "Window")
 ogTxtWindow.posRef := ogTxtControl
-ogTxtWindow.yOffset := 23
+ogTxtWindow.yMargin := 10
 
 ogEdtWindow := oGuiFunction.AddEdit("yp-3 x60 w237 right", "")
 ogEdtWindow.posRef := ogEdtControl
-ogEdtWindow.yOffset := 23
+ogEdtWindow.yMargin := 2
 
 ogGbResult := oGuiFunction.Add("GroupBox", "xm+3 w294 h40 Section Hidden", "Result")
 ogGbResult.posRef := ogEdtWindow
@@ -584,7 +773,7 @@ ogCB_FilterCtrlVisible.Statusbar := "Filter on only visible controls"
 ogCB_FilterCtrlText := oGuiControlList.AddCheckbox("xp+60 yp vfilter_ctrl_text", "Text visible") 
 ogCB_FilterCtrlText.OnEvent("Click", UpdateCtrlList)
 ogCB_FilterCtrlText.statusbar := "Filter on controls with text"
-ogLV_CtrlList := oGuiControlList.AddListView("xm+4 y+7 r15 w" (myGui.Width-8*3)/2 " vCtrlList section AltSubmit", ["Class(NN)", "Hwnd", "Text", "X", "Y", "W", "H","Visible"])
+ogLV_CtrlList := oGuiControlList.AddListView("xm+4 y+7 r15 w" (myGui.Width-8*3)/2 " vCtrlList section AltSubmit", ["Class(NN)", "Hwnd", "Text", "Type", "X", "Y", "W", "H","Visible"])
 ogLV_CtrlList.Opt("Count100 -Multi")
 ogLV_CtrlList.OnEvent("Click", DClickCtrlList)
 ogLV_CtrlList.OnNotify(NM_RCLICK := -5, RClickCtrlList)
@@ -891,7 +1080,7 @@ RClickCtrlList(*){
     ctrl_ClassNN := ControlGetClassNN(MyGui.ctrl_hwnd + 0)
     Ctrl_Visible := ControlGetVisible(MyGui.ctrl_hwnd+0)
     Ctrl_Enabled := ControlGetEnabled(MyGui.ctrl_hwnd+0)
-    ObjectType := TranslateClassName(ctrl_ClassNN)
+    ObjectType := ControlGetType(MyGui.ctrl_hwnd + 0)
     myMenu := Menu()
     myMenu.Add("Copy Text", (*) => (A_Clipboard:= ControlGetText(MyGui.ctrl_hwnd+0), Tooltip2("Copied [" A_Clipboard "]")))
     myMenu.Add("Copy ClassNN", (*) => (A_Clipboard:= ControlGetClassNN(MyGui.ctrl_hwnd+0), Tooltip2("Copied [" A_Clipboard "]")))
@@ -1134,45 +1323,19 @@ UpdateCtrlList(*){
                 Hwnd_selected := ctrl_hwnd
             }
             ctrl_text := ControlGetText(ctrl_hwnd)
-            ctrl_ClassNN := ControlGetClassNN(ctrl_hwnd)
-            ctrl_AhkName := TranslateClassName(ctrl_ClassNN)
             ControlGetPos(&ctrl_x, &ctrl_y, &ctrl_w, &ctrl_h, ctrl_hwnd)
-            ControlType := ControlGetStyle(ctrl_hwnd) & 0xF
-            If (ctrl_AhkName = "Button") {
-                ; 1: BS_DEFPUSHBUTTON
-                ; 2: BS_CHECKBOX
-                ; 3: BS_AUTOCHECK
-                ; 4: BS_RADIOBUTTON
-                ; 5: BS_3STATE
-                ; 6: BS_AUTO3STATE
-                ; 9: BS_AUTORADIOBUTTON
-                If (ControlType == 1) {
-                    ctrl_AhkName := "Button"
-                } Else if (ControlType ~= "^(?i:2|3|5|6)$")
-                    ctrl_AhkName := "CheckBox"
-                Else if (ControlType ~= "^(?i:4|9)$")
-                    ctrl_AhkName := "Radio"
-                Else If (ControlType == 7)
-                    ctrl_AhkName := "GroupBox"
+            ctrl_ClassNN := ControlGetClassNN(ctrl_hwnd)
+            ; ctrl_AhkName := TranslateClassName(ctrl_ClassNN)
+            ; ControlType := ControlGetStyle(ctrl_hwnd) & 0xF
 
-            }  Else If (ctrl_AhkName == "Text") {
-                If (ControlType == 3 || ControlType == 14) {
-                    ; 3:  SS_ICON
-                    ; 14: SS_BITMAP
-                    ctrl_AhkName := "Picture"
-                }
-                If (ctrl_text == "" && ctrl_h == 2) {
-                    ctrl_AhkName := "Separator"
-                }
-            }
-
+            ctrl_Type := ControlGetType(ctrl_hwnd)
             
             ctrl_Visible := ControlGetVisible(ctrl_hwnd)
             if ((ogCB_FilterCtrlText.value = 1 and ctrl_text = "") or (ogCB_FilterCtrlVisible.value = 1 and !ctrl_Visible)){
                  continue
             }
             if (ogEdit_ctrl_search.value="" or InStr(ctrl_ClassNN " " ctrl_hwnd " " ctrl_text,ogEdit_ctrl_search.value)){
-                NewRowNumber:= ogLV_CtrlList.Add((mILControls.Has(ctrl_AhkName) ? "Icon" mILControls[ctrl_AhkName] : "" ) , ctrl_ClassNN, format("{:#x}", ctrl_hwnd), ctrl_text,ctrl_x , ctrl_y, ctrl_w, ctrl_h, ctrl_Visible ? "Visible" : "Hidden")
+                NewRowNumber:= ogLV_CtrlList.Add((mILControls.Has(ctrl_Type) ? "Icon" mILControls[ctrl_Type] : "" ) , ctrl_ClassNN, format("{:#x}", ctrl_hwnd), ctrl_text, ctrl_Type, ctrl_x, ctrl_y, ctrl_w, ctrl_h, ctrl_Visible ? "Visible" : "Hidden")
                 if (selectedCtrl_hwnd=ctrl_hwnd){
                     ogLV_CtrlList.Modify(NewRowNumber, "Select Vis")
                 }
@@ -1363,16 +1526,10 @@ GuiStyles_Create(hwnd, ObjectType) {
     ogLVExStyles := GuiStyles.Add("ListView", "h332 w375 Checked", ["Style", "Hex", "Default", "Description"])
     ogTab.UseTab()
     ogEditOptions := GuiStyles.AddEdit("xm y410 w300")
+
     Options := ""
     SkipOptions := "" ;Styles to be skipped because of set options
     aoStyles := (ObjectType = "window") ? aoWinStyles : aoControlStyles
-
-    ; general style
-    for index, oStyle in aoStyles{
-        ogLVStyles.Add(((object_Style & oStyle.Hex) ? "Check" : ""),oStyle.Style,oStyle.Hex,(defaultStyle & oStyle.Hex) ? "true" : "false", oStyle.Description)
-        Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText) 
-        SkipOptions .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " (oStyle.SkipHex)
-    }
 
     aoStyles_extra := ""
     aoStyles_extra := (ObjectType = "text") ? aoTextStyles : aoStyles_extra
@@ -1381,34 +1538,121 @@ GuiStyles_Create(hwnd, ObjectType) {
     aoStyles_extra := (ObjectType ~= "Button|CheckBox|Radio|GroupBox") ? aoButtonStyles : aoStyles_extra
     aoStyles_extra := (ObjectType = "text") ? aoTextStyles : aoStyles_extra
 
+    aoStyles_extra := (ObjectType = "updown") ? aoUpDownStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "picture") ? aoPicStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "Combobox") ? aoCBBStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "DropDownList") ? aoCBBStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "ListBox") ? aoLBStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "ListView") ? aoLVStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "TreeView") ? aoTreeViewStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "DateTime") ? aoDateTimeStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "MonthCal") ? aoMonthCalStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "Slider") ? aoSliderStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "Progress") ? aoProgressStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "Tab3") ? aoTabStyles : aoStyles_extra
+    aoStyles_extra := (ObjectType = "Statusbar") ? aoStatusbarStyles : aoStyles_extra
+
+
+    ; general style
+    for index, oStyle in aoStyles{
+        ogLVStyles.Add(((object_Style & oStyle.Hex) ? "Check" : ""),oStyle.Style,oStyle.Hex,(defaultStyle & oStyle.Hex) ? "true" : "false", oStyle.Description)
+        ; Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText) 
+        ; SkipOptions .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " (oStyle.SkipHex)
+    }
+
+    
+
     ; object specific styles
     if (aoStyles_extra!=""){
         for index, oStyle in aoStyles_extra{
             ogLVStyles.Add(((object_Style & oStyle.Hex)? "Check" : ""),oStyle.Style,oStyle.Hex,(defaultStyle & oStyle.Hex) ? "true" : "false",oStyle.Description)
-            Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText) 
-            SkipOptions .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " (oStyle.SkipHex)
+            ; Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText) 
+            ; SkipOptions .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " (oStyle.SkipHex)
         }
     }
     
     for index, oExStyle in aoWinExStyles{
         ogLVExStyles.Add(((object_ExStyle & oExStyle.Hex)? "Check" : ""),oExStyle.Style,oExStyle.Hex, (defaultExStyle & oExStyle.Hex) ? "true" : "false",oExStyle.Description)
-        Options .= (((defaultExStyle & oExStyle.Hex) && (object_ExStyle & oExStyle.Hex)) | (!(defaultExStyle & oExStyle.Hex) && !(object_ExStyle & oExStyle.Hex))) ? "" : " " ((defaultExStyle & oExStyle.Hex) ? "-" : "+") (oExStyle.OptionText="" ? "E" oExStyle.Hex : oExStyle.OptionText) 
-        SkipOptions .= (((defaultExStyle & oExStyle.Hex) && (object_ExStyle & oExStyle.Hex)) | (!(defaultStyle & oExStyle.Hex) && !(object_ExStyle & oExStyle.Hex))) ? "" : " " (oExStyle.SkipHex)
+        ; Options .= (((defaultExStyle & oExStyle.Hex) && (object_ExStyle & oExStyle.Hex)) | (!(defaultExStyle & oExStyle.Hex) && !(object_ExStyle & oExStyle.Hex))) ? "" : " " ((defaultExStyle & oExStyle.Hex) ? "-" : "+") (oExStyle.OptionText="" ? "E" oExStyle.Hex : oExStyle.OptionText) 
+        ; SkipOptions .= (((defaultExStyle & oExStyle.Hex) && (object_ExStyle & oExStyle.Hex)) | (!(defaultStyle & oExStyle.Hex) && !(object_ExStyle & oExStyle.Hex))) ? "" : " " (oExStyle.SkipHex)
     }
 
-    optionsBuffer := ""
-    Loop parse, Options, A_space{
-        if !InStr(" " SkipOptions " ", " " A_LoopField " ",){
-            optionsBuffer .= A_LoopField " "
-        }
-    }
-    ogEditOptions.Value := optionsBuffer
+    ogEditOptions.Value := ControlGetAHKOptions(ObjectType,object_Style,object_ExStyle)
     ogLVStyles.ModifyCol
     ogLVStyles.ModifyCol(2, "Integer")
     ogLVExStyles.ModifyCol
     ogLVExStyles.ModifyCol(2, "Integer")
+    
     GuiStyles.Show("")
 
+    ControlGetAHKOptions(ObjectType, object_Style, object_ExStyle){
+        Options := ""
+        SkipOptions := "" ;Styles to be skipped because of set options
+        optionsBuffer := ""
+        aoStyles := (ObjectType = "window") ? aoWinStyles : aoControlStyles
+
+        defaultStyle :=aoDefaultStyles.%ObjectType%.style
+        defaultExStyle :=aoDefaultStyles.%ObjectType%.exStyle
+
+        if (ObjectType="Checkbox"){
+            ; Correction on Check3 Checkbox
+            if(object_Style & 0xF== 6){
+                optionsBuffer .= "Check3 "
+                defaultStyle := 0x50010006
+            }
+        }
+
+        aoStyles_extra := ""
+        aoStyles_extra := (ObjectType = "text") ? aoTextStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "Edit") ? aoEditStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "EditMultiline") ? aoEditMultilineStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType ~= "Button|CheckBox|Radio|GroupBox") ? aoButtonStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "text") ? aoTextStyles : aoStyles_extra
+
+        aoStyles_extra := (ObjectType = "updown") ? aoUpDownStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "picture") ? aoPicStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "Combobox") ? aoCBBStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "DropDownList") ? aoCBBStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "ListBox") ? aoLBStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "ListView") ? aoLVStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "TreeView") ? aoTreeViewStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "DateTime") ? aoDateTimeStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "MonthCal") ? aoMonthCalStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "Slider") ? aoSliderStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "Progress") ? aoProgressStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "Tab3") ? aoTabStyles : aoStyles_extra
+        aoStyles_extra := (ObjectType = "Statusbar") ? aoStatusbarStyles : aoStyles_extra
+
+        ; general style
+        for index, oStyle in aoStyles{
+            Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText) 
+            SkipOptions .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " (oStyle.SkipHex)
+        }
+
+        ; object specific styles
+        if (aoStyles_extra!=""){
+            for index, oStyle in aoStyles_extra{
+                Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText) 
+                SkipOptions .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " (oStyle.SkipHex)
+            }
+        }
+        
+        for index, oExStyle in aoWinExStyles{
+            Options .= (((defaultExStyle & oExStyle.Hex) && (object_ExStyle & oExStyle.Hex)) | (!(defaultExStyle & oExStyle.Hex) && !(object_ExStyle & oExStyle.Hex))) ? "" : " " ((defaultExStyle & oExStyle.Hex) ? "-" : "+") (oExStyle.OptionText="" ? "E" oExStyle.Hex : oExStyle.OptionText) 
+            SkipOptions .= (((defaultExStyle & oExStyle.Hex) && (object_ExStyle & oExStyle.Hex)) | (!(defaultStyle & oExStyle.Hex) && !(object_ExStyle & oExStyle.Hex))) ? "" : " " (oExStyle.SkipHex)
+        }
+
+        
+        Loop parse, Options, A_space{
+            if !InStr(" " SkipOptions " ", " " A_LoopField " ",){
+                optionsBuffer .= A_LoopField " "
+            }
+        }
+        optionsBuffer :=StrReplace(optionsBuffer,"+-", "-")
+        
+
+        return optionsBuffer
+    }
     Return
 
 }
@@ -1536,25 +1780,67 @@ Tooltip2(Text:="" , X:= "", Y:= "", WhichToolTip:= ""){
 }
 
 GetButtonType(hwndButton){
-    static types := ["Button"	;BS_PUSHBUTTON
-        , "Button"	;BS_DEFPUSHBUTTON
-        , "Checkbox"	;BS_CHECKBOX
-        , "Checkbox"	;BS_AUTOCHECKBOX
-        , "Radio"	;BS_RADIOBUTTON
-        , "Checkbox"	;BS_3STATE
-        , "Checkbox"	;BS_AUTO3STATE
-        , "Groupbox"	;BS_GROUPBOX
-        , "NotUsed"	;BS_USERBUTTON
-        , "Radio"	;BS_AUTORADIOBUTTON
-        , "Button"	;BS_PUSHBOX
-        , "AppSpecific"	;BS_OWNERDRAW
-        , "SplitButton"	;BS_SPLITBUTTON    (vista+)
-        , "SplitButton"	;BS_DEFSPLITBUTTON (vista+)
-        , "CommandLink"	;BS_COMMANDLINK    (vista+)
-        , "CommandLink"]	;BS_DEFCOMMANDLINK (vista+)
+    static types := ["Button"	;BS_PUSHBUTTON 1
+        , "Button"	;BS_DEFPUSHBUTTON 2
+        , "Checkbox"	;BS_CHECKBOX 3
+        , "Checkbox"	;BS_AUTOCHECKBOX 4
+        , "Radio"	;BS_RADIOBUTTON 5
+        , "Checkbox"	;BS_3STATE 6
+        , "Checkbox"	;BS_AUTO3STATE 7
+        , "Groupbox"	;BS_GROUPBOX 8
+        , "NotUsed"	;BS_USERBUTTON 9
+        , "Radio"	;BS_AUTORADIOBUTTON 10
+        , "Button"	;BS_PUSHBOX 11
+        , "AppSpecific"	;BS_OWNERDRAW 12
+        , "SplitButton"	;BS_SPLITBUTTON    (vista+) 13
+        , "SplitButton"	;BS_DEFSPLITBUTTON (vista+) 14
+        , "CommandLink"	;BS_COMMANDLINK    (vista+) 15
+        , "CommandLink"]	;BS_DEFCOMMANDLINK (vista+) 16
 
     btnStyle := WinGetStyle("ahk_id " hwndButton)
     return types[1 + (btnStyle & 0xF)]
+}
+
+ControlGetType(ctrl_hwnd){
+    ctrl_ClassNN := ControlGetClassNN(ctrl_hwnd)
+    ctrl_text := ControlGetText(ctrl_hwnd)
+    ctrl_AhkName := TranslateClassName(ctrl_ClassNN)
+    ControlType := ControlGetStyle(ctrl_hwnd) & 0xF
+    ControlGetPos(&ctrl_x, &ctrl_y, &ctrl_w, &ctrl_h, ctrl_hwnd)
+    If (ctrl_AhkName = "Button") {
+        ; 1: BS_DEFPUSHBUTTON
+        ; 2: BS_CHECKBOX
+        ; 3: BS_AUTOCHECK
+        ; 4: BS_RADIOBUTTON
+        ; 5: BS_3STATE
+        ; 6: BS_AUTO3STATE
+        ; 9: BS_AUTORADIOBUTTON
+        If (ControlType == 1) {
+            ctrl_AhkName := "Button"
+        } Else if (ControlType ~= "^(?i:2|3|5|6)$")
+            ctrl_AhkName := "CheckBox"
+        Else if (ControlType ~= "^(?i:4|9)$")
+            ctrl_AhkName := "Radio"
+        Else If (ControlType == 7)
+            ctrl_AhkName := "GroupBox"
+
+    } Else If (ctrl_AhkName == "Text") {
+        If (ControlType == 3 || ControlType == 14) {
+            ; 3:  SS_ICON
+            ; 14: SS_BITMAP
+            ctrl_AhkName := "Picture"
+        }
+        If (ctrl_text == "" && ctrl_h == 2) {
+            ctrl_AhkName := "Separator"
+        }
+    } Else If (ctrl_AhkName == "ComboBox") {
+        If (ControlType == 3) {
+            ctrl_AhkName := "DropDownList"
+        } Else {
+            ctrl_AhkName := "ComboBox"
+        }
+    }
+    return ctrl_AhkName
 }
 
 TranslateClassName(ClassName) {
@@ -1585,7 +1871,7 @@ TranslateClassName(ClassName) {
         AhkName := "Tab3"
     } Else If (InStr(ClassName, "updown")) {
         AhkName := "UpDown"
-    } Else If (InStr(ClassName, "hotkey")) {
+    } Else If (InStr(ClassName, "msctls_hotkey")) {
         AhkName := "Hotkey"
     } Else If (InStr(ClassName, "progress")) {
         AhkName := "Progress"
@@ -1609,6 +1895,8 @@ TranslateClassName(ClassName) {
         AhkName := "ToolBar"
     } Else If (InStr(ClassName, "ScrollBar")) {
         AhkName := "ScrollBar"
+    } Else If (InStr(ClassName, "AutoHotkeyGui")) {
+        AhkName := "Gui"
     }
     Return AhkName
 }
