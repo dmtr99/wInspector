@@ -1510,23 +1510,37 @@ Gui_Size(thisGui, MinMax:=1, Width:= 1, Height:= 1) {
 GuiStyles_Create(hwnd, ObjectType) {
     object_Style := WinGetStyle("ahk_id " hwnd)
     object_ExStyle := WinGetExStyle("ahk_id " hwnd)
+    Try{
+        Object_ClassNN := ControlGetClassNN(hwnd)
+    }Catch{
+        Object_ClassNN := WinGetTitle("ahk_id " hwnd)
+    }
     
     ObjectType := (ObjectType="Edit" and object_Style & 0x4) ? "editmultiLine" : ObjectType
 
+    if !aoDefaultStyles.HasProp(ObjectType){
+        return
+    }
     defaultStyle :=aoDefaultStyles.%ObjectType%.style
     defaultExStyle :=aoDefaultStyles.%ObjectType%.exStyle
 
-    GuiStyles := Gui(, "Styles - " ObjectType " - " format("0x{:X}",object_Style))
-
+    GuiStyles := Gui("Resize", "Styles - " Object_ClassNN " - " ObjectType " - " format("0x{:X}",object_Style))
+    GuiStyles.OnEvent("Size",GuiSection_Size)
     ogTab := GuiStyles.AddTab3("w400 h400",["Styles","Extended Styles"])
+    ogTab.LeftMargin := 10
+    ogTab.BottomMargin := 40
     ogEditStyle := GuiStyles.AddEdit("w150",format("0x{:X}", object_Style))
     ogLVStyles := GuiStyles.Add("ListView", " h332 w375 Checked", ["Style", "Hex", "Default","Description"])
+    ogLVStyles.LeftMargin := 20
+    ogLVStyles.BottomMargin := 50
     ogTab.UseTab("Extended Styles")
     ogEditExStyle := GuiStyles.AddEdit("w150", format("0x{:X}", object_ExStyle))
     ogLVExStyles := GuiStyles.Add("ListView", "h332 w375 Checked", ["Style", "Hex", "Default", "Description"])
+    ogLVExStyles.LeftMargin := 20
+    ogLVExStyles.BottomMargin := 50
     ogTab.UseTab()
     ogEditOptions := GuiStyles.AddEdit("xm y410 w300")
-
+    ogEditOptions.BottomDistance := 10
     Options := ""
     SkipOptions := "" ;Styles to be skipped because of set options
     aoStyles := (ObjectType = "window") ? aoWinStyles : aoControlStyles
