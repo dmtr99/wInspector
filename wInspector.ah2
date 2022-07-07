@@ -1737,9 +1737,11 @@ GuiRectangle(x:= 0, y:= 0 ,w:= 100 ,h:=100 , Color:="Blue",Thickness := 2){
             w := w + Thickness * 2
             h := h + Thickness * 2
         }
-        GuiBox.Move(x, y, w, h)
-        goColor.Move(,,w,h)
-        goTransp.Move(Thickness, Thickness, w-Thickness*2, h-Thickness*2)
+        ScreenScale := A_ScreenDPI / 96
+        GuiBox.Move(x / ScreenScale, y / ScreenScale, w / ScreenScale, h / ScreenScale)
+        goColor.Move(, , w / ScreenScale, h / ScreenScale)
+        goTransp.Move(Thickness, Thickness, w / ScreenScale - Thickness * 2, h / ScreenScale - Thickness * 2)
+
         goColor.Redraw()
         goTransp.Redraw()
         
