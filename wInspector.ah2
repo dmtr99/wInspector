@@ -1125,6 +1125,15 @@ DClickCtrlList(LV, RowNumber){
 DClickWinList(p*) {
     MyGui.win_hwnd := ogLV_WinList.GetText(ogLV_WinList.GetNext(, "F"), 3) + 0
     win_hwnd := MyGui.win_hwnd+0
+
+    winPID := MyGui.win_hwnd != 0 ? WinGetPID("ahk_id " MyGui.win_hwnd) : 0
+    Loop ogLV_ProcessList.GetCount()
+    {
+        rowPID := ogLV_ProcessList.GetText(A_Index, 2)
+        if (rowPID = winPID)
+            ogLV_ProcessList.Modify(A_Index, "Select Vis")
+    }
+
     if !WinExist(win_hwnd){
         (IsSet(GuiBox) && WinExist(GuiBox) && GuiBox.Hide())
         return
@@ -1144,7 +1153,8 @@ DClickWinList(p*) {
     } else{
         (IsSet(GuiBox) && WinExist(GuiBox) && GuiBox.Hide())
     }
-      
+
+
 }
 
 SectionCorrections(){
@@ -1255,6 +1265,7 @@ UpdateProcessList(p*){
     }
     ogLV_ProcessList.ModifyCol(1)
     ogLV_ProcessList.ModifyCol(2)
+    ogLV_ProcessList.ModifyCol(3)
     ogLV_ProcessList.Opt("+Redraw")
 
 }
