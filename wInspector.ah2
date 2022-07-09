@@ -3,7 +3,7 @@
 ; 2022-07-12 Added ChildGuis to handle different view options, included Function section to quickly run functions
 ; 2022-07-15 Added more functions and improved the function commands
 
-#Requires AutoHotKey v2.0-beta.3
+#Requires AutoHotKey v2.0-
 #SingleInstance Force
 #DllLoad "Gdiplus.dll"
 #Include lib\SetSystemCursor.ahk
@@ -598,6 +598,7 @@ moFunctions["ControlSetText"] := {var1:"NewText", var1Default: "", control:true,
 moFunctions["ControlSetEnabled"] := {var1:"Value", var1Default: "1", control:true, description:"Enables or disables the specified control."}
 moFunctions["SendMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", control:true, result:true, description:"Sends a message to a window or control and waits for acknowledgement."}
 moFunctions["PostMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", control:true, result:true, description:"Places a message in the message queue of a window or control."}
+moFunctions["WinClose"] := {description: "Closes the specified window."}
 moFunctions["WinGetControls"] := {description: "Returns the control names for all controls in the specified window.", result: true}
 moFunctions["WinGetCount"] := {description: "Returns the number of existing windows that match the specified criteria.", result: true}
 moFunctions["WinGetClass"] := {description: "Retrieves the specified window`'s class name.", result: true}
@@ -928,7 +929,7 @@ CheckButtonClick(wParam , lParam, msg, hwnd){
         MyGui.MouseY := MouseY
         SetSelectedWindow(MouseWinHwnd)
         SetSelectedControl(MouseControlHwnd)
-        
+        UpdateProcessList()
         UpdateWinList()
         UpdateCtrlList()
         ogButton_Selector.text := "+"
@@ -1044,7 +1045,7 @@ RClickProcessList(*){
     myMenu.Add("Copy Process", (*) => (A_Clipboard:= WinGetProcessName('ahk_pid ' Process_PID), Tooltip2("Copied [" A_Clipboard "]")))
     myMenu.Add("Copy ProcessPath", (*) => (A_Clipboard:= WinGetProcessPath('ahk_pid ' Process_PID), Tooltip2("Copied [" A_Clipboard "]")))
     myMenu.Add()
-    myMenu.Add("ProcessClose", (*) => (ProcessClose("ahk_pid " Process_PID),UpdateProcessList(), Tooltip2("ProcessClose('ahk_pid ' " Process_PID ")")))
+    myMenu.Add("ProcessClose", (*) => (ProcessClose(Process_PID),UpdateProcessList(), Tooltip2("ProcessClose(" Process_PID ")")))
     myMenu.Show()
 }
 
@@ -1071,6 +1072,7 @@ RClickWinList(*){
     } else{
         myMenu.Add("Visible", (*) => (WinShow("ahk_id " win_hwnd),UpdateWinList(), Tooltip2("WinHide('ahk_id '" win_hwnd ")")))
     }
+    ; myMenu.Add("GetPID", (*) => (Tooltip2(WinGetPID("ahk_id " win_hwnd))))
     
     myMenu.Show()
 }
@@ -1219,6 +1221,8 @@ UpdateProcessList(p*){
     
     ogLV_ProcessList.Opt("-Redraw")
     oProcessList := ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process")
+
+    winPID := MyGui.win_hwnd !=0 ? WinGetPID("ahk_id " MyGui.win_hwnd) : 0
     index:=0
     for oProcess in oProcessList{
         index++
@@ -1244,9 +1248,9 @@ UpdateProcessList(p*){
             
             ; NewRowNumber :=ogLV_ProcessList.Add("Icon" mapIL[oProcess.Name], win_title, win_process, format("{:#x}", win_id), win_visible, win_x, win_y, win_w, win_h)
             NewRowNumber :=ogLV_ProcessList.Add("Icon" mapIL[oProcess.Name], oProcess.Name, format("{:#x}", oProcess.Handle), oProcess.ExecutablePath)
-            ; if(win_id = MyGui.win_hwnd){
-            ;     ogLV_ProcessList.Modify(NewRowNumber, "Select Vis")
-            ; }
+            if(oProcess.Handle = winPID){
+                ogLV_ProcessList.Modify(NewRowNumber, "Select Vis")
+            }
         }
     }
     ogLV_ProcessList.ModifyCol(1)
@@ -1676,7 +1680,7 @@ GuiRectangle(x:= 0, y:= 0 ,w:= 100 ,h:=100 , Color:="Blue",Thickness := 2){
     if IsObject(GuiBox){
         GuiBox.Destroy()
     }
-    GuiBox := Gui(" +ToolWindow -Caption +AlwaysOnTop +E0x20", "Highlight")
+    GuiBox := Gui(" +ToolWindow -Caption +AlwaysOnTop +E0x20 -DPIScale", "Highlight")
     GuiBox.x := x
     GuiBox.y := y
     GuiBox.w := w
@@ -1741,7 +1745,9 @@ GuiRectangle(x:= 0, y:= 0 ,w:= 100 ,h:=100 , Color:="Blue",Thickness := 2){
         GuiBox.Move(x / ScreenScale, y / ScreenScale, w / ScreenScale, h / ScreenScale)
         goColor.Move(, , w / ScreenScale, h / ScreenScale)
         goTransp.Move(Thickness, Thickness, w / ScreenScale - Thickness * 2, h / ScreenScale - Thickness * 2)
-
+        ; GuiBox.Move(x, y, w, h)
+        ; goColor.Move(,,w,h)
+        ; goTransp.Move(Thickness, Thickness, w-Thickness*2, h-Thickness*2)
         goColor.Redraw()
         goTransp.Redraw()
         
@@ -2011,17 +2017,16 @@ ReadINI(INI_File:="", oResult := "") {	; return 2D-array from INI-file
         }
 
         if !WinExist(ogEdtWindow.text){
-            MsgBox("No window was found for [" ogEdtWindow.text "]",,"Iconx")
+            MsgBox("No window was found for [" ogEdtWindow.text "]",,"Iconx 262144") ; AlwaysOnTop := 262144
             return
         }
+
+        ; Display tooltip if more than one window found
         if (SelFunction != "WinGetCount" && WinGetCount(ogEdtWindow.text)>1){
-            Tooltip2(WinGetCount(ogEdtWindow.text) " windows found")
+            Tooltip2("WARNING: " WinGetCount(ogEdtWindow.text) " windows found")
         }
 
-        ; Display tooltip if more than one
-
         aPar.Push(ogEdtWindow.text)
-        
         
         Result := %SelFunction%(aPar*)
         if (Type(Result)="Array"){
