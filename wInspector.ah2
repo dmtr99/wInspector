@@ -917,11 +917,10 @@ CheckButtonClick(wParam , lParam, msg, hwnd){
                 SetSelectedMouse(MouseX, MouseY)
                 SetSelectedMouseGrid(MouseX, MouseY)
             }
-            
+
             MouseControlHwnd_Prev := MouseControlHwnd
             MouseX_Prev := MouseX
             MouseY_Prev := MouseY
-
         }
         MyGui.win_hwnd := MouseWinHwnd
         MyGui.ctrl_hwnd := MouseControlHwnd
@@ -1033,8 +1032,8 @@ SetSelectedMouseGrid(MouseX, MouseY){
     if (oGuiMouse.Visible){
         oGuiMouse.Show("AutoSize")
     }
-    Gui_Size(myGui)
-    WinRedraw(myGui)
+
+    WinRedraw(oGuiMouse)
 }
 
 RClickProcessList(*){
