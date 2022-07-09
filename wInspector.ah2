@@ -1126,7 +1126,15 @@ DClickWinList(p*) {
     MyGui.win_hwnd := ogLV_WinList.GetText(ogLV_WinList.GetNext(, "F"), 3) + 0
     win_hwnd := MyGui.win_hwnd+0
 
-    winPID := MyGui.win_hwnd != 0 ? WinGetPID("ahk_id " MyGui.win_hwnd) : 0
+    if !WinExist("ahk_id " win_hwnd){
+        (IsSet(GuiBox) && WinExist(GuiBox) && GuiBox.Hide())
+        UpdateWinList()
+        UpdateProcessList()
+        UpdateCtrlList()
+        return
+    }
+
+    winPID := MyGui.win_hwnd !=0 and WinExist("ahk_id " MyGui.win_hwnd) ? WinGetPID("ahk_id " MyGui.win_hwnd) : 0
     Loop ogLV_ProcessList.GetCount()
     {
         rowPID := ogLV_ProcessList.GetText(A_Index, 2)
@@ -1134,10 +1142,6 @@ DClickWinList(p*) {
             ogLV_ProcessList.Modify(A_Index, "Select Vis")
     }
 
-    if !WinExist(win_hwnd){
-        (IsSet(GuiBox) && WinExist(GuiBox) && GuiBox.Hide())
-        return
-    }
     SetSelectedWindow(win_hwnd)
     UpdateCtrlList(p)
     win_style := WinGetStyle(win_hwnd)
@@ -1232,7 +1236,7 @@ UpdateProcessList(p*){
     ogLV_ProcessList.Opt("-Redraw")
     oProcessList := ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process")
 
-    winPID := MyGui.win_hwnd !=0 ? WinGetPID("ahk_id " MyGui.win_hwnd) : 0
+    winPID := MyGui.win_hwnd !=0 and WinExist("ahk_id " MyGui.win_hwnd) ? WinGetPID("ahk_id " MyGui.win_hwnd) : 0
     index:=0
     for oProcess in oProcessList{
         index++
