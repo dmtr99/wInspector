@@ -2467,9 +2467,9 @@ GroupBoxAutosize(ogGB){
 }
 
 Gui_About() {
-
-    ogAbout := Gui(, "About wInspector")
-    ogAbout.Opt("-MaximizeBox -MinimizeBox AlwaysOnTop")
+    MyGui.Opt("+Disabled")	; Disable main window.
+    ogAbout := Gui(, "About wInspector +owner" MyGui.Hwnd)
+    ogAbout.Opt("-MaximizeBox -MinimizeBox AlwaysOnTop +OwnDialogs" )
     ogAbout.Add("Picture", "x11 w32 h33 +0x40 +E0x4 Icon145", "imageres.dll")
     ogAbout.Add("Text", "x53 y10 w345 h16 +0x7 +0x4 +0x8 +0x5 +Wrap +0x80 +0x9 +0x6 +E0x4", "wInspector")
     ogAbout.Add("Text", "x15 y45 w426 h2 +0x12 +0x10 +0x11 +E0x4 +E0x20000", "") ; Line
@@ -2477,7 +2477,16 @@ Gui_About() {
     ogAbout.Add("Text", "x53 h16 +0x80 +E0x4", "© All rights reserved.")
     ogAbout.Add("Text", "x53 w360 h65 +0x80 +E0x4", "wInspector and its user interface are protected by trademark and other pending or existing intellectual property rights in the United States and other countries/regions.")
     ButtonOK := ogAbout.Add("Button", "x375 w75 +0x3 +0x9 +Default +0x7 +E0x4", "OK")
-    ButtonOK.OnEvent("Click", (*)=>(ogAbout.Destroy()))
+    ogAbout.OnEvent("Close", About_Close)
+	ogAbout.OnEvent("Escape", About_Close)
+    ButtonOK.OnEvent("Click", About_Close)
     ogAbout.Show()
+    MyGui.Opt("+OwnDialogs")
     Return
+
+    About_Close(*)
+    {
+        MyGui.Opt("-Disabled")	; Re-enable the main window (must be done prior to the next step).
+        ogAbout.Destroy()	; Destroy the about box.
+    }
 }
