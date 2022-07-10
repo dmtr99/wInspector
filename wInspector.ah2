@@ -44,7 +44,7 @@ oSettings_Default.MainGui := {
 }
 
 global IconLib := "Images.icl"
-
+global GuiBox
 Global oImageControls := {
     ActiveX: -33,
     Button: -9,
@@ -619,7 +619,7 @@ For Key, Value in moFunctions{
 DDLFunction := oGuiFunction.Add("ComboBox", "x60 yp+15 Choose", aFunctionList)
 DDLFunction.AutoComplete := true
 DDLFunction.text := oSet.Function
-DDLFunction.OnEvent("Change", UpdateFunctionControls)
+DDLFunction.OnEvent("Change", (*)=> (UpdateFunctionControls(), Gui_Autosize(), Gui_Size(MyGui)))
 
 BtnRun := oGuiFunction.AddPicButton("x+8 yp-1 w23 h23", "mmcndmgr.dll","icon33 w16 h16")
 BtnRun.StatusBar := "Run the selected function"
@@ -693,7 +693,7 @@ oGuiProcessList.HeigthMultiplier := 0.3
 
 ogEdit_Process_search := oGuiProcessList.AddEdit("xp+4 yp+15 w200 vProcess_seach")
 ogEdit_Process_search.SetCueText("Search")
-ogEdit_Process_search.statusbar := "Type to filter the Processdows on specific words"
+ogEdit_Process_search.statusbar := "Type to filter the Processes on specific words"
 ogEdit_Process_search.OnEvent("Change",UpdateProcessList)
 ; ogCB_FilterProcessVisible := oGuiProcessList.AddCheckbox("xp+210 yp+3 vfilter_Process_visible Checked", "Visible") 
 ; ogCB_FilterProcessVisible.OnEvent("Click",UpdateProcessList)
@@ -715,9 +715,7 @@ ogLV_ProcessList.LeftMargin := 5
 ogLV_ProcessList.BottomMargin := 8
 UpdateProcessList()
 
-
 ; WinList Section
-
 oGuiWindowList.posRef := oGuiProcessList
 oGuiWindowList.posRule := "Xx Yyh Ww"
 ogGBWinList := oGuiWindowList.addGroupBox("h311","WinList")
@@ -783,7 +781,6 @@ ogLV_CtrlList.BottomMargin := 28
 
 
 ; Menu definitions
-
 SettingsMenu := Menu()
 SettingsMenu.Add("Resize", (ItemName, ItemPos, ItemMenu) => (ItemMenu.ToggleCheck(ItemName), oSet.WinResize:= !oSet.WinResize, oSet.WinResize ? myGui.Opt("+Resize") :  myGui.Opt("-Resize")))
 oSet.WinResize=1 ? SettingsMenu.Check("Resize") : ""
@@ -813,17 +810,6 @@ WindowMenu.Add("Process", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemN
 (oSet.WindowPar = "Process") ? WindowMenu.Check("Process") : ""
 SettingsMenu.Add("Window", WindowMenu)
 
-; Define the menus
-ViewMenu := Menu()
-for oSection in myGui.aSections{
-    SectionTitle := oSection.Title
-    ViewMenu.Add(SectionTitle, ((oSection, SectionTitle, ItemName, ItemPos, ItemMenu) => (ItemMenu.ToggleCheck(ItemName), oSet.Sect%SectionTitle% := !oSet.Sect%SectionTitle%, oSection.Visible := oSet.Sect%SectionTitle%, SectionCorrections() GuiUpdate())).Bind(oSection, SectionTitle))
-    (oSet.Sect%SectionTitle% = true && ViewMenu.Check(SectionTitle))
-    if (SectionTitle="Function"){
-        ViewMenu.Add()
-    }
-}
-
 HelpMenu := Menu()
 HelpMenu.Add("Report Issue", (*)=>Run("https://github.com/dmtr99/wInspector/issues/new"))
 HelpMenu.Add("Open Github", (*)=>Run("https://github.com/dmtr99/wInspector"))
@@ -832,7 +818,6 @@ HelpMenu.Add("About wInspector",(*)=>(Gui_About()))
 
 Menus := MenuBar()
 Menus.Add("&Settings", SettingsMenu)
-Menus.Add("&View", ViewMenu)
 Menus.Add("&Help", HelpMenu)
 Menus.Add( "&Reload", (*) => (Gui_Close(myGui), Reload()))
 MyGui.MenuBar := Menus
@@ -848,17 +833,18 @@ oToolbar.Add()
 oTbProcessList := oToolbar.Add("", "ProcessList", (*) => (ToggleSection("ProcessList")), "shell32.dll", 13)
 oTbWindowList := oToolbar.Add("", "WindowList", (*) => (ToggleSection("WindowList")), "shell32.dll", 3)
 oTbControlList := oToolbar.Add("", "ControlList", (*) => (ToggleSection("ControlList")), "shell32.dll", 96)
-; oButton.Styles := 0x2
-; oToolbar.Add("", "Button2", Callback1, "shell32.dll", 20)
-; oToolbar.Add()
-; oToolbar.Add("", "Button3", Callback2, "shell32.dll", 24)
-; oToolbar.Add("", "Button4", Callback2, "shell32.dll", 22)
 
-AddToolbar(oToolbar, MyGui, , "x30 y1 h24")
+for Section in ["Window","Control","Mouse","Function","ProcessList","WindowList","ControlList"]{
+    oTb%Section%.Styles := "Check"
+    SectionTitle := oGui%Section%.Title
+    (oSet.Sect%SectionTitle% = 1 && oTb%Section%.States := "Checked")
+}
+
+
+AddToolbar(oToolbar, MyGui, "0x2", "x30 y1 h24")
 
 ; Create a Status Bar to give info about the number of files and their total size:
 SB := MyGui.Add("StatusBar")
-; SB.SetParts(300, 300)  ; Create three parts in the bar (the third part fills all the remaining width).
 MyGui.OnEvent("Size",Gui_Size)
 MyGui.OnEvent("Close",Gui_Close)
 
@@ -870,12 +856,12 @@ for index, oSection in myGui.aSections {
 }
 
 UpdateWinList()
-
 MyGui.Show("x" oSet.WinX " y" oSet.WinY " w" oSet.WinW " h" oSet.WinH)
-SectionCorrections()
 
+GroupBoxAutosize(ogGB_Mouse)
 UpdateFunctionControls()
-
+Gui_Size(MyGui)
+SectionCorrections()
 
 ; Reset Cursor in case previous script gave error
 SetSystemCursor("Default")
@@ -889,7 +875,6 @@ OnMessage(0x200, WM_MOUSEMOVE)
 }
 
 ToggleSection(SectionTitle){
-    ViewMenu.ToggleCheck(SectionTitle)
     oSet.Sect%SectionTitle% := !oSet.Sect%SectionTitle%
     oGui%SectionTitle%.Visible := oSet.Sect%SectionTitle%
     SectionCorrections() 
@@ -1052,6 +1037,10 @@ RClickProcessList(*){
     myMenu.Add("Copy ProcessPath", (*) => (A_Clipboard:= WinGetProcessPath('ahk_pid ' Process_PID), Tooltip2("Copied [" A_Clipboard "]")))
     myMenu.Add()
     myMenu.Add("ProcessClose", (*) => (ProcessClose(Process_PID),UpdateProcessList(), Tooltip2("ProcessClose(" Process_PID ")")))
+    ; Disable the closing of known critical processes.
+    if (process~="i)NTOSKrnl.exe|SMSS.exe|CSRSS.exe|WinLogon.exe|WinInit.exe|LogonUI.exe|lsass.exe|Services.exe|svchost.exe|DWM.exe"){
+        myMenu.Disable("ProcessClose")
+    }
     myMenu.Show()
 }
 
@@ -1125,7 +1114,7 @@ DClickCtrlList(LV, RowNumber){
         GuiBox.Show()
     }
     SetSelectedControl(Hwnd_selected)
-    WinMoveTop(win_hwnd)
+    WinMoveTop("ahk_id " win_hwnd)
 }
 
 DClickWinList(p*) {
@@ -1215,11 +1204,9 @@ SectionCorrections(){
     GuiUpdate()
     Gui_Size(myGui)
     
-
     WinRedraw(myGui)
-    Gui_Size(myGui)
     Gui_Autosize()
-    
+    Gui_Size(myGui)
 }
 
 Gui_Autosize(){
@@ -1229,7 +1216,6 @@ Gui_Autosize(){
         if (ogSection.Visible) {
             WinGetPos(&XSection, &YSection, &WSection, &HSection, ogSection)
             WinGetClientPos(&XcSection, &YcSection, &WcSection, &HcSection, ogSection)
-
             maxHeight := Max(maxHeight, (YcSection + HcSection) - YmyGui + 30)
         }
     }
@@ -2433,8 +2419,8 @@ ReadINI(INI_File:="", oResult := "") {	; return 2D-array from INI-file
         GroupBoxAutosize(ogGBFunction)
         
         Gui_Size(myGui)
-        Gui_Autosize()
-        Gui_Size(myGui)
+        ; Gui_Autosize()
+        ; Gui_Size(myGui)
     }
 
 }
