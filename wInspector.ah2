@@ -465,9 +465,7 @@ Gui_wInspector(*){
     MyGui.ctrl_hwnd := 0
     ogButton_Selector := MyGui.addButton("xm y0 w60 vbtnSelector BackgroundTrans h24 w24 +0x4000", "+")
     ogButton_Selector.SetFont("s20", "Times New Roman")
-    ogButton_Selector.statusbar := "Rclick and drag to select a specific control or window"
-
-
+    ogButton_Selector.statusbar := "Click and drag to select a specific control or window"
 
     ChildOpt := "+Parent" myGui.hwnd " -Resize +AlwaysOnTop -Border -Caption -ToolWindow"
     ; ChildOpt := "+Parent" myGui.hwnd " +Resize +AlwaysOnTop -Border -Caption +ToolWindow" ; Borders visible for testing
@@ -889,7 +887,8 @@ ToggleSection(SectionTitle){
     oSet.Sect%SectionTitle% := !oSet.Sect%SectionTitle%
     oGui%SectionTitle%.Visible := oSet.Sect%SectionTitle%
     SectionCorrections() 
-    GuiUpdate()
+    ; GuiUpdate()
+    Gui_Size(MyGui)
     return
 }
 
