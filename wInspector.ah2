@@ -870,8 +870,8 @@ Gui_wInspector(*){
 
     GroupBoxAutosize(ogGB_Mouse)
     UpdateFunctionControls()
-    Gui_Size(MyGui)
     SectionCorrections()
+    Gui_Size(MyGui)
 
     ; Reset Cursor in case previous script gave error
     SetSystemCursor("Default")
@@ -1056,12 +1056,16 @@ SetSelectedMouseGrid(MouseX, MouseY){
 }
 
 RClickProcessList(*){
+    if ogLV_ProcessList.GetNext(, "F") = 0 {
+        return
+    }
     Process := ogLV_ProcessList.GetText(ogLV_ProcessList.GetNext(, "F"), 1)
     Process_PID := ogLV_ProcessList.GetText(ogLV_ProcessList.GetNext(, "F"), 2)
+    Process_Path := ogLV_ProcessList.GetText(ogLV_ProcessList.GetNext(, "F"), 3)
 
     myMenu := Menu()
-    myMenu.Add("Copy Process", (*) => (A_Clipboard:= WinGetProcessName('ahk_pid ' Process_PID), Tooltip2("Copied [" A_Clipboard "]")))
-    myMenu.Add("Copy ProcessPath", (*) => (A_Clipboard:= WinGetProcessPath('ahk_pid ' Process_PID), Tooltip2("Copied [" A_Clipboard "]")))
+    myMenu.Add("Copy Process", (*) => (A_Clipboard:= Process, Tooltip2("Copied [" A_Clipboard "]")))
+    myMenu.Add("Copy ProcessPath", (*) => (A_Clipboard:= Process_Path, Tooltip2("Copied [" A_Clipboard "]")))
     myMenu.Add()
     myMenu.Add("ProcessClose", (*) => (ProcessClose(Process_PID),UpdateProcessList(), Tooltip2("ProcessClose(" Process_PID ")")))
     ; Disable the closing of known critical processes.
@@ -1072,6 +1076,9 @@ RClickProcessList(*){
 }
 
 RClickWinList(*){
+    if ogLV_WinList.GetNext(, "F") = 0 {
+        return
+    }
     win_hwnd := GetSelectedWindow()
     State_AlwaysOnTop := WinGetExStyle('ahk_id ' win_hwnd) & 0x8
 
@@ -1100,6 +1107,9 @@ RClickWinList(*){
 }
 
 RClickCtrlList(*){
+    if ogLV_CtrlList.GetNext(, "F")=0{
+        return
+    }
     MyGui.ctrl_hwnd := ogLV_CtrlList.GetText(ogLV_CtrlList.GetNext(, "F"), 2) + 0
     ctrl_ClassNN := ControlGetClassNN(MyGui.ctrl_hwnd + 0)
     Ctrl_Visible := ControlGetVisible(MyGui.ctrl_hwnd+0)
@@ -1130,6 +1140,9 @@ RClickCtrlList(*){
 }
 
 DClickCtrlList(LV, RowNumber){
+    if (RowNumber=0){
+        return
+    }
     win_hwnd := MyGui.win_hwnd
     MyGui.ctrl_hwnd := ogLV_CtrlList.GetText(RowNumber,2)+0 ; convert to number
     Hwnd_selected := MyGui.ctrl_hwnd+0
@@ -1144,7 +1157,10 @@ DClickCtrlList(LV, RowNumber){
     WinMoveTop("ahk_id " win_hwnd)
 }
 
-DClickWinList(p*) {
+DClickWinList(LV,RowNumber) {
+    if (RowNumber = 0) {
+        return
+    }
     MyGui.win_hwnd := ogLV_WinList.GetText(ogLV_WinList.GetNext(, "F"), 3) + 0
     win_hwnd := MyGui.win_hwnd+0
 
@@ -1165,7 +1181,7 @@ DClickWinList(p*) {
     }
 
     SetSelectedWindow(win_hwnd)
-    UpdateCtrlList(p)
+    UpdateCtrlList()
     win_style := WinGetStyle(win_hwnd)
     if (win_style & 0x10000000 ){
         if oSet.WinHighlight {
@@ -1230,10 +1246,7 @@ SectionCorrections(){
     GroupBoxAutosize(ogGBFunction)
     GuiUpdate()
     Gui_Size(myGui)
-    
     WinRedraw(myGui)
-    Gui_Autosize()
-    Gui_Size(myGui)
 }
 
 Gui_Autosize(){
@@ -1520,6 +1533,7 @@ GuiSection_Size(thisGui, MinMax:=1, Width:="", Height:= "") {
 
 ; Automatically change Sections positions
 Gui_Size(thisGui, MinMax:=1, Width:= 1, Height:= 1) {
+
     if MinMax = -1	; The window has been minimized. No action needed.
         return
     DllCall("LockWindowUpdate", "Uint", thisGui.Hwnd)
@@ -1538,10 +1552,11 @@ Gui_Size(thisGui, MinMax:=1, Width:= 1, Height:= 1) {
             ogSection.move(XSection - XcmyGui, YSection - YcmyGui,,HcmyGui*ogSection.HeigthMultiplier)
         }
     }
-    ;WinRedraw(thisGui)
+
     DllCall("LockWindowUpdate", "Uint", 0)
 
     GuiUpdate()
+    
 }
 
 GuiStyles_Create(hwnd, ObjectType) {
