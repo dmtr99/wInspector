@@ -19,6 +19,10 @@ SetWorkingDir A_ScriptDir  ; Ensures a consistent starting directory.
 ; Set the tray icon
 TraySetIcon("imageres.dll",145)
 
+A_TrayMenu.Add()  ; Creates a separator line.
+A_TrayMenu.Add("Inspect", Gui_wInspector)  ; Creates a new menu item.
+A_TrayMenu.Default := "Inspect"
+
 ; Settings initiation
 oSettings_Default := Object()
 oSettings_Default.MainGui := { 
@@ -40,7 +44,8 @@ oSettings_Default.MainGui := {
     ControlPar: "ClassNN",
     WindowPar: "Title",
     MouseGrid: 1,
-    Function: "ControlClick"
+    Function: "ControlClick",
+    IDHex: true
 }
 
 global IconLib := "Images.icl"
@@ -441,432 +446,438 @@ If !pToken := Gdip_Startup() {
 }
 OnExit((ExitReason, ExitCode) => Gdip_Shutdown(pToken))
 
-MyGui := Gui("+AlwaysOnTop +MinSize304x114", "wInspector")
-oSet.WinResize=1 ? myGui.Opt("+Resize") : myGui.Opt("-Resize")
-oSet.WinAlwaysOnTop=1 ? myGui.Opt("+AlwaysOnTop") : myGui.Opt("-AlwaysOnTop")
-MyGui.MarginX := 2
-MyGui.MarginY := 2
-MyGui.Width := 1200
-MyGui.win_hwnd := 0
-MyGui.ctrl_hwnd := 0
-ogButton_Selector := MyGui.addButton("xm y0 w60 vbtnSelector BackgroundTrans h24 w24 +0x4000", "+")
-ogButton_Selector.SetFont("s20", "Times New Roman")
-ogButton_Selector.statusbar := "Rclick and drag to select a specific control or window"
+Gui_wInspector()
+
+Gui_wInspector(*){
+    global
+    if (IsSet(MyGui) and WinExist("wInspector ahk_exe autohotkey.exe")){
+        return
+    }
+
+    MyGui := Gui("+AlwaysOnTop +MinSize304x114", "wInspector")
+    MyGui.OnEvent("Close",(*)=>(myGui.Destroy()))
+    oSet.WinResize=1 ? myGui.Opt("+Resize") : myGui.Opt("-Resize")
+    oSet.WinAlwaysOnTop=1 ? myGui.Opt("+AlwaysOnTop") : myGui.Opt("-AlwaysOnTop")
+    MyGui.MarginX := 2
+    MyGui.MarginY := 2
+    MyGui.Width := 1200
+    MyGui.win_hwnd := 0
+    MyGui.ctrl_hwnd := 0
+    ogButton_Selector := MyGui.addButton("xm y0 w60 vbtnSelector BackgroundTrans h24 w24 +0x4000", "+")
+    ogButton_Selector.SetFont("s20", "Times New Roman")
+    ogButton_Selector.statusbar := "Rclick and drag to select a specific control or window"
 
 
 
-ChildOpt := "+Parent" myGui.hwnd " -Resize +AlwaysOnTop -Border -Caption -ToolWindow"
-; ChildOpt := "+Parent" myGui.hwnd " +Resize +AlwaysOnTop -Border -Caption +ToolWindow" ; Borders visible for testing
+    ChildOpt := "+Parent" myGui.hwnd " -Resize +AlwaysOnTop -Border -Caption -ToolWindow"
+    ; ChildOpt := "+Parent" myGui.hwnd " +Resize +AlwaysOnTop -Border -Caption +ToolWindow" ; Borders visible for testing
 
-; Child guis or sections
-oGuiWindow := Gui(, "Window")
-oGuiControl := Gui(, "Control")
-oGuiMouse := Gui(, "Mouse")
-oGuiFunction := Gui(, "Function")
-oGuiWindowList := Gui(, "WindowList")
-oGuiControlList := Gui(, "ControlList")
-oGuiProcessList := Gui(, "ProcessList")
+    ; Child guis or sections
+    oGuiWindow := Gui(, "Window")
+    oGuiControl := Gui(, "Control")
+    oGuiMouse := Gui(, "Mouse")
+    oGuiFunction := Gui(, "Function")
+    oGuiWindowList := Gui(, "WindowList")
+    oGuiControlList := Gui(, "ControlList")
+    oGuiProcessList := Gui(, "ProcessList")
 
-myGui.aSections := [oGuiWindow, oGuiControl, oGuiMouse, oGuiFunction, oGuiProcessList, oGuiWindowList, oGuiControlList]
+    myGui.aSections := [oGuiWindow, oGuiControl, oGuiMouse, oGuiFunction, oGuiProcessList, oGuiWindowList, oGuiControlList]
 
-for index, oSection in myGui.aSections {
-    ; Adding a visible property to the guis
-    oSection.DefineProp("Visible", { Get: ((oSection, *) => ((WinGetStyle(oSection) & 0x10000000) != 0)).bind(oSection), set: ((oSection, this, value) => (value ? oSection.Show() : oSection.Hide())).bind(oSection) })
-    ; Apply section options
-    oSection.Opt(ChildOpt)
-    oSection.OnEvent("Size", GuiSection_Size)
-    oSection.MarginX := 2
-    oSection.MarginY := 2
+    for index, oSection in myGui.aSections {
+        ; Adding a visible property to the guis
+        oSection.DefineProp("Visible", { Get: ((oSection, *) => ((WinGetStyle(oSection) & 0x10000000) != 0)).bind(oSection), set: ((oSection, this, value) => (value ? oSection.Show() : oSection.Hide())).bind(oSection) })
+        ; Apply section options
+        oSection.Opt(ChildOpt)
+        oSection.OnEvent("Size", GuiSection_Size)
+        oSection.MarginX := 2
+        oSection.MarginY := 2
+    }
+
+    ; Window Section
+
+    ogGB_Window := oGuiWindow.AddGroupBox("w300 h145 Section", "Window")
+    ogGB_Window.LeftMargin := 2
+    ogGB_Window.BottomMargin := 2
+    oGuiWindow.AddText("xp+3 yp+18", "Title")
+    ogEdit_wTitle := oGuiWindow.AddEdit("x42 yp-3 w255", "")
+    ogEdit_wTitle.StatusBar := "WinGetTitle(WinTitle, WinText, ExcludeTitle, ExcludeText)"
+    oGuiWindow.AddText("x6 y+5", "Class")
+    ogEdit_wClass := oGuiWindow.AddEdit("x42 yp-3 w170 vwClass +ReadOnly")
+    ogEdit_wClass.StatusBar := "WinGetClass(WinTitle, WinText, ExcludeTitle, ExcludeText)"
+    oGuiWindow.AddText("x+4 yp+3", "ID")
+    ogEdit_wID := oGuiWindow.AddEdit("x237 yp-3 Right vwID w60 +ReadOnly")
+    ogEdit_wID.StatusBar := "WinGetID(WinTitle, WinText, ExcludeTitle, ExcludeText)"
+    oGuiWindow.AddText("x4 y+5", "Process")
+    ogEdit_wProcess := oGuiWindow.AddEdit("x42 yp-3 w170 vwProcess +ReadOnly")
+    oGuiWindow.AddText("x+3 yp+3", "PID")
+    ogEdit_wPID := oGuiWindow.AddEdit("x237 yp-3 w60 Right vwPID +ReadOnly")
+
+    oGuiWindow.AddText("x30 y+5", "X")
+    ogEdit_wXPos := oGuiWindow.AddEdit("x42 yp-3 Right Number vwXPos w40")
+    oGuiWindow.AddText("x+5 yp+3", "Y")
+    ogEdit_wYPos := oGuiWindow.AddEdit("x+2 yp-3 Right Number vwYPos w40")
+    ogEdit_wYPos.StatusBar := "Y position of window"
+    oGuiWindow.AddText("x+5 yp+3", "W")
+    ogEdit_wWidth := oGuiWindow.AddEdit("x+2 yp-3 Right Number vwWPos w40")
+    oGuiWindow.AddText("x+5 yp+3", "H")
+    ogEdit_wHeight := oGuiWindow.AddEdit("x+2 yp-3 Right Number vwHPos w40")
+    ogButton_Move := oGuiWindow.AddButton("x258 yp-1 w40", "Move")
+    ogButton_Move.OnEvent("Click", (*) => (WinExist("ahk_id " ogEdit_wID.value) ? WinMove(ogEdit_wXPos.value, ogEdit_wYPos.value, ogEdit_wWidth.value, ogEdit_wHeight.value, "ahk_id " ogEdit_wID.value) : ""))
+    oGuiWindow.AddText("x8 y+4", "Transparent:")
+    ogSlider_Transparent := oGuiWindow.AddSlider("xp+60 vTransparent  Range0-255 ToolTip", "255")
+    ogSlider_Transparent.OnEvent("Change", (*) => (WinExist("ahk_id " ogEdit_wID.value) ? WinSetTransparent(ogSlider_Transparent.value, "ahk_id " ogEdit_wID.value) : ""))
+
+    ; Control Section
+
+    oGuiControl.posRef := oGuiWindow
+    oGuiControl.posRule := "Xx Yyh Ww"
+    ogGB_Control := oGuiControl.AddGroupBox("xm w300 h88", "Control")
+    ogGB_Control.LeftMargin := 2
+    ogGB_Control.BottomMargin := 2
+    oGuiControl.AddText("xp+3 yp+18", "Text")
+    ogEdit_cText := oGuiControl.AddEdit("x42 yp-3 w255", "")
+    ogEdit_cText.StatusBar := "ControlGetText(Control, WinTitle, WinText, ExcludeTitle, ExcludeText)"
+    oGuiControl.AddText("x6 y+5", "Class")
+    ogEdit_cClass := oGuiControl.AddEdit("x42 yp-3 w178 vccClass +ReadOnly")
+    ogEdit_cClass.StatusBar := "ControlGetClassNN(Control , WinTitle, WinText, ExcludeTitle, ExcludeText)"
+    oGuiControl.AddText("x+4 yp+3", "ID")
+    ogEdit_cID := oGuiControl.AddEdit("x237 yp-3 w60 Right vcID +ReadOnly")
+    ogEdit_cID.StatusBar := "ControlGetHwnd(Control, WinTitle, WinText, ExcludeTitle, ExcludeText)"
+
+    oGuiControl.AddText("x30 y+5", "X")
+    ogEdit_cXPos := oGuiControl.AddEdit("x42 yp-3 Right Number vcXPos w40")
+    oGuiControl.AddText("x+5 yp+3", "Y")
+    ogEdit_cYPos := oGuiControl.AddEdit("x+2 yp-3 Right Number vcYPos w40")
+    oGuiControl.AddText("x+5 yp+3", "W")
+    ogEdit_cWidth := oGuiControl.AddEdit("x+2 yp-3 Right Number vcWPos w40")
+    oGuiControl.AddText("x+5 yp+3", "H")
+    ogEdit_cHeight := oGuiControl.AddEdit("x+2 yp-3 Right Number vcHPos w40")
+    ogButton_cMove := oGuiControl.AddButton("x258 yp-1 w40", "Move")
+    ogButton_cMove.OnEvent("Click", (*) => (ControlMove(ogEdit_cXPos.value, ogEdit_cYPos.value, ogEdit_cWidth.value, ogEdit_cHeight.value, ogEdit_cID.value + 0)))
+
+    ; Mouse Section
+
+    oGuiMouse.posRef := oGuiControl
+    oGuiMouse.posRule := "Xx Yyh Ww"
+    ogGB_Mouse := oGuiMouse.AddGroupBox("xm w300", "Mouse")
+    ogGB_Mouse.LeftMargin := 2
+    ogGB_Mouse.BottomMargin := 2
+    oGuiMouse.AddText("xp+3 yp+18", "Pos")
+    ogEdit_mPos := oGuiMouse.AddEdit("x42 yp-3 w70", "")
+    ogDDL_MouseCoordMode := oGuiMouse.AddDropDownList("x+3 yp w70 vDDL_MouseCoordMode Choose1", ["Screen", "Window", "Client"])
+    ogBut_MouseMove := oGuiMouse.AddButton("x+3 yp-1 w50", "Move")
+    ogBut_MouseMove.OnEvent("Click", (*) => (CoordMode("Mouse", ogDDL_MouseCoordMode.Text), MouseMove(oGuiMouse.MouseX+0,oGuiMouse.MouseY+0)))
+    ogBut_MouseClick := oGuiMouse.AddButton("x+3 yp w50", "Click")
+    ogBut_MouseClick.OnEvent("Click", (*) => (CoordMode("Mouse", ogDDL_MouseCoordMode.Text), Mouseclick(,oGuiMouse.MouseX+0,oGuiMouse.MouseY+0)))
+    oGuiMouse.AddText("x6 y+4", "RGB")
+    ogEdit_mColor := oGuiMouse.AddEdit("x42 yp-3 w70", "")
+    ogText_mColor := oGuiMouse.AddText("x+3 yp w21 h21 BackgroundWhite +Border")
+
+    ogDDL_GridSize := oGuiMouse.AddDropDownList("x+3 yp w60 vDDL_GridSize" , ["1x1", "3x3","5x5", "9x9", "15x15"])
+
+    ogDDL_GridSize.text := oSet.MouseGrid "x" oSet.MouseGrid
+    ogDDL_GridSize.OnEvent("Change", GridSize_Change)
+    oGuiMouse.Grid := oSet.MouseGrid
+
+    ogPic_Grid := oGuiMouse.AddPicture("x42 y+2 w" oGuiMouse.Grid*16 " h" oGuiMouse.Grid*16 " +0x40 +0xE +Border Section")
+    ogText_Line1 := oGuiMouse.AddText("xs+" (oGuiMouse.Grid-1) * 16/2 " ys+1 w1 h" oGuiMouse.Grid * 16-2 " backgroundWhite")
+    ogText_Line2 := oGuiMouse.AddText("xs+" (oGuiMouse.Grid+1) * 16/2 " ys+1 w1 h" oGuiMouse.Grid * 16-2 " backgroundWhite")
+    ogText_Line3 := oGuiMouse.AddText("xs+1 ys+" (oGuiMouse.Grid - 1) * 16 / 2 " w" oGuiMouse.Grid * 16-2 " h1 backgroundWhite")
+    ogText_Line4 := oGuiMouse.AddText("xs+1 ys+" (oGuiMouse.Grid + 1) * 16 / 2 " w" oGuiMouse.Grid * 16-2 " h1 backgroundWhite")
+    GridSize_Change()
+
+
+    ; Function Section
+
+    oGuiFunction.posRef := oGuiMouse
+    oGuiFunction.posRule := "Xx Yyh Ww"
+    ogGBFunction := oGuiFunction.addGroupBox(,"Function")
+    ogGBFunction.LeftMargin := 2
+    ogGBFunction.BottomMargin := 2
+
+    moFunctions := Map()
+    moFunctions["ControlAddItem"] := {var1:"String", var1Default: "", control:true, description:"Adds the specified string as a new entry at the bottom of a ListBox or ComboBox."}
+    moFunctions["ControlChooseIndex"] := {var1:"N", var1Default: "0", control:true, description:"Sets the selection in a ListBox, ComboBox or Tab control to be the specified entry or tab number."}
+    moFunctions["ControlChooseString"] := {var1:"String", var1Default: "0", control:true, description:"Sets the selection in a ListBox or ComboBox to be the first entry whose leading part matches the specified string."}
+    moFunctions["ControlClick"] := {control:true, description:"Sends a mouse button or mouse wheel event to a control."}
+    moFunctions["ControlFocus"] := {control:true, description:"Sets input focus to a given control on a window."}
+    moFunctions["ControlGetChecked"] := {control:true, description: "Returns a non-zero value if the checkbox or radio button is checked.", result: true}
+    moFunctions["ControlGetChoice"] := {control:true, description: "Returns the name of the currently selected entry in a ListBox or ComboBox.", result: true}
+    moFunctions["ControlGetText"] := {control:true, description: "Retrieves text from a control.", result: true}
+    moFunctions["ControlGetItems"] := {control:true, description: "Returns an array of items/rows from a ListBox, ComboBox, or DropDownList.", result: true}
+    moFunctions["ControlGetIndex"] := {control:true, description: "Returns the index of the currently selected entry or tab in a ListBox, ComboBox or Tab control.", result: true}
+    moFunctions["ControlSend"] := {var1:"Keys", var1Default: "", control:true, description:"Sends simulated keystrokes to a window or control."}
+    moFunctions["ControlSendText"] := {var1:"Keys", var1Default: "", control:true, description: "Sends text to a window or control."}
+    moFunctions["ControlSetText"] := {var1:"NewText", var1Default: "", control:true, description:"Changes the text of a control."}
+    moFunctions["ControlSetEnabled"] := {var1:"Value", var1Default: "1", control:true, description:"Enables or disables the specified control."}
+    moFunctions["ListViewGetContent"] := {var1: "Options", var1Default: "", control:true, description:"Returns a list of items/rows from a ListView.", result: true}
+    moFunctions["SendMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", control:true, result:true, description:"Sends a message to a window or control and waits for acknowledgement."}
+    moFunctions["PostMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", control:true, result:true, description:"Places a message in the message queue of a window or control."}
+    moFunctions["WinClose"] := {description: "Closes the specified window."}
+    moFunctions["WinGetControls"] := {description: "Returns the control names for all controls in the specified window.", result: true}
+    moFunctions["WinGetCount"] := {description: "Returns the number of existing windows that match the specified criteria.", result: true}
+    moFunctions["WinGetClass"] := {description: "Retrieves the specified window`'s class name.", result: true}
+    moFunctions["WinGetPID"] := {description: "Returns the Process ID number of the specified window.", result: true}
+    moFunctions["WinGetTitle"] := {description: "Retrieves the title of the specified window.", result: true}
+    moFunctions["WinGetText"] := {description: "Retrieves the text from the specified window.", result: true}
+    moFunctions["WinGetStyle"] := {description: "Returns the style of the specified window.", result: true}
+    moFunctions["WinGetExStyle"] := {description: "Returns the extended style of the specified window.", result: true}
+    moFunctions["WinGetMinMax"] := {description: "Returns the state whether the specified window is maximized or minimized.", result: true}
+    moFunctions["WinGetList"] := {description: "Returns the unique ID numbers of all existing windows that match the specified criteria.", result: true}
+    moFunctions["WinGetProcessName"] := {description: "Returns the name of the process that owns the specified window.", result: true}
+    moFunctions["WinGetProcessPath"] := {description: "Returns the full path and name of the process that owns the specified window.", result: true}
+
+    aFunctionList := Array()
+    For Key, Value in moFunctions{
+        aFunctionList.Push(Key)
+    }
+    DDLFunction := oGuiFunction.AddComboBox("x60 yp+15 w130 Choose", aFunctionList)
+    DDLFunction.AutoComplete := true
+    DDLFunction.text := oSet.Function
+    DDLFunction.OnEvent("Change", (*)=> (UpdateFunctionControls(), Gui_Autosize(), Gui_Size(MyGui)))
+
+    BtnRun := oGuiFunction.AddPicButton("x+8 yp-1 w23 h23", "mmcndmgr.dll","icon33 w16 h16")
+    BtnRun.StatusBar := "Run the selected function"
+    BtnRun.OnEvent("Click",ClickRun)
+
+    BtnCopy := oGuiFunction.AddPicButton("x+6 yp w23 h23", "shell32.dll","icon135 w16 h16")
+    BtnCopy.StatusBar := "Copy the Code"
+    BtnCopy.OnEvent("Click",ClickCopy)
+    BtnInfo := oGuiFunction.AddPicButton("x+6 yp w23 h23", "shell32.dll","icon278 w14 h14")
+    BtnInfo.StatusBar := "Open the documentation of the function."
+    BtnInfo.OnEvent("Click",(*)=>(run("https://lexikos.github.io/v2/docs/search.htm?q=" DDLFunction.text "&m=2")))
+
+    ogTxtVar1 := oGuiFunction.AddText("xm+2 y+4 w50", "Msg")
+    ogEdtVar1 := oGuiFunction.AddEdit("x60 yp-3 w237 right", "")
+    ogTxtVar2 := oGuiFunction.AddText("xm+2 y+6 w50 Hidden", "wParam")
+    ogTxtVar2.posRef := ogTxtVar1
+    ogTxtVar2.yMargin := 10
+    ogEdtVar2 := oGuiFunction.AddEdit("x60 yp-4 w86 right Hidden", 0)
+    ogEdtVar2.posRef := ogEdtVar1
+    ogEdtVar2.yMargin := 2
+
+    ogTxtVar3 := oGuiFunction.AddText("x+5 yp+3 w50 Hidden", "lParam")
+    ogEdtVar3 := oGuiFunction.AddEdit("xp+60 yp-3 w86 right Hidden", 0)
+    ogTxtControl := oGuiFunction.AddText("xm+2 y+6 ", "Control")
+    ogTxtControl.posRef := ogTxtVar2
+    ogTxtControl.yMargin := 10
+
+    ogEdtControl := oGuiFunction.AddEdit("yp-3 x60 w237 right", )
+    ogEdtControl.posRef := ogEdtVar2
+    ogEdtControl.yMargin := 2
+
+    ogTxtWindow := oGuiFunction.AddText("xm+2 y+6 ", "Window")
+    ogTxtWindow.posRef := ogTxtControl
+    ogTxtWindow.yMargin := 10
+
+    ogEdtWindow := oGuiFunction.AddEdit("yp-3 x60 w237 right", "")
+    ogEdtWindow.posRef := ogEdtControl
+    ogEdtWindow.yMargin := 2
+
+    ogGbResult := oGuiFunction.Add("GroupBox", "xm+3 w294 h40 Section Hidden", "Result")
+    ogGbResult.posRef := ogEdtWindow
+    ogGbResult.yMargin := 3
+    ogEdtResult := oGuiFunction.AddEdit("xs+3 ys+15 w288 r1 Hidden +Multi -VScroll", "")
+    ogEdtResult.posRef := ogGbResult
+    ogEdtResult.yOffset := 15
+
+    ogGbMsgList := oGuiFunction.Add("GroupBox", "xm+3 w294 h245 Section Hidden", "MsgList")
+    ogGbMsgList.posRef := ogGbResult
+    ogGbMsgList.yMargin := 2
+    ogEdtSearch := oGuiFunction.AddEdit("xs+10 ys+15 Hidden", "")
+    ogEdtSearch.posRef := ogGbMsgList
+    ogEdtSearch.yOffset := 15
+    ogEdtSearch.SetCueText("Search")
+    ogEdtSearch.OnEvent("Change",UpdateLVMessages)
+    ogLvMessages := oGuiFunction.Add("ListView", "w280 r10 Hidden", ["Message","Value"])
+    ogLvMessages.posRef := ogEdtSearch
+    ogLvMessages.yMargin := 4
+    UpdateLVMessages()
+    ogLvMessages.OnEvent("Click", DClickMsgList)
+
+
+    ; ProcessList Section
+
+    oGuiProcessList.posRef := oGuiWindow
+    oGuiProcessList.posRule := "Xxw Yy" 
+    ogGBProcessList := oGuiProcessList.addGroupBox("h311","ProcessList")
+    ogGBProcessList.LeftMargin := 2
+    ogGBProcessList.BottomMargin := 2
+    oGuiProcessList.LeftDistance := 0
+    oGuiProcessList.HeigthMultiplier := 0.3
+
+    ogEdit_Process_search := oGuiProcessList.AddEdit("xp+4 yp+15 w200 vProcess_seach")
+    ogEdit_Process_search.SetCueText("Search")
+    ogEdit_Process_search.statusbar := "Type to filter the Processes on specific words"
+    ogEdit_Process_search.OnEvent("Change",UpdateProcessList)
+
+    ogLV_ProcessList := oGuiProcessList.AddListView("xm+4 y+2 r14 w" (myGui.Width - 8 * 3) / 2 " vProcessList section AltSubmit", ["Process", "PID","Path"])
+    ogLV_ProcessList.Opt("Count400 -Multi")
+    ogLV_ProcessList.ModifyCol()
+    ogLV_ProcessList.ModifyCol(1, 300)
+    ogLV_ProcessList.ModifyCol(2, 100)
+    ogLV_ProcessList.ModifyCol(2, "Integer")
+
+    ; ogLV_ProcessList.OnEvent("Click", DClickProcessList)
+    ogLV_ProcessList.OnNotify(NM_RCLICK := -5, RClickProcessList)
+    ogLV_ProcessList.LeftMargin := 5
+    ogLV_ProcessList.BottomMargin := 8
+    UpdateProcessList()
+
+    ; WinList Section
+    oGuiWindowList.posRef := oGuiProcessList
+    oGuiWindowList.posRule := "Xx Yyh Ww"
+    ogGBWinList := oGuiWindowList.addGroupBox("h311","WinList")
+    ogGBWinList.LeftMargin := 2
+    ogGBWinList.BottomMargin := 2
+    oGuiWindowList.LeftDistance := 0
+    oGuiWindowList.HeigthMultiplier := 0.3
+
+    ogEdit_win_search := oGuiWindowList.AddEdit("xp+4 yp+15 w200 vwin_seach")
+    ogEdit_win_search.SetCueText("Search")
+    ogEdit_win_search.statusbar := "Type to filter the windows on specific words"
+    ogEdit_win_search.OnEvent("Change",UpdateWinList)
+    ogCB_FilterWinVisible := oGuiWindowList.AddCheckbox("xp+210 yp+3 vfilter_win_visible Checked", "Visible") 
+    ogCB_FilterWinVisible.OnEvent("Click",UpdateWinList)
+    ogCB_FilterWinVisible.Statusbar := "Filter on only visible windows"
+    ogCB_FilterWinTitle := oGuiWindowList.AddCheckbox("xp+60 yp vfilter_win_title Checked", "Title") 
+    ogCB_FilterWinTitle.OnEvent("Click", UpdateWinList)
+    ogCB_FilterWinTitle.Statusbar := "Filter on windows with a title"
+    ogLV_WinList := oGuiWindowList.AddListView("xm+4 y+7 r14 w" (myGui.Width - 8 * 3) / 2 " vWinList section AltSubmit", ["Title", "Process", "ID", "Visible", "X", "Y", "W", "H"])
+    ogLV_WinList.Opt("Count400 -Multi")
+
+    ogLV_WinList.ModifyCol()
+    ogLV_WinList.ModifyCol(1, 300)
+    ogLV_WinList.ModifyCol(2, 100)
+    ogLV_WinList.ModifyCol(3, 60)
+    ogLV_WinList.ModifyCol(4, 50)
+    ogLV_WinList.ModifyCol(3, "Integer")
+    ogLV_WinList.ModifyCol(4, "SortDesc")
+
+    ogLV_WinList.OnEvent("Click", DClickWinList)
+    ogLV_WinList.OnNotify(NM_RCLICK := -5, RClickWinList)
+    ogLV_WinList.LeftMargin := 5
+    ogLV_WinList.BottomMargin := 8
+
+    ; ControlList Section
+
+    oGuiControlList.posRef := oGuiWindowList
+    oGuiControlList.posRule := "Xx Yyh Ww"
+    oGuiControlList.LeftDistance := 0
+    oGuiControlList.BottomDistance := 0
+    ogGBControlList := oGuiControlList.addGroupBox(, "ControlList")
+    ogGBControlList.LeftMargin := 2
+    ogGBControlList.BottomMargin := 24
+
+    ogEdit_ctrl_search := oGuiControlList.AddEdit("xp+4 yp+15 w200 vctrl_search")
+    ogEdit_ctrl_search.SetCueText("Search")
+    ogEdit_ctrl_search.OnEvent("Change", UpdateCtrlList)
+    ogEdit_ctrl_search.statusbar := "Type to filter the controls on specific words"
+
+    ogCB_FilterCtrlVisible := oGuiControlList.AddCheckbox("xp+210 yp+3 vfilter_ctrl_visible", "Visible")
+    ogCB_FilterCtrlVisible.OnEvent("Click", UpdateCtrlList)
+    ogCB_FilterCtrlVisible.Statusbar := "Filter on only visible controls"
+
+    ogCB_FilterCtrlText := oGuiControlList.AddCheckbox("xp+60 yp vfilter_ctrl_text", "Text visible") 
+    ogCB_FilterCtrlText.OnEvent("Click", UpdateCtrlList)
+    ogCB_FilterCtrlText.statusbar := "Filter on controls with text"
+    ogLV_CtrlList := oGuiControlList.AddListView("xm+4 y+7 r15 w" (myGui.Width-8*3)/2 " vCtrlList section AltSubmit", ["Class(NN)", "Hwnd", "Text", "Type", "X", "Y", "W", "H","Visible"])
+    ogLV_CtrlList.Opt("Count100 -Multi")
+    ogLV_CtrlList.OnEvent("Click", DClickCtrlList)
+    ogLV_CtrlList.OnNotify(NM_RCLICK := -5, RClickCtrlList)
+    ogLV_CtrlList.LeftMargin := 5
+    ogLV_CtrlList.BottomMargin := 28
+
+
+    ; Menu definitions
+    SettingsMenu := Menu()
+    SettingsMenu.Add("Resize", (ItemName, ItemPos, ItemMenu) => (ItemMenu.ToggleCheck(ItemName), oSet.WinResize:= !oSet.WinResize, oSet.WinResize ? myGui.Opt("+Resize") :  myGui.Opt("-Resize")))
+    oSet.WinResize=1 ? SettingsMenu.Check("Resize") : ""
+    SettingsMenu.Add("AlwaysOnTop", (ItemName, ItemPos, ItemMenu) => (ItemMenu.ToggleCheck(ItemName), oSet.WinAlwaysOnTop:= !oSet.WinAlwaysOnTop, oSet.WinAlwaysOnTop ? myGui.Opt("+AlwaysOnTop") :  myGui.Opt("-AlwaysOnTop")))
+    oSet.WinAlwaysOnTop=1 ? SettingsMenu.Check("AlwaysOnTop") : ""
+    SettingsMenu.Add("ID Hex", (ItemName, ItemPos, ItemMenu) => (ItemMenu.ToggleCheck(ItemName), oSet.IDHex:= !oSet.IDHex))
+    oSet.IDHex=1 ? SettingsMenu.Check("ID Hex") : ""
+    SettingsMenu.Add()
+    SettingsMenu.Add("Highlight", (ItemName, ItemPos, ItemMenu) => (ItemMenu.ToggleCheck(ItemName), oSet.WinHighlight:= !oSet.WinHighlight))
+    oSet.WinHighlight=1 ? SettingsMenu.Check("Highlight") : ""
+    SettingsMenu.Add()
+    ControlMenu := Menu()
+    ControlMenu.Add("ClassNN", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemName),ItemMenu.UnCheck("hwnd"), ItemMenu.UnCheck("Text"), oSet.ControlPar := "ClassNN"))
+    ControlMenu.Add("hwnd", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemName), ItemMenu.UnCheck("ClassNN"), ItemMenu.UnCheck("Text"), oSet.ControlPar := "hwnd"))
+    ControlMenu.Add("Text", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemName), ItemMenu.UnCheck("hwnd"), ItemMenu.UnCheck("ClassNN"), oSet.ControlPar := "Text"))
+    (oSet.ControlPar = "ClassNN") ? ControlMenu.Check("ClassNN") : ""
+    (oSet.ControlPar = "hwnd") ? ControlMenu.Check("hwnd") : ""
+    (oSet.ControlPar = "Text") ? ControlMenu.Check("Text") : ""
+    SettingsMenu.Add("Control", ControlMenu)
+
+    WindowMenu := Menu()
+    WindowMenu.Add("Class", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemName),ItemMenu.UnCheck("hwnd"), ItemMenu.UnCheck("Title"), ItemMenu.UnCheck("Process"), oSet.WindowPar := "Class"))
+    WindowMenu.Add("hwnd", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemName), ItemMenu.UnCheck("Class"), ItemMenu.UnCheck("Title"), ItemMenu.UnCheck("Process"), oSet.WindowPar := "hwnd"))
+    WindowMenu.Add("Title", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemName), ItemMenu.UnCheck("hwnd"), ItemMenu.UnCheck("Class"), ItemMenu.UnCheck("Process"), oSet.WindowPar := "Title"))
+    WindowMenu.Add("Process", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemName), ItemMenu.UnCheck("hwnd"), ItemMenu.UnCheck("Class"), ItemMenu.UnCheck("Title"), oSet.WindowPar := "Process"))
+    (oSet.WindowPar = "Class") ? WindowMenu.Check("Class") : ""
+    (oSet.WindowPar = "hwnd") ? WindowMenu.Check("hwnd") : ""
+    (oSet.WindowPar = "Title") ? WindowMenu.Check("Title") : ""
+    (oSet.WindowPar = "Process") ? WindowMenu.Check("Process") : ""
+    SettingsMenu.Add("Window", WindowMenu)
+
+    HelpMenu := Menu()
+    HelpMenu.Add("Report Issue", (*)=>Run("https://github.com/dmtr99/wInspector/issues/new"))
+    HelpMenu.Add("Open Github", (*)=>Run("https://github.com/dmtr99/wInspector"))
+    HelpMenu.Add()
+    HelpMenu.Add("About wInspector",(*)=>(Gui_About()))
+
+    Menus := MenuBar()
+    Menus.Add("&Settings", SettingsMenu)
+    Menus.Add("&Help", HelpMenu)
+    Menus.Add( "&Reload", (*) => (Gui_Close(myGui), Reload()))
+    MyGui.MenuBar := Menus
+
+    ; Toolbar
+    oToolbar := Toolbar("Flat List Tooltips +0x2")
+
+    oTbWindow := oToolbar.Add("", "Window", (*) => (ToggleSection("Window")), "shell32.dll", 3)
+    oTbControl := oToolbar.Add("", "Control", (*) => (ToggleSection("Control")), "shell32.dll", 134)
+    oTbMouse := oToolbar.Add("", "Mouse", (*) => (ToggleSection("Mouse")), "shell32.dll", 121)
+    oTbFunction := oToolbar.Add("", "Function", (*) => (ToggleSection("Function")), "shell32.dll", 25)
+    oToolbar.Add()
+    oTbProcessList := oToolbar.Add("", "ProcessList", (*) => (ToggleSection("ProcessList")), "shell32.dll", 13)
+    oTbWindowList := oToolbar.Add("", "WindowList", (*) => (ToggleSection("WindowList")), "shell32.dll", 3)
+    oTbControlList := oToolbar.Add("", "ControlList", (*) => (ToggleSection("ControlList")), "shell32.dll", 96)
+
+    for Section in ["Window","Control","Mouse","Function","ProcessList","WindowList","ControlList"]{
+        oTb%Section%.Styles := "Check"
+        SectionTitle := oGui%Section%.Title
+        (oSet.Sect%SectionTitle% = 1 && oTb%Section%.States := "Checked")
+    }
+
+    AddToolbar(oToolbar, MyGui, "0x2", "x30 y1 h24")
+
+    ; Create a Status Bar to give info about the number of files and their total size:
+    SB := MyGui.Add("StatusBar")
+    MyGui.OnEvent("Size",Gui_Size)
+    MyGui.OnEvent("Close",Gui_Close)
+
+    for index, oSection in myGui.aSections {
+        SectionTitle := oSection.Title
+        ; Show the sections
+        oSection.Show("x0 y24")
+        (oSet.Sect%SectionTitle% = 0 && oSection.Visible := 0)
+    }
+
+    UpdateWinList()
+    MyGui.Show("x" oSet.WinX " y" oSet.WinY " w" oSet.WinW " h" oSet.WinH)
+
+    GroupBoxAutosize(ogGB_Mouse)
+    UpdateFunctionControls()
+    Gui_Size(MyGui)
+    SectionCorrections()
+
+    ; Reset Cursor in case previous script gave error
+    SetSystemCursor("Default")
+    OnMessage(WM_LBUTTONDOWN := 0x0201, CheckButtonClick)
+    OnMessage(0x200, WM_MOUSEMOVE)
 }
-
-; Window Section
-
-ogGB_Window := oGuiWindow.AddGroupBox("w300 h145 Section", "Window")
-ogGB_Window.LeftMargin := 2
-ogGB_Window.BottomMargin := 2
-oGuiWindow.AddText("xp+3 yp+18", "Title")
-ogEdit_wTitle := oGuiWindow.AddEdit("x42 yp-3 w255", "")
-ogEdit_wTitle.StatusBar := "WinGetTitle(WinTitle, WinText, ExcludeTitle, ExcludeText)"
-oGuiWindow.AddText("x6 y+5", "Class")
-ogEdit_wClass := oGuiWindow.AddEdit("x42 yp-3 w170 vwClass +ReadOnly")
-ogEdit_wClass.StatusBar := "WinGetClass(WinTitle, WinText, ExcludeTitle, ExcludeText)"
-oGuiWindow.AddText("x+4 yp+3", "ID")
-ogEdit_wID := oGuiWindow.AddEdit("x237 yp-3 Right vwID w60 +ReadOnly")
-ogEdit_wID.StatusBar := "WinGetID(WinTitle, WinText, ExcludeTitle, ExcludeText)"
-oGuiWindow.AddText("x4 y+5", "Process")
-ogEdit_wProcess := oGuiWindow.AddEdit("x42 yp-3 w170 vwProcess +ReadOnly")
-oGuiWindow.AddText("x+3 yp+3", "PID")
-ogEdit_wPID := oGuiWindow.AddEdit("x237 yp-3 w60 Right vwPID +ReadOnly")
-
-oGuiWindow.AddText("x30 y+5", "X")
-ogEdit_wXPos := oGuiWindow.AddEdit("x42 yp-3 Right Number vwXPos w40")
-oGuiWindow.AddText("x+5 yp+3", "Y")
-ogEdit_wYPos := oGuiWindow.AddEdit("x+2 yp-3 Right Number vwYPos w40")
-ogEdit_wYPos.StatusBar := "Y position of window"
-oGuiWindow.AddText("x+5 yp+3", "W")
-ogEdit_wWidth := oGuiWindow.AddEdit("x+2 yp-3 Right Number vwWPos w40")
-oGuiWindow.AddText("x+5 yp+3", "H")
-ogEdit_wHeight := oGuiWindow.AddEdit("x+2 yp-3 Right Number vwHPos w40")
-ogButton_Move := oGuiWindow.AddButton("x258 yp-1 w40", "Move")
-ogButton_Move.OnEvent("Click", (*) => (WinExist("ahk_id " ogEdit_wID.value) ? WinMove(ogEdit_wXPos.value, ogEdit_wYPos.value, ogEdit_wWidth.value, ogEdit_wHeight.value, "ahk_id " ogEdit_wID.value) : ""))
-oGuiWindow.AddText("x8 y+4", "Transparent:")
-ogSlider_Transparent := oGuiWindow.AddSlider("xp+60 vTransparent  Range0-255 ToolTip", "255")
-ogSlider_Transparent.OnEvent("Change", (*) => (WinExist("ahk_id " ogEdit_wID.value) ? WinSetTransparent(ogSlider_Transparent.value, "ahk_id " ogEdit_wID.value) : ""))
-
-; Control Section
-
-oGuiControl.posRef := oGuiWindow
-oGuiControl.posRule := "Xx Yyh Ww"
-ogGB_Control := oGuiControl.AddGroupBox("xm w300 h88", "Control")
-ogGB_Control.LeftMargin := 2
-ogGB_Control.BottomMargin := 2
-oGuiControl.AddText("xp+3 yp+18", "Text")
-ogEdit_cText := oGuiControl.AddEdit("x42 yp-3 w255", "")
-ogEdit_cText.StatusBar := "ControlGetText(Control, WinTitle, WinText, ExcludeTitle, ExcludeText)"
-oGuiControl.AddText("x6 y+5", "Class")
-ogEdit_cClass := oGuiControl.AddEdit("x42 yp-3 w178 vccClass +ReadOnly")
-ogEdit_cClass.StatusBar := "ControlGetClassNN(Control , WinTitle, WinText, ExcludeTitle, ExcludeText)"
-oGuiControl.AddText("x+4 yp+3", "ID")
-ogEdit_cID := oGuiControl.AddEdit("x237 yp-3 w60 Right vcID +ReadOnly")
-ogEdit_cID.StatusBar := "ControlGetHwnd(Control, WinTitle, WinText, ExcludeTitle, ExcludeText)"
-
-oGuiControl.AddText("x30 y+5", "X")
-ogEdit_cXPos := oGuiControl.AddEdit("x42 yp-3 Right Number vcXPos w40")
-oGuiControl.AddText("x+5 yp+3", "Y")
-ogEdit_cYPos := oGuiControl.AddEdit("x+2 yp-3 Right Number vcYPos w40")
-oGuiControl.AddText("x+5 yp+3", "W")
-ogEdit_cWidth := oGuiControl.AddEdit("x+2 yp-3 Right Number vcWPos w40")
-oGuiControl.AddText("x+5 yp+3", "H")
-ogEdit_cHeight := oGuiControl.AddEdit("x+2 yp-3 Right Number vcHPos w40")
-ogButton_cMove := oGuiControl.AddButton("x258 yp-1 w40", "Move")
-ogButton_cMove.OnEvent("Click", (*) => (ControlMove(ogEdit_cXPos.value, ogEdit_cYPos.value, ogEdit_cWidth.value, ogEdit_cHeight.value, ogEdit_cID.value + 0)))
-
-; Mouse Section
-
-oGuiMouse.posRef := oGuiControl
-oGuiMouse.posRule := "Xx Yyh Ww"
-ogGB_Mouse := oGuiMouse.AddGroupBox("xm w300", "Mouse")
-ogGB_Mouse.LeftMargin := 2
-ogGB_Mouse.BottomMargin := 2
-oGuiMouse.AddText("xp+3 yp+18", "Pos")
-ogEdit_mPos := oGuiMouse.AddEdit("x42 yp-3 w70", "")
-ogDDL_MouseCoordMode := oGuiMouse.AddDropDownList("x+3 yp w70 vDDL_MouseCoordMode Choose1", ["Screen", "Window", "Client"])
-ogBut_MouseMove := oGuiMouse.AddButton("x+3 yp-1 w50", "Move")
-ogBut_MouseMove.OnEvent("Click", (*) => (CoordMode("Mouse", ogDDL_MouseCoordMode.Text), MouseMove(oGuiMouse.MouseX+0,oGuiMouse.MouseY+0)))
-ogBut_MouseClick := oGuiMouse.AddButton("x+3 yp w50", "Click")
-ogBut_MouseClick.OnEvent("Click", (*) => (CoordMode("Mouse", ogDDL_MouseCoordMode.Text), Mouseclick(,oGuiMouse.MouseX+0,oGuiMouse.MouseY+0)))
-oGuiMouse.AddText("x6 y+4", "RGB")
-ogEdit_mColor := oGuiMouse.AddEdit("x42 yp-3 w70", "")
-ogText_mColor := oGuiMouse.AddText("x+3 yp w21 h21 BackgroundWhite +Border")
-
-ogDDL_GridSize := oGuiMouse.AddDropDownList("x+3 yp w60 vDDL_GridSize" , ["1x1", "3x3","5x5", "9x9", "15x15"])
-
-ogDDL_GridSize.text := oSet.MouseGrid "x" oSet.MouseGrid
-ogDDL_GridSize.OnEvent("Change", GridSize_Change)
-oGuiMouse.Grid := oSet.MouseGrid
-
-ogPic_Grid := oGuiMouse.AddPicture("x42 y+2 w" oGuiMouse.Grid*16 " h" oGuiMouse.Grid*16 " +0x40 +0xE +Border Section")
-ogText_Line1 := oGuiMouse.AddText("xs+" (oGuiMouse.Grid-1) * 16/2 " ys+1 w1 h" oGuiMouse.Grid * 16-2 " backgroundWhite")
-ogText_Line2 := oGuiMouse.AddText("xs+" (oGuiMouse.Grid+1) * 16/2 " ys+1 w1 h" oGuiMouse.Grid * 16-2 " backgroundWhite")
-ogText_Line3 := oGuiMouse.AddText("xs+1 ys+" (oGuiMouse.Grid - 1) * 16 / 2 " w" oGuiMouse.Grid * 16-2 " h1 backgroundWhite")
-ogText_Line4 := oGuiMouse.AddText("xs+1 ys+" (oGuiMouse.Grid + 1) * 16 / 2 " w" oGuiMouse.Grid * 16-2 " h1 backgroundWhite")
-GridSize_Change()
-
-
-; Function Section
-
-oGuiFunction.posRef := oGuiMouse
-oGuiFunction.posRule := "Xx Yyh Ww"
-ogGBFunction := oGuiFunction.addGroupBox(,"Function")
-ogGBFunction.LeftMargin := 2
-ogGBFunction.BottomMargin := 2
-
-moFunctions := Map()
-moFunctions["ControlAddItem"] := {var1:"String", var1Default: "", control:true, description:"Adds the specified string as a new entry at the bottom of a ListBox or ComboBox."}
-moFunctions["ControlChooseIndex"] := {var1:"N", var1Default: "0", control:true, description:"Sets the selection in a ListBox, ComboBox or Tab control to be the specified entry or tab number."}
-moFunctions["ControlChooseString"] := {var1:"String", var1Default: "0", control:true, description:"Sets the selection in a ListBox or ComboBox to be the first entry whose leading part matches the specified string."}
-moFunctions["ControlClick"] := {control:true, description:"Sends a mouse button or mouse wheel event to a control."}
-moFunctions["ControlFocus"] := {control:true, description:"Sets input focus to a given control on a window."}
-moFunctions["ControlGetChecked"] := {control:true, description: "Returns a non-zero value if the checkbox or radio button is checked.", result: true}
-moFunctions["ControlGetChoice"] := {control:true, description: "Returns the name of the currently selected entry in a ListBox or ComboBox.", result: true}
-moFunctions["ControlGetText"] := {control:true, description: "Retrieves text from a control.", result: true}
-moFunctions["ControlGetItems"] := {control:true, description: "Returns an array of items/rows from a ListBox, ComboBox, or DropDownList.", result: true}
-moFunctions["ControlGetIndex"] := {control:true, description: "Returns the index of the currently selected entry or tab in a ListBox, ComboBox or Tab control.", result: true}
-moFunctions["ControlSend"] := {var1:"Keys", var1Default: "", control:true, description:"Sends simulated keystrokes to a window or control."}
-moFunctions["ControlSendText"] := {var1:"Keys", var1Default: "", control:true, description: "Sends text to a window or control."}
-moFunctions["ControlSetText"] := {var1:"NewText", var1Default: "", control:true, description:"Changes the text of a control."}
-moFunctions["ControlSetEnabled"] := {var1:"Value", var1Default: "1", control:true, description:"Enables or disables the specified control."}
-moFunctions["SendMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", control:true, result:true, description:"Sends a message to a window or control and waits for acknowledgement."}
-moFunctions["PostMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", control:true, result:true, description:"Places a message in the message queue of a window or control."}
-moFunctions["WinClose"] := {description: "Closes the specified window."}
-moFunctions["WinGetControls"] := {description: "Returns the control names for all controls in the specified window.", result: true}
-moFunctions["WinGetCount"] := {description: "Returns the number of existing windows that match the specified criteria.", result: true}
-moFunctions["WinGetClass"] := {description: "Retrieves the specified window`'s class name.", result: true}
-moFunctions["WinGetPID"] := {description: "Returns the Process ID number of the specified window.", result: true}
-moFunctions["WinGetTitle"] := {description: "Retrieves the title of the specified window.", result: true}
-moFunctions["WinGetText"] := {description: "Retrieves the text from the specified window.", result: true}
-moFunctions["WinGetStyle"] := {description: "Returns the style of the specified window.", result: true}
-moFunctions["WinGetExStyle"] := {description: "Returns the extended style of the specified window.", result: true}
-moFunctions["WinGetMinMax"] := {description: "Returns the state whether the specified window is maximized or minimized.", result: true}
-moFunctions["WinGetList"] := {description: "Returns the unique ID numbers of all existing windows that match the specified criteria.", result: true}
-moFunctions["WinGetProcessName"] := {description: "Returns the name of the process that owns the specified window.", result: true}
-moFunctions["WinGetProcessPath"] := {description: "Returns the full path and name of the process that owns the specified window.", result: true}
-
-aFunctionList := Array()
-For Key, Value in moFunctions{
-    aFunctionList.Push(Key)
-}
-DDLFunction := oGuiFunction.Add("ComboBox", "x60 yp+15 Choose", aFunctionList)
-DDLFunction.AutoComplete := true
-DDLFunction.text := oSet.Function
-DDLFunction.OnEvent("Change", (*)=> (UpdateFunctionControls(), Gui_Autosize(), Gui_Size(MyGui)))
-
-BtnRun := oGuiFunction.AddPicButton("x+8 yp-1 w23 h23", "mmcndmgr.dll","icon33 w16 h16")
-BtnRun.StatusBar := "Run the selected function"
-BtnRun.OnEvent("Click",ClickRun)
-
-BtnCopy := oGuiFunction.AddPicButton("x+6 yp w23 h23", "shell32.dll","icon135 w16 h16")
-BtnCopy.StatusBar := "Copy the Code"
-BtnCopy.OnEvent("Click",ClickCopy)
-BtnInfo := oGuiFunction.AddPicButton("x+6 yp w23 h23", "shell32.dll","icon278 w14 h14")
-BtnInfo.StatusBar := "Open the documentation of the function."
-BtnInfo.OnEvent("Click",(*)=>(run("https://lexikos.github.io/v2/docs/search.htm?q=" DDLFunction.text "&m=2")))
-
-ogTxtVar1 := oGuiFunction.AddText("xm+2 y+4 w50", "Msg")
-ogEdtVar1 := oGuiFunction.AddEdit("x60 yp-3 w237 right", "")
-ogTxtVar2 := oGuiFunction.AddText("xm+2 y+6 w50 Hidden", "wParam")
-ogTxtVar2.posRef := ogTxtVar1
-ogTxtVar2.yMargin := 10
-ogEdtVar2 := oGuiFunction.AddEdit("x60 yp-4 w86 right Hidden", 0)
-ogEdtVar2.posRef := ogEdtVar1
-ogEdtVar2.yMargin := 2
-
-ogTxtVar3 := oGuiFunction.AddText("x+5 yp+3 w50 Hidden", "lParam")
-ogEdtVar3 := oGuiFunction.AddEdit("xp+60 yp-3 w86 right Hidden", 0)
-ogTxtControl := oGuiFunction.AddText("xm+2 y+6 ", "Control")
-ogTxtControl.posRef := ogTxtVar2
-ogTxtControl.yMargin := 10
-
-ogEdtControl := oGuiFunction.AddEdit("yp-3 x60 w237 right", )
-ogEdtControl.posRef := ogEdtVar2
-ogEdtControl.yMargin := 2
-
-ogTxtWindow := oGuiFunction.AddText("xm+2 y+6 ", "Window")
-ogTxtWindow.posRef := ogTxtControl
-ogTxtWindow.yMargin := 10
-
-ogEdtWindow := oGuiFunction.AddEdit("yp-3 x60 w237 right", "")
-ogEdtWindow.posRef := ogEdtControl
-ogEdtWindow.yMargin := 2
-
-ogGbResult := oGuiFunction.Add("GroupBox", "xm+3 w294 h40 Section Hidden", "Result")
-ogGbResult.posRef := ogEdtWindow
-ogGbResult.yMargin := 3
-ogEdtResult := oGuiFunction.AddEdit("xs+3 ys+15 w288 r1 Hidden +Multi -VScroll", "")
-ogEdtResult.posRef := ogGbResult
-ogEdtResult.yOffset := 15
-
-ogGbMsgList := oGuiFunction.Add("GroupBox", "xm+3 w294 h245 Section Hidden", "MsgList")
-ogGbMsgList.posRef := ogGbResult
-ogGbMsgList.yMargin := 2
-ogEdtSearch := oGuiFunction.AddEdit("xs+10 ys+15 Hidden", "")
-ogEdtSearch.posRef := ogGbMsgList
-ogEdtSearch.yOffset := 15
-ogEdtSearch.SetCueText("Search")
-ogEdtSearch.OnEvent("Change",UpdateLVMessages)
-ogLvMessages := oGuiFunction.Add("ListView", "w280 r10 Hidden", ["Message","Value"])
-ogLvMessages.posRef := ogEdtSearch
-ogLvMessages.yMargin := 4
-UpdateLVMessages()
-ogLvMessages.OnEvent("Click", DClickMsgList)
-
-
-; ProcessList Section
-
-oGuiProcessList.posRef := oGuiWindow
-oGuiProcessList.posRule := "Xxw Yy" 
-ogGBProcessList := oGuiProcessList.addGroupBox("h311","ProcessList")
-ogGBProcessList.LeftMargin := 2
-ogGBProcessList.BottomMargin := 2
-oGuiProcessList.LeftDistance := 0
-oGuiProcessList.HeigthMultiplier := 0.3
-
-ogEdit_Process_search := oGuiProcessList.AddEdit("xp+4 yp+15 w200 vProcess_seach")
-ogEdit_Process_search.SetCueText("Search")
-ogEdit_Process_search.statusbar := "Type to filter the Processes on specific words"
-ogEdit_Process_search.OnEvent("Change",UpdateProcessList)
-; ogCB_FilterProcessVisible := oGuiProcessList.AddCheckbox("xp+210 yp+3 vfilter_Process_visible Checked", "Visible") 
-; ogCB_FilterProcessVisible.OnEvent("Click",UpdateProcessList)
-; ogCB_FilterProcessVisible.Statusbar := "Filter on only visible Processdows"
-; ogCB_FilterProcessTitle := oGuiProcessList.AddCheckbox("xp+60 yp vfilter_Process_title Checked", "Title") 
-; ogCB_FilterProcessTitle.OnEvent("Click", UpdateProcessList)
-; ogCB_FilterProcessTitle.Statusbar := "Filter on Processdows with a title"
-
-ogLV_ProcessList := oGuiProcessList.AddListView("xm+4 y+2 r14 w" (myGui.Width - 8 * 3) / 2 " vProcessList section AltSubmit", ["Process", "PID","Path"])
-ogLV_ProcessList.Opt("Count400 -Multi")
-ogLV_ProcessList.ModifyCol()
-ogLV_ProcessList.ModifyCol(1, 300)
-ogLV_ProcessList.ModifyCol(2, 100)
-ogLV_ProcessList.ModifyCol(2, "Integer")
-
-; ogLV_ProcessList.OnEvent("Click", DClickProcessList)
-ogLV_ProcessList.OnNotify(NM_RCLICK := -5, RClickProcessList)
-ogLV_ProcessList.LeftMargin := 5
-ogLV_ProcessList.BottomMargin := 8
-UpdateProcessList()
-
-; WinList Section
-oGuiWindowList.posRef := oGuiProcessList
-oGuiWindowList.posRule := "Xx Yyh Ww"
-ogGBWinList := oGuiWindowList.addGroupBox("h311","WinList")
-ogGBWinList.LeftMargin := 2
-ogGBWinList.BottomMargin := 2
-oGuiWindowList.LeftDistance := 0
-oGuiWindowList.HeigthMultiplier := 0.3
-
-ogEdit_win_search := oGuiWindowList.AddEdit("xp+4 yp+15 w200 vwin_seach")
-ogEdit_win_search.SetCueText("Search")
-ogEdit_win_search.statusbar := "Type to filter the windows on specific words"
-ogEdit_win_search.OnEvent("Change",UpdateWinList)
-ogCB_FilterWinVisible := oGuiWindowList.AddCheckbox("xp+210 yp+3 vfilter_win_visible Checked", "Visible") 
-ogCB_FilterWinVisible.OnEvent("Click",UpdateWinList)
-ogCB_FilterWinVisible.Statusbar := "Filter on only visible windows"
-ogCB_FilterWinTitle := oGuiWindowList.AddCheckbox("xp+60 yp vfilter_win_title Checked", "Title") 
-ogCB_FilterWinTitle.OnEvent("Click", UpdateWinList)
-ogCB_FilterWinTitle.Statusbar := "Filter on windows with a title"
-ogLV_WinList := oGuiWindowList.AddListView("xm+4 y+7 r14 w" (myGui.Width - 8 * 3) / 2 " vWinList section AltSubmit", ["Title", "Process", "ID", "Visible", "X", "Y", "W", "H"])
-ogLV_WinList.Opt("Count400 -Multi")
-
-ogLV_WinList.ModifyCol()
-ogLV_WinList.ModifyCol(1, 300)
-ogLV_WinList.ModifyCol(2, 100)
-ogLV_WinList.ModifyCol(3, 60)
-ogLV_WinList.ModifyCol(4, 50)
-ogLV_WinList.ModifyCol(3, "Integer")
-ogLV_WinList.ModifyCol(4, "SortDesc")
-
-ogLV_WinList.OnEvent("Click", DClickWinList)
-ogLV_WinList.OnNotify(NM_RCLICK := -5, RClickWinList)
-ogLV_WinList.LeftMargin := 5
-ogLV_WinList.BottomMargin := 8
-
-; ControlList Section
-
-oGuiControlList.posRef := oGuiWindowList
-oGuiControlList.posRule := "Xx Yyh Ww"
-oGuiControlList.LeftDistance := 0
-oGuiControlList.BottomDistance := 0
-ogGBControlList := oGuiControlList.addGroupBox(, "ControlList")
-ogGBControlList.LeftMargin := 2
-ogGBControlList.BottomMargin := 24
-
-ogEdit_ctrl_search := oGuiControlList.AddEdit("xp+4 yp+15 w200 vctrl_search")
-ogEdit_ctrl_search.SetCueText("Search")
-ogEdit_ctrl_search.OnEvent("Change", UpdateCtrlList)
-ogEdit_ctrl_search.statusbar := "Type to filter the controls on specific words"
-
-ogCB_FilterCtrlVisible := oGuiControlList.AddCheckbox("xp+210 yp+3 vfilter_ctrl_visible", "Visible")
-ogCB_FilterCtrlVisible.OnEvent("Click", UpdateCtrlList)
-ogCB_FilterCtrlVisible.Statusbar := "Filter on only visible controls"
-
-ogCB_FilterCtrlText := oGuiControlList.AddCheckbox("xp+60 yp vfilter_ctrl_text", "Text visible") 
-ogCB_FilterCtrlText.OnEvent("Click", UpdateCtrlList)
-ogCB_FilterCtrlText.statusbar := "Filter on controls with text"
-ogLV_CtrlList := oGuiControlList.AddListView("xm+4 y+7 r15 w" (myGui.Width-8*3)/2 " vCtrlList section AltSubmit", ["Class(NN)", "Hwnd", "Text", "Type", "X", "Y", "W", "H","Visible"])
-ogLV_CtrlList.Opt("Count100 -Multi")
-ogLV_CtrlList.OnEvent("Click", DClickCtrlList)
-ogLV_CtrlList.OnNotify(NM_RCLICK := -5, RClickCtrlList)
-ogLV_CtrlList.LeftMargin := 5
-ogLV_CtrlList.BottomMargin := 28
-
-
-; Menu definitions
-SettingsMenu := Menu()
-SettingsMenu.Add("Resize", (ItemName, ItemPos, ItemMenu) => (ItemMenu.ToggleCheck(ItemName), oSet.WinResize:= !oSet.WinResize, oSet.WinResize ? myGui.Opt("+Resize") :  myGui.Opt("-Resize")))
-oSet.WinResize=1 ? SettingsMenu.Check("Resize") : ""
-SettingsMenu.Add("AlwaysOnTop", (ItemName, ItemPos, ItemMenu) => (ItemMenu.ToggleCheck(ItemName), oSet.WinAlwaysOnTop:= !oSet.WinAlwaysOnTop, oSet.WinAlwaysOnTop ? myGui.Opt("+AlwaysOnTop") :  myGui.Opt("-AlwaysOnTop")))
-oSet.WinAlwaysOnTop=1 ? SettingsMenu.Check("AlwaysOnTop") : ""
-SettingsMenu.Add()
-SettingsMenu.Add("Highlight", (ItemName, ItemPos, ItemMenu) => (ItemMenu.ToggleCheck(ItemName), oSet.WinHighlight:= !oSet.WinHighlight))
-oSet.WinHighlight=1 ? SettingsMenu.Check("Highlight") : ""
-SettingsMenu.Add()
-ControlMenu := Menu()
-ControlMenu.Add("ClassNN", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemName),ItemMenu.UnCheck("hwnd"), ItemMenu.UnCheck("Text"), oSet.ControlPar := "ClassNN"))
-ControlMenu.Add("hwnd", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemName), ItemMenu.UnCheck("ClassNN"), ItemMenu.UnCheck("Text"), oSet.ControlPar := "hwnd"))
-ControlMenu.Add("Text", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemName), ItemMenu.UnCheck("hwnd"), ItemMenu.UnCheck("ClassNN"), oSet.ControlPar := "Text"))
-(oSet.ControlPar = "ClassNN") ? ControlMenu.Check("ClassNN") : ""
-(oSet.ControlPar = "hwnd") ? ControlMenu.Check("hwnd") : ""
-(oSet.ControlPar = "Text") ? ControlMenu.Check("Text") : ""
-SettingsMenu.Add("Control", ControlMenu)
-
-WindowMenu := Menu()
-WindowMenu.Add("Class", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemName),ItemMenu.UnCheck("hwnd"), ItemMenu.UnCheck("Title"), ItemMenu.UnCheck("Process"), oSet.WindowPar := "Class"))
-WindowMenu.Add("hwnd", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemName), ItemMenu.UnCheck("Class"), ItemMenu.UnCheck("Title"), ItemMenu.UnCheck("Process"), oSet.WindowPar := "hwnd"))
-WindowMenu.Add("Title", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemName), ItemMenu.UnCheck("hwnd"), ItemMenu.UnCheck("Class"), ItemMenu.UnCheck("Process"), oSet.WindowPar := "Title"))
-WindowMenu.Add("Process", (ItemName, ItemPos, ItemMenu) => (ItemMenu.Check(ItemName), ItemMenu.UnCheck("hwnd"), ItemMenu.UnCheck("Class"), ItemMenu.UnCheck("Title"), oSet.WindowPar := "Process"))
-(oSet.WindowPar = "Class") ? WindowMenu.Check("Class") : ""
-(oSet.WindowPar = "hwnd") ? WindowMenu.Check("hwnd") : ""
-(oSet.WindowPar = "Title") ? WindowMenu.Check("Title") : ""
-(oSet.WindowPar = "Process") ? WindowMenu.Check("Process") : ""
-SettingsMenu.Add("Window", WindowMenu)
-
-HelpMenu := Menu()
-HelpMenu.Add("Report Issue", (*)=>Run("https://github.com/dmtr99/wInspector/issues/new"))
-HelpMenu.Add("Open Github", (*)=>Run("https://github.com/dmtr99/wInspector"))
-HelpMenu.Add()
-HelpMenu.Add("About wInspector",(*)=>(Gui_About()))
-
-Menus := MenuBar()
-Menus.Add("&Settings", SettingsMenu)
-Menus.Add("&Help", HelpMenu)
-Menus.Add( "&Reload", (*) => (Gui_Close(myGui), Reload()))
-MyGui.MenuBar := Menus
-
-; Toolbar
-oToolbar := Toolbar("Flat List Tooltips +0x2")
-
-oTbWindow := oToolbar.Add("", "Window", (*) => (ToggleSection("Window")), "shell32.dll", 3)
-oTbControl := oToolbar.Add("", "Control", (*) => (ToggleSection("Control")), "shell32.dll", 134)
-oTbMouse := oToolbar.Add("", "Mouse", (*) => (ToggleSection("Mouse")), "shell32.dll", 121)
-oTbFunction := oToolbar.Add("", "Function", (*) => (ToggleSection("Function")), "shell32.dll", 25)
-oToolbar.Add()
-oTbProcessList := oToolbar.Add("", "ProcessList", (*) => (ToggleSection("ProcessList")), "shell32.dll", 13)
-oTbWindowList := oToolbar.Add("", "WindowList", (*) => (ToggleSection("WindowList")), "shell32.dll", 3)
-oTbControlList := oToolbar.Add("", "ControlList", (*) => (ToggleSection("ControlList")), "shell32.dll", 96)
-
-for Section in ["Window","Control","Mouse","Function","ProcessList","WindowList","ControlList"]{
-    oTb%Section%.Styles := "Check"
-    SectionTitle := oGui%Section%.Title
-    (oSet.Sect%SectionTitle% = 1 && oTb%Section%.States := "Checked")
-}
-
-
-AddToolbar(oToolbar, MyGui, "0x2", "x30 y1 h24")
-
-; Create a Status Bar to give info about the number of files and their total size:
-SB := MyGui.Add("StatusBar")
-MyGui.OnEvent("Size",Gui_Size)
-MyGui.OnEvent("Close",Gui_Close)
-
-for index, oSection in myGui.aSections {
-    SectionTitle := oSection.Title
-    ; Show the sections
-    oSection.Show("x0 y24")
-    (oSet.Sect%SectionTitle% = 0 && oSection.Visible := 0)
-}
-
-UpdateWinList()
-MyGui.Show("x" oSet.WinX " y" oSet.WinY " w" oSet.WinW " h" oSet.WinH)
-
-GroupBoxAutosize(ogGB_Mouse)
-UpdateFunctionControls()
-Gui_Size(MyGui)
-SectionCorrections()
-
-; Reset Cursor in case previous script gave error
-SetSystemCursor("Default")
-OnMessage(WM_LBUTTONDOWN := 0x0201, CheckButtonClick)
-OnMessage(0x200, WM_MOUSEMOVE)
 
 ~LButton::{
     if (isSet(GuiBox) and !WinActive("wInspector")){
@@ -879,9 +890,25 @@ ToggleSection(SectionTitle){
     oGui%SectionTitle%.Visible := oSet.Sect%SectionTitle%
     SectionCorrections() 
     GuiUpdate()
+    return
 }
 
-CheckButtonClick(wParam , lParam, msg, hwnd){
+^i::
+{
+    MouseGetPos(&MouseX, &MouseY, &MouseWinHwnd, &MouseControlHwnd, 2)
+
+    Gui_wInspector()
+    SetSelectedWindow(MouseWinHwnd)
+    SetSelectedControl(MouseControlHwnd)
+    SetSelectedMouse(MouseX, MouseY)
+    SetSelectedMouseGrid(MouseX, MouseY)
+    UpdateProcessList()
+    UpdateWinList()
+    UpdateCtrlList()
+    return
+}
+
+CheckButtonClick(wParam :=0, lParam := 0, msg := 0, hwnd := 0){
     global MyGui
     MouseGetPos(,,,&OutputVarControlHwnd, 2)
     MouseControlHwnd_Prev := OutputVarControlHwnd
@@ -1253,7 +1280,7 @@ UpdateProcessList(p*){
             }
             
             ; NewRowNumber :=ogLV_ProcessList.Add("Icon" mapIL[oProcess.Name], win_title, win_process, format("{:#x}", win_id), win_visible, win_x, win_y, win_w, win_h)
-            NewRowNumber :=ogLV_ProcessList.Add("Icon" mapIL[oProcess.Name], oProcess.Name, format("{:#x}", oProcess.Handle), oProcess.ExecutablePath)
+            NewRowNumber :=ogLV_ProcessList.Add("Icon" mapIL[oProcess.Name], oProcess.Name, oSet.IDHex ? format("{:#x}", oProcess.Handle) : oProcess.Handle, oProcess.ExecutablePath)
             if(oProcess.Handle = winPID){
                 ogLV_ProcessList.Modify(NewRowNumber, "Select Vis")
             }
@@ -1304,7 +1331,7 @@ UpdateWinList(p*){
                 }
             }
             
-            NewRowNumber :=ogLV_WinList.Add("Icon" mapIL[win_id], win_title, win_process, format("{:#x}", win_id), win_visible, win_x, win_y, win_w, win_h)
+            NewRowNumber :=ogLV_WinList.Add("Icon" mapIL[win_id], win_title, win_process, oSet.IDHex ? format("{:#x}", win_id) : win_id, win_visible, win_x, win_y, win_w, win_h)
             if(win_id = MyGui.win_hwnd){
                 ogLV_WinList.Modify(NewRowNumber, "Select Vis")
             }
@@ -1322,7 +1349,6 @@ UpdateWinList(p*){
 UpdateCtrlList(*){
     ;IconLib
     ogLV_CtrlList.Delete()
-
     ogLV_CtrlList.SetImageList(ImageCtrlList)
 
     win_hwnd := MyGui.win_hwnd
@@ -1346,7 +1372,7 @@ UpdateCtrlList(*){
                  continue
             }
             if (ogEdit_ctrl_search.value="" or InStr(ctrl_ClassNN " " ctrl_hwnd " " ctrl_text,ogEdit_ctrl_search.value)){
-                NewRowNumber:= ogLV_CtrlList.Add((mILControls.Has(ctrl_Type) ? "Icon" mILControls[ctrl_Type] : "" ) , ctrl_ClassNN, format("{:#x}", ctrl_hwnd), ctrl_text, ctrl_Type, ctrl_x, ctrl_y, ctrl_w, ctrl_h, ctrl_Visible ? "Visible" : "Hidden")
+                NewRowNumber:= ogLV_CtrlList.Add((mILControls.Has(ctrl_Type) ? "Icon" mILControls[ctrl_Type] : "" ) , ctrl_ClassNN, oSet.IDHex ? format("{:#x}", ctrl_hwnd) : ctrl_hwnd, ctrl_text, ctrl_Type, ctrl_x, ctrl_y, ctrl_w, ctrl_h, ctrl_Visible ? "Visible" : "Hidden")
                 if (selectedCtrl_hwnd=ctrl_hwnd){
                     ogLV_CtrlList.Modify(NewRowNumber, "Select Vis")
                 }
@@ -1953,7 +1979,6 @@ WM_MOUSEMOVE(wParam, lParam, Msg, Hwnd) {
     return
 }
 
-;-------------------------------------------------------------------------------
 WriteINI(&Array2D, INI_File :="") {	; write 2D-array to INI-file
     ;-------------------------------------------------------------------------------
     INI_File := INI_File="" ? Regexreplace(A_scriptName,"(.*)\..*","$1.ini") : INI_File
@@ -1966,7 +1991,6 @@ WriteINI(&Array2D, INI_File :="") {	; write 2D-array to INI-file
     }
 }
 
-;-------------------------------------------------------------------------------
 ReadINI(INI_File:="", oResult := "") {	; return 2D-array from INI-file
     INI_File := INI_File = "" ? Regexreplace(A_scriptName, "(.*)\..*", "$1.ini") : INI_File
     oResult := IsObject(oResult) ? oResult : Object()
@@ -2419,8 +2443,6 @@ ReadINI(INI_File:="", oResult := "") {	; return 2D-array from INI-file
         GroupBoxAutosize(ogGBFunction)
         
         Gui_Size(myGui)
-        ; Gui_Autosize()
-        ; Gui_Size(myGui)
     }
 
 }
@@ -2452,16 +2474,14 @@ GroupBoxAutosize(ogGB){
     ogGB.gui.Show("Autosize")
 }
 
-Gui_About() {
+Gui_About(){
     MyGui.Opt("+Disabled")	; Disable main window.
-    ogAbout := Gui(, "About wInspector +owner" MyGui.Hwnd)
+    ogAbout := Gui(, "About wInspector")
     ogAbout.Opt("-MaximizeBox -MinimizeBox AlwaysOnTop +OwnDialogs" )
     ogAbout.Add("Picture", "x11 w32 h33 +0x40 +E0x4 Icon145", "imageres.dll")
     ogAbout.Add("Text", "x53 y10 w345 h16 +0x7 +0x4 +0x8 +0x5 +Wrap +0x80 +0x9 +0x6 +E0x4", "wInspector")
     ogAbout.Add("Text", "x15 y45 w426 h2 +0x12 +0x10 +0x11 +E0x4 +E0x20000", "") ; Line
-    ogAbout.Add("Text", "x53 h16 +0x80 +E0x4", "Written by Ahk_user.")
-    ogAbout.Add("Text", "x53 h16 +0x80 +E0x4", "© All rights reserved.")
-    ogAbout.Add("Text", "x53 w360 h65 +0x80 +E0x4", "wInspector and its user interface are protected by trademark and other pending or existing intellectual property rights in the United States and other countries/regions.")
+    ogAbout.Add("Text", "x53 +0x80 +E0x4", "Written by Ahk_user.`n© All rights reserved.")
     ButtonOK := ogAbout.Add("Button", "x375 w75 +0x3 +0x9 +Default +0x7 +E0x4", "OK")
     ogAbout.OnEvent("Close", About_Close)
 	ogAbout.OnEvent("Escape", About_Close)
@@ -2470,8 +2490,7 @@ Gui_About() {
     MyGui.Opt("+OwnDialogs")
     Return
 
-    About_Close(*)
-    {
+    About_Close(*){
         MyGui.Opt("-Disabled")	; Re-enable the main window (must be done prior to the next step).
         ogAbout.Destroy()	; Destroy the about box.
     }
