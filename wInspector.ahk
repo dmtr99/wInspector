@@ -1,4 +1,4 @@
-﻿; Made by Ahk_user
+; Made by Ahk_user
 ; Based on AHK window info, but in V2 and with more features
 ; 2022-07-12 Added ChildGuis to handle different view options, included Function section to quickly run functions
 ; 2022-07-15 Added more functions and improved the function commands
@@ -37,6 +37,7 @@ oSettings_Default.MainGui := {
     WinHighlight: 1,
     SectWindow: true,
     SectControl: true,
+    SectAcc: true,
     SectMouse: true,
     SectFunction: true,
     SectWindowList: true,
@@ -474,13 +475,14 @@ Gui_wInspector(*){
     ; Child guis or sections
     oGuiWindow := Gui(, "Window")
     oGuiControl := Gui(, "Control")
+    oGuiAcc := Gui(, "Acc")
     oGuiMouse := Gui(, "Mouse")
     oGuiFunction := Gui(, "Function")
     oGuiWindowList := Gui(, "WindowList")
     oGuiControlList := Gui(, "ControlList")
     oGuiProcessList := Gui(, "ProcessList")
 
-    myGui.aSections := [oGuiWindow, oGuiControl, oGuiMouse, oGuiFunction, oGuiProcessList, oGuiWindowList, oGuiControlList]
+    myGui.aSections := [oGuiWindow, oGuiControl, oGuiAcc, oGuiMouse, oGuiFunction, oGuiProcessList, oGuiWindowList, oGuiControlList]
 
     for index, oSection in myGui.aSections {
         ; Adding a visible property to the guis
@@ -554,9 +556,21 @@ Gui_wInspector(*){
     ogButton_cMove := oGuiControl.AddButton("x258 yp-1 w40", "Move")
     ogButton_cMove.OnEvent("Click", (*) => (ControlMove(ogEdit_cXPos.value, ogEdit_cYPos.value, ogEdit_cWidth.value, ogEdit_cHeight.value, ogEdit_cID.value + 0)))
 
+    ; Acc Section
+
+    oGuiAcc.posRef := oGuiControl
+    oGuiAcc.posRule := "Xx Yyh Ww"
+    ogGB_Acc := oGuiAcc.AddGroupBox("xm w300", "Acc")
+    ogGB_Acc.LeftMargin := 2
+    ogGB_Acc.BottomMargin := 2
+    ogLV_AccProps := oGuiAcc.Add("ListView", "xp+3 yp+18 h220 w293", ["Property", "Value"])
+    ogLV_AccProps.ModifyCol(1, 100)
+    for i, v in ["RoleText", "Role", "Value", "Name", "Location", "StateText", "State", "DefaultAction", "Description", "KeyboardShortcut", "Help", "ChildId"]
+        ogLV_AccProps.Add(, v, "")
+
     ; Mouse Section
 
-    oGuiMouse.posRef := oGuiControl
+    oGuiMouse.posRef := oGuiAcc
     oGuiMouse.posRule := "Xx Yyh Ww"
     ogGB_Mouse := oGuiMouse.AddGroupBox("xm w300", "Mouse")
     ogGB_Mouse.LeftMargin := 2
@@ -837,6 +851,7 @@ Gui_wInspector(*){
 
     oTbWindow := oToolbar.Add("", "Window", (*) => (ToggleSection("Window")), "shell32.dll", 3)
     oTbControl := oToolbar.Add("", "Control", (*) => (ToggleSection("Control")), "shell32.dll", 134)
+    oTbAcc := oToolbar.Add("", "Acc", (*) => (ToggleSection("Acc")), "shell32.dll", 85)
     oTbMouse := oToolbar.Add("", "Mouse", (*) => (ToggleSection("Mouse")), "shell32.dll", 121)
     oTbFunction := oToolbar.Add("", "Function", (*) => (ToggleSection("Function")), "shell32.dll", 25)
     oToolbar.Add()
@@ -844,7 +859,7 @@ Gui_wInspector(*){
     oTbWindowList := oToolbar.Add("", "WindowList", (*) => (ToggleSection("WindowList")), "shell32.dll", 3)
     oTbControlList := oToolbar.Add("", "ControlList", (*) => (ToggleSection("ControlList")), "shell32.dll", 96)
 
-    for Section in ["Window","Control","Mouse","Function","ProcessList","WindowList","ControlList"]{
+    for Section in ["Window","Control","Acc","Mouse","Function","ProcessList","WindowList","ControlList"]{
         oTb%Section%.Styles := "Check"
         SectionTitle := oGui%Section%.Title
         (oSet.Sect%SectionTitle% = 1 && oTb%Section%.States := "Checked")
@@ -868,6 +883,7 @@ Gui_wInspector(*){
     MyGui.Show("x" oSet.WinX " y" oSet.WinY " w" oSet.WinW " h" oSet.WinH)
 
     GroupBoxAutosize(ogGB_Mouse)
+    GroupBoxAutosize(ogGB_Acc)
     UpdateFunctionControls()
     SectionCorrections()
     Gui_Size(MyGui)
@@ -953,6 +969,17 @@ CheckButtonClick(wParam :=0, lParam := 0, msg := 0, hwnd := 0){
         ogButton_Selector.text := "+"
         SetSystemCursor("Default")
         SetSelectedMouseGrid(MouseX, MouseY)
+        if (oGuiAcc.Visible){
+            ; MsgBox("Text")
+            oAccp := Acc.ObjectFromPoint(MouseX, MouseY)
+            ogLV_AccProps.Delete()
+            Location := { x: 0, y: 0, w: 0, h: 0 }, RoleText := "", Role := "", Value := "", Name := "", StateText := "", State := "", DefaultAction := "", Description := "", KeyboardShortcut := "", Help := "", ChildId := ""
+            for _, v in ["RoleText", "Role", "Value", "Name", "Location", "StateText", "State", "DefaultAction", "Description", "KeyboardShortcut", "Help", "ChildId"] {
+                try %v% := oAccp.%v%
+                ogLV_AccProps.Add(, v, v = "Location" ? ("x: " %v%.x " y: " %v%.y " w: " %v%.w " h: " %v%.h) : %v%)
+            }
+        }
+        
     } else if (ogPic_Grid.hwnd = OutputVarControlHwnd){
         ; Hide the cross and get the selected pixel
         ogText_Line1.visible := 0
@@ -1243,6 +1270,7 @@ SectionCorrections(){
     if (!oSet.SectWindowList && !oSet.SectControlList  && !oSet.SectProcessList){
         MyGui.move(,,320)
     }
+    GroupBoxAutosize(ogGB_Acc)
     GroupBoxAutosize(ogGB_Mouse)
     GroupBoxAutosize(ogGBFunction)
     GuiUpdate()
