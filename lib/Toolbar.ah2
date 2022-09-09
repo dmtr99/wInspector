@@ -82,6 +82,7 @@ AddToolbar(Toolbar, GuiObj, Extra := "", Pos := "", Padding := "", ExStyle := 0x
     ogc.DefineProp('OnEvent', { call: ((this, Event, Callback) => (this.CallBack := CallBack.Name, this.OnNotify(NM_Codes.%Event%, Toolbar_Callback))) })
 
     hWnd := ogc.hwnd
+    Toolbar.hwnd := hWnd
 
     TBB_Size := A_PtrSize == 8 ? 32 : 20
     cButtons := aButtons.Length
