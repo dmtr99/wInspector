@@ -1797,7 +1797,7 @@ GuiStyles_Create(hwnd, ObjectType) {
 GuiRectangle(x:= 0, y:= 0 ,w:= 100 ,h:=100 , Color:="Blue",Thickness := 2){
     Static GuiBox := "" 
     if IsObject(GuiBox){
-        GuiBox.Destroy()
+        try GuiBox.Destroy()
     }
     GuiBox := Gui(" +ToolWindow -Caption +AlwaysOnTop +E0x20 -DPIScale", "Highlight")
     GuiBox.x := x
