@@ -873,10 +873,12 @@ Gui_wInspector(*){
     MyGui.OnEvent("Size",Gui_Size)
     MyGui.OnEvent("Close",Gui_Close)
 
+ControlGetPos( , , , &ToolbarHeight, oToolbar)
     for index, oSection in myGui.aSections {
         SectionTitle := oSection.Title
         ; Show the sections
-        oSection.Show("x0 y24")
+        ; oSection.Show("x0 y24")
+        oSection.Show("x0 y" ToolbarHeight)
         (oSet.Sect%SectionTitle% = 0 && oSection.Visible := 0)
     }
 
@@ -1002,7 +1004,7 @@ CheckButtonClick(wParam :=0, lParam := 0, msg := 0, hwnd := 0){
 
 GetSelectedWindow(*){
     global MyGui
-    MyGui.win_hwnd := ogLV_WinList.GetText(ogLV_WinList.GetNext(, "F"), 3)
+    MyGui.win_hwnd := ogLV_WinList.GetText(ogLV_WinList.GetNext(), 3)
     return MyGui.win_hwnd
 }
 
@@ -1281,8 +1283,10 @@ SectionCorrections(){
         oGuiWindowList.HeigthMultiplier := ""
     }
     if (oSet.SectProcessList && oSet.SectWindowList && oSet.SectControlList){
-        oGuiProcessList.move(,,,HcmyGui/3)
-        oGuiWindowList.move(,,,HcmyGui/3)
+        ControlMove(, , ,HcmyGui/3,oGuiProcessList)
+        ControlMove(, , ,HcmyGui/3,oGuiWindowList)
+        ; oGuiProcessList.move(,,,HcmyGui/3)
+        ; oGuiWindowList.move(,,,HcmyGui/3)
         oGuiProcessList.HeigthMultiplier := 0.3
         oGuiWindowList.HeigthMultiplier := 0.3
         
@@ -1339,7 +1343,7 @@ UpdateProcessList(p*){
     for oProcess in oProcessList
     {
         
-        if (ogEdit_Process_search.value="" or InStr(oProcess.Name oProcess.ExecutablePath,ogEdit_Process_search.value)){
+        if (ogEdit_Process_search.value="" or InStrSuffled(oProcess.Name oProcess.ExecutablePath,ogEdit_Process_search.value)){
             if (mapIL.Has(oProcess.Name)){
                 IconIndex := mapIL[oProcess.Name]
             } else{
@@ -1390,7 +1394,7 @@ UpdateWinList(p*){
         if (ogCB_FilterWinTitle.value=1 and win_title=""){
             continue
         }
-        if (ogEdit_win_search.value="" or InStr(win_title " " win_process,ogEdit_win_search.value)){
+        if (ogEdit_win_search.value="" or InStrSuffled(win_title " " win_process,ogEdit_win_search.value)){
             if (mapIL.Has(win_id)){
                 IconIndex := mapIL[win_id]
             } else{
@@ -1443,7 +1447,7 @@ UpdateCtrlList(*){
             if ((ogCB_FilterCtrlText.value = 1 and ctrl_text = "") or (ogCB_FilterCtrlVisible.value = 1 and !ctrl_Visible)){
                  continue
             }
-            if (ogEdit_ctrl_search.value="" or InStr(ctrl_ClassNN " " ctrl_hwnd " " ctrl_text,ogEdit_ctrl_search.value)){
+            if (ogEdit_ctrl_search.value="" or InStrSuffled(ctrl_ClassNN " " ctrl_hwnd " " ctrl_text,ogEdit_ctrl_search.value)){
                 NewRowNumber:= ogLV_CtrlList.Add((mILControls.Has(ctrl_Type) ? "Icon" mILControls[ctrl_Type] : "" ) , ctrl_ClassNN, oSet.IDHex ? format("{:#x}", ctrl_hwnd) : ctrl_hwnd, ctrl_text, ctrl_Type, ctrl_x, ctrl_y, ctrl_w, ctrl_h, ctrl_Visible ? "Visible" : "Hidden")
                 if (selectedCtrl_hwnd=ctrl_hwnd){
                     ogLV_CtrlList.Modify(NewRowNumber, "Select Vis")
@@ -1604,16 +1608,19 @@ Gui_Size(thisGui, MinMax:=1, Width:= 1, Height:= 1) {
 
     WinGetPos(&XmyGui, &YmyGui, &WmyGui, &HmyGui, myGui)
     WinGetClientPos(&XcmyGui, &YcmyGui, &WcmyGui, &HcmyGui, myGui)
+    ScreenScale := A_ScreenDPI / 96
+
     For Hwnd, ogSection in myGui.aSections{
         WinGetPos(&XSection, &YSection, &WSection, &HSection, ogSection)
         WinGetClientPos(&XcSection, &YcSection, &WcSection, &HcSection, ogSection)
         if (ogSection.HasProp("LeftDistance") && ogSection.LeftDistance!=""){
-            ogSection.move(XSection - XcmyGui, YSection - YcmyGui,(XcmyGui+WcmyGui)-XSection-ogSection.LeftDistance)
+            ogSection.move((XSection - XcmyGui)/ScreenScale, (YSection - YcmyGui)/ScreenScale,((XcmyGui+WcmyGui)-XSection-ogSection.LeftDistance)/ScreenScale)
         }
         if (ogSection.HasProp("BottomDistance") && ogSection.BottomDistance != ""){
-            ogSection.move(XSection - XcmyGui, YSection - YcmyGui,,(YcmyGui+HcmyGui)-YcSection-ogSection.LeftDistance )
+            ogSection.move((XSection - XcmyGui)/ScreenScale, (YSection - YcmyGui)/ScreenScale,,(((YcmyGui+HcmyGui)-YcSection)/ScreenScale-ogSection.BottomDistance))
         } else if (ogSection.HasProp("HeigthMultiplier") && ogSection.HeigthMultiplier != ""){
-            ogSection.move(XSection - XcmyGui, YSection - YcmyGui,,HcmyGui*ogSection.HeigthMultiplier)
+            
+            ogSection.move((XSection - XcmyGui)/ScreenScale, (YSection - YcmyGui)/ScreenScale,,(HcmyGui*ogSection.HeigthMultiplier)/ScreenScale)
         }
     }
 
@@ -2534,7 +2541,8 @@ GroupBoxAutosize(ogGB){
     }
 
     yMax := 0
-    ogGB.GetPos(&xGB,&yGB,&wGB,&hGB)
+    ; ogGB.GetPos(&xGB,&yGB,&wGB,&hGB)
+    ControlGetPos(&xGB,&yGB,&wGB,&hGB, ogGB)
     for index, oControl in ogGB.gui{
         if !oControl.visible{
             continue
@@ -2543,6 +2551,7 @@ GroupBoxAutosize(ogGB){
             continue
         }
         oControl.GetPos(&xC,&yC,&wC,&hC)
+        ControlGetPos(&xC,&yC,&wC,&hC, oControl)
         yMax := Max(yMax,yC+hC)
     }
     
@@ -2694,7 +2703,7 @@ GuiAccViewer(Wintitle:="A", ControlHwnd:=""){
                 ChildId := RegExReplace(A_LoopField,".*\Q ChildId: \E(.*?)(\Q [\E.*|\Q\E)$","$1", &OutputVarCount)
                 ChildId := OutputVarCount=0 ? "" : ChildId
 
-                if (ogEditSearch.text != "" and !InStr(Path "." RoleText "." Role "." Name "." value "." Description "." StateText "." State "." KeyboardShortcut "." Help ,ogEditSearch.text )){
+                if (ogEditSearch.text != "" and !InStrSuffled(Path "." RoleText "." Role "." Name "." value "." Description "." StateText "." State "." KeyboardShortcut "." Help ,ogEditSearch.text )){
                     continue
                 }
                 if ((ogCB_Value.Value and value!="") or (ogCB_Visible.Value and x=0 and y=0 and w=0 and h=0)){
@@ -2774,5 +2783,28 @@ GuiAccViewer(Wintitle:="A", ControlHwnd:=""){
             ogButton_AccSelector.text := "+"
         }
     }
+
+    ;     CopyAcc(ThisHotkey) {
+    ;     if (ControlGetFocus()=LVAcc.hwnd){
+    ;         Loop LVAcc.GetCount("Column") {
+    ;             Headers .= ((A_Index = 1) ? "" : "`t") LVAcc.GetText(0, A_Index)
+    ;         }
+    ;         A_Clipboard := Headers "`n" ListViewGetContent("Selected", LVAcc)
+    ;     }
+    ; }
  
+}
+
+InStrSuffled(Haystack, Needles){
+	Arr_Needle := StrSplit(Needles, " ")
+	Value := "1"
+	loop Arr_Needle.Length
+	{
+        if (Arr_Needle[A_Index]!=""){
+            Value := Value * InStr(Haystack, Arr_Needle[A_Index])
+		; Value := Value * RegExMatch(Haystack, "i)^(.*[^a-z]|)\Q" Arr_Needle[A_Index] "\E")
+        }
+		
+	}
+	return Value
 }
