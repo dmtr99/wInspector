@@ -853,7 +853,7 @@ Gui_wInspector(*){
     oTbWindow := oToolbar.Add("", "Window", (*) => (ToggleSection("Window")), "shell32.dll", 3)
     oTbControl := oToolbar.Add("", "Control", (*) => (ToggleSection("Control")), "shell32.dll", 134)
     oTbAcc := oToolbar.Add("", "Acc", (*) => (ToggleSection("Acc")), "shell32.dll", 85)
-    oTbMouse := oToolbar.Add("", "Mouse", (*) => (ToggleSection("Mouse")), "shell32.dll", 121)
+    oTbMouse := oToolbar.Add("", "Mouse", (*) => (ToggleSection("Mouse")), "ddores.dll", 30)
     oTbFunction := oToolbar.Add("", "Function", (*) => (ToggleSection("Function")), "shell32.dll", 25)
     oToolbar.Add()
     oTbProcessList := oToolbar.Add("", "ProcessList", (*) => (ToggleSection("ProcessList")), "shell32.dll", 13)
@@ -906,6 +906,8 @@ ControlGetPos( , , , &ToolbarHeight, oToolbar)
 ToggleSection(SectionTitle){
     oSet.Sect%SectionTitle% := !oSet.Sect%SectionTitle%
     oGui%SectionTitle%.Visible := oSet.Sect%SectionTitle%
+    INI_File := Regexreplace(A_scriptName, "(.*)\..*", "$1.ini")
+    IniWrite(oSet.Sect%SectionTitle%, INI_File, "MainGui", "Sect" SectionTitle)
     SectionCorrections() 
     ; GuiUpdate()
     Gui_Size(MyGui)
@@ -1114,6 +1116,7 @@ RClickProcessList(*){
     myMenu.SetIcon("Copy ProcessPath", "shell32.dll", 135)
     myMenu.Add()
     myMenu.Add("ProcessClose", (*) => (ProcessClose(Process_PID),UpdateProcessList(), Tooltip2("ProcessClose(" Process_PID ")")))
+    myMenu.SetIcon("ProcessClose", "shell32.dll", 132)
     ; Disable the closing of known critical processes.
     if (process~="i)NTOSKrnl.exe|SMSS.exe|CSRSS.exe|WinLogon.exe|WinInit.exe|LogonUI.exe|lsass.exe|Services.exe|svchost.exe|DWM.exe"){
         myMenu.Disable("ProcessClose")
@@ -1152,6 +1155,7 @@ RClickWinList(*){
         myMenu.Add("Visible", (*) => (WinShow("ahk_id " win_hwnd),UpdateWinList(), Tooltip2("WinHide('ahk_id '" win_hwnd ")")))
     }
     myMenu.Add("Close", (*) => (WinClose("ahk_id " win_hwnd), UpdateWinList(), Tooltip2("WinClose('ahk_id '" win_hwnd ")")))
+    myMenu.SetIcon("Close", "shell32.dll", 132)
     ; myMenu.Add("GetPID", (*) => (Tooltip2(WinGetPID("ahk_id " win_hwnd))))
     
     myMenu.Show()
