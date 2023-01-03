@@ -2,6 +2,7 @@
 ; Based on AHK window info, but in V2 and with more features
 ; 2022-07-12 Added ChildGuis to handle different view options, included Function section to quickly run functions
 ; 2022-07-15 Added more functions and improved the function commands
+; 2023-01-03 Added PID filtering
 
 #Requires AutoHotKey v2.0-
 #SingleInstance Force
@@ -442,6 +443,8 @@ global SettingsFile := Regexreplace(A_scriptName, "(.*)\..*", "$1.ini")
 global oSettings := FileExist(SettingsFile) ? ReadINI(SettingsFile, oSettings_Default) : oSettings_Default
 global oSet := oSettings.MainGui
 
+try FileInstall("Images.icl", "Images.icl")
+
 If !pToken := Gdip_Startup() {
     MsgBox "Gdiplus failed to start. Please ensure you have gdiplus on your system"
     ExitApp
@@ -732,7 +735,7 @@ Gui_wInspector(*){
     ogLV_ProcessList.ModifyCol(2, 100)
     ogLV_ProcessList.ModifyCol(2, "Integer")
 
-    ; ogLV_ProcessList.OnEvent("Click", DClickProcessList)
+    ogLV_ProcessList.OnEvent("Click", DClickProcessList)
     ogLV_ProcessList.OnNotify(NM_RCLICK := -5, RClickProcessList)
     ogLV_ProcessList.LeftMargin := 5
     ogLV_ProcessList.BottomMargin := 8
@@ -754,10 +757,13 @@ Gui_wInspector(*){
     ogCB_FilterWinVisible := oGuiWindowList.AddCheckbox("xp+210 yp+3 vfilter_win_visible Checked", "Visible") 
     ogCB_FilterWinVisible.OnEvent("Click",UpdateWinList)
     ogCB_FilterWinVisible.Statusbar := "Filter on only visible windows"
-    ogCB_FilterWinTitle := oGuiWindowList.AddCheckbox("xp+60 yp vfilter_win_title Checked", "Title") 
+    ogCB_FilterWinTitle := oGuiWindowList.AddCheckbox("xp+60 yp vfilter_win_title Checked", "Title")
     ogCB_FilterWinTitle.OnEvent("Click", UpdateWinList)
     ogCB_FilterWinTitle.Statusbar := "Filter on windows with a title"
-    ogLV_WinList := oGuiWindowList.AddListView("xm+4 y+7 r14 w" (myGui.Width - 8 * 3) / 2 " vWinList section AltSubmit", ["Title", "Process", "ID", "Visible", "X", "Y", "W", "H"])
+    ogCB_FilterWinPID := oGuiWindowList.AddCheckbox("xp+60 yp vfilter_win_PID", "Process PID") 
+    ogCB_FilterWinPID.OnEvent("Click", UpdateWinList)
+    ogCB_FilterWinPID.Statusbar := "Filter on by selected PID in ProcessList"
+    ogLV_WinList := oGuiWindowList.AddListView("xm+4 y+7 r14 w" (myGui.Width - 8 * 3) / 2 " vWinList section AltSubmit", ["Title", "Process", "ID", "Visible", "X", "Y", "W", "H", "Class"])
     ogLV_WinList.Opt("Count400 -Multi")
 
     ogLV_WinList.ModifyCol()
@@ -1138,6 +1144,8 @@ RClickWinList(*){
     myMenu.SetIcon("Copy Process", "shell32.dll", 135)
     myMenu.Add("Copy ProcessPath", (*) => (A_Clipboard := WinGetProcessPath('ahk_id ' win_hwnd), Tooltip2("Copied [" A_Clipboard "]")))
     myMenu.SetIcon("Copy ProcessPath", "shell32.dll", 135)
+    myMenu.Add("Copy WinClass", (*) => (A_Clipboard := WinGetClass('ahk_id ' win_hwnd), Tooltip2("Copied [" A_Clipboard "]")))
+    myMenu.SetIcon("Copy WinClass", "shell32.dll", 135)
     myMenu.Add("Styles", (*) => (GuiStyles_Create(win_hwnd, "Window")))
     myMenu.Add("Acc Viewer", (*) => (GuiAccViewer("ahk_id " win_hwnd)))
     myMenu.SetIcon("Acc Viewer", "shell32.dll", 85)
@@ -1200,22 +1208,16 @@ RClickCtrlList(*){
     myMenu.Show()
 }
 
-DClickCtrlList(LV, RowNumber){
-    if (RowNumber=0){
+DClickProcessList(LV,RowNumber){
+    if (RowNumber = 0) {
         return
     }
-    win_hwnd := MyGui.win_hwnd
-    MyGui.ctrl_hwnd := ogLV_CtrlList.GetText(RowNumber,2)+0 ; convert to number
-    Hwnd_selected := MyGui.ctrl_hwnd+0
-    text := ControlGetText(Hwnd_selected)
-    if oSet.WinHighlight {
-        GuiBox := GuiRectangle()
-        GuiBox.MoveToControl(Hwnd_selected, "ahk_id " win_hwnd)
-        GuiBox.Opt("+Owner" win_hwnd)
-        GuiBox.Show()
+    MyGui.PID := ogLV_ProcessList.GetText(ogLV_ProcessList.GetNext(, "F"), 2) + 0
+    PID := MyGui.PID+0
+    if (ogCB_FilterWinPID.value=1){
+        UpdateWinList()
     }
-    SetSelectedControl(Hwnd_selected)
-    WinMoveTop("ahk_id " win_hwnd)
+        
 }
 
 DClickWinList(LV,RowNumber) {
@@ -1259,6 +1261,25 @@ DClickWinList(LV,RowNumber) {
 
 
 }
+
+DClickCtrlList(LV, RowNumber){
+    if (RowNumber=0){
+        return
+    }
+    win_hwnd := MyGui.win_hwnd
+    MyGui.ctrl_hwnd := ogLV_CtrlList.GetText(RowNumber,2)+0 ; convert to number
+    Hwnd_selected := MyGui.ctrl_hwnd+0
+    text := ControlGetText(Hwnd_selected)
+    if oSet.WinHighlight {
+        GuiBox := GuiRectangle()
+        GuiBox.MoveToControl(Hwnd_selected, "ahk_id " win_hwnd)
+        GuiBox.Opt("+Owner" win_hwnd)
+        GuiBox.Show()
+    }
+    SetSelectedControl(Hwnd_selected)
+    WinMoveTop("ahk_id " win_hwnd)
+}
+
 
 SectionCorrections(){
     myGui.GetPos(&xWin,&yWin,&wWin,&hWin)
@@ -1370,7 +1391,6 @@ UpdateProcessList(p*){
     ogLV_ProcessList.ModifyCol(2)
     ogLV_ProcessList.ModifyCol(3)
     ogLV_ProcessList.Opt("+Redraw")
-
 }
 
 UpdateWinList(p*){
@@ -1392,13 +1412,17 @@ UpdateWinList(p*){
         win_class := WinGetClass(win_id)
         win_title := WinGetTitle(win_id)
         win_process := WinGetProcessName(win_id)
+        win_PID := WinGetPID(win_id)
         WinGetClientPos(&win_x, &win_y, &win_w, &win_h, win_id)
         
         win_visible := WinGetStyle(win_id) & 0x10000000 "" ? "Visible" : "Hidden"
         if (ogCB_FilterWinTitle.value=1 and win_title=""){
             continue
         }
-        if (ogEdit_win_search.value="" or InStrSuffled(win_title " " win_process,ogEdit_win_search.value)){
+        if (ogCB_FilterWinPID.value=1 and MyGui.PID != "" and MyGui.PID != win_PID+0){
+            continue
+        }
+        if (ogEdit_win_search.value="" or InStrSuffled(win_title " " win_process " " (oSet.IDHex ? format("{:#x}", win_PID) : win_PID),ogEdit_win_search.value)){
             if (mapIL.Has(win_id)){
                 IconIndex := mapIL[win_id]
             } else{
@@ -1411,7 +1435,7 @@ UpdateWinList(p*){
                 }
             }
             
-            NewRowNumber :=ogLV_WinList.Add("Icon" mapIL[win_id], win_title, win_process, oSet.IDHex ? format("{:#x}", win_id) : win_id, win_visible, win_x, win_y, win_w, win_h)
+            NewRowNumber :=ogLV_WinList.Add("Icon" mapIL[win_id], win_title, win_process, oSet.IDHex ? format("{:#x}", win_id) : win_id, win_visible, win_x, win_y, win_w, win_h, win_class)
             if(win_id = MyGui.win_hwnd){
                 ogLV_WinList.Modify(NewRowNumber, "Select Vis")
             }
@@ -1422,6 +1446,7 @@ UpdateWinList(p*){
     ogLV_WinList.ModifyCol(6)
     ogLV_WinList.ModifyCol(7)
     ogLV_WinList.ModifyCol(8)
+    ogLV_WinList.ModifyCol(9)
     ogLV_WinList.Opt("+Redraw")
 
 }
