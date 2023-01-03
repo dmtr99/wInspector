@@ -1411,7 +1411,8 @@ UpdateWinList(p*){
     {
         win_class := WinGetClass(win_id)
         win_title := WinGetTitle(win_id)
-        win_process := WinGetProcessName(win_id)
+        win_process := ""
+        try win_process := WinGetProcessName(win_id) ; Seems to fail in some situations
         win_PID := WinGetPID(win_id)
         WinGetClientPos(&win_x, &win_y, &win_w, &win_h, win_id)
         
@@ -1430,7 +1431,8 @@ UpdateWinList(p*){
                 if (WinHIcon != 0) {
                     mapIL[win_id] := IL_Add(ImageWinList, "HICON:" WinHIcon)
                 } else{
-                    ProcessPath := WinGetProcessPath(win_id)
+                    ProcessPath := ""
+                    try ProcessPath := WinGetProcessPath(win_id)
                     mapIL[win_id] := IL_Add(ImageWinList, ProcessPath)
                 }
             }
