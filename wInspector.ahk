@@ -972,6 +972,7 @@ CheckButtonClick(wParam :=0, lParam := 0, msg := 0, hwnd := 0){
         MyGui.ctrl_hwnd := MouseControlHwnd
         MyGui.MouseX := MouseX
         MyGui.MouseY := MouseY
+	MyGui.PID := WinGetPID(MouseWinHwnd)
         SetSelectedWindow(MouseWinHwnd)
         SetSelectedControl(MouseControlHwnd)
         UpdateProcessList()
