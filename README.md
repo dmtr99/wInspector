@@ -7,8 +7,8 @@ functionalities:
  - List all processes and filter them
  - List all controls and filter them
  - Quickly test functions to the selected window or control, with a possibility to copy the code
- - move controls or windows
- - retrieve the styles of the controls or windows
- - Acc Viewer
+ - Move controls or windows
+ - Retrieve the styles of the controls or windows
+ - Acc Viewer to explore the Acc elements
 
 Feel free to give tip or requests to improve this tool.
