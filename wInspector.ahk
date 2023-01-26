@@ -472,26 +472,24 @@ Gui_wInspector(*){
     ogButton_Selector.SetFont("s20", "Times New Roman")
     ogButton_Selector.statusbar := "Click and drag to select a specific control or window"
 
-    ChildOpt := "+Parent" myGui.hwnd " -Resize +AlwaysOnTop -Border -Caption -ToolWindow"
-    ; ChildOpt := "+Parent" myGui.hwnd " +Resize +AlwaysOnTop -Border -Caption +ToolWindow" ; Borders visible for testing
+    ChildOpt := " +AlwaysOnTop +Parent" myGui.hwnd " -Resize -Border -Caption -ToolWindow"
+    ; ChildOpt := "+AlwaysOnTop +Parent" myGui.hwnd " +Resize -Border -Caption +ToolWindow" ; Borders visible for testing
 
     ; Child guis or sections
-    oGuiWindow := Gui(, "Window")
-    oGuiControl := Gui(, "Control")
-    oGuiAcc := Gui(, "Acc")
-    oGuiMouse := Gui(, "Mouse")
-    oGuiFunction := Gui(, "Function")
-    oGuiWindowList := Gui(, "WindowList")
-    oGuiControlList := Gui(, "ControlList")
-    oGuiProcessList := Gui(, "ProcessList")
+    oGuiWindow := Gui(ChildOpt, "Window")
+    oGuiControl := Gui(ChildOpt, "Control")
+    oGuiAcc := Gui(ChildOpt, "Acc")
+    oGuiMouse := Gui(ChildOpt, "Mouse")
+    oGuiFunction := Gui(ChildOpt, "Function")
+    oGuiWindowList := Gui(ChildOpt, "WindowList")
+    oGuiControlList := Gui(ChildOpt, "ControlList")
+    oGuiProcessList := Gui(ChildOpt, "ProcessList")
 
     myGui.aSections := [oGuiWindow, oGuiControl, oGuiAcc, oGuiMouse, oGuiFunction, oGuiProcessList, oGuiWindowList, oGuiControlList]
 
     for index, oSection in myGui.aSections {
         ; Adding a visible property to the guis
         oSection.DefineProp("Visible", { Get: ((oSection, *) => ((WinGetStyle(oSection) & 0x10000000) != 0)).bind(oSection), set: ((oSection, this, value) => (value ? oSection.Show() : oSection.Hide())).bind(oSection) })
-        ; Apply section options
-        oSection.Opt(ChildOpt)
         oSection.OnEvent("Size", GuiSection_Size)
         oSection.MarginX := 2
         oSection.MarginY := 2
