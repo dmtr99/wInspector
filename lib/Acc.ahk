@@ -878,7 +878,7 @@ class Acc {
         if !(IsSet(x) && IsSet(y)) {
             DllCall("GetCursorPos", "int64P", &pt64:=0), x := 0xFFFFFFFF & pt64, y := pt64 >> 32
         } else {
-            pt64 := y << 32 | x
+            pt64 := y << 32 | (x & 0xFFFFFFFF)
         }
         wId := DllCall("GetAncestor", "UInt", DllCall("user32.dll\WindowFromPoint", "int64",  pt64), "UInt", GA_ROOT := 2) ; hwnd from point by SKAN
         if activateChromium
@@ -1012,7 +1012,7 @@ class Acc {
     }
 
 	static WindowFromPoint(X, Y) { ; by SKAN and Linear Spoon
-		return DllCall("GetAncestor", "UInt", DllCall("user32.dll\WindowFromPoint", "Int64", Y << 32 | X), "UInt", 2)
+		return DllCall("GetAncestor", "UInt", DllCall("user32.dll\WindowFromPoint", "Int64", Y << 32 | (X & 0xFFFFFFFF)), "UInt", 2)
 	}
 
     class Viewer {
