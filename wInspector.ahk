@@ -27,10 +27,10 @@ A_TrayMenu.Default := "Inspect"
 
 ; Settings initiation
 oSettings_Default := Object()
-oSettings_Default.MainGui := { 
-    WinX: 100, 
+oSettings_Default.MainGui := {
+    WinX: 100,
     WinY: 100,
-    WinW: 645, 
+    WinW: 645,
     WinH: 645,
     WinAlwaysOnTop: 1,
     WinGetClientPos: true,
@@ -96,7 +96,7 @@ for property, value in oImageControls.OwnProps(){
     index++
     mILControls[Property] := IL_Add(ImageCtrlList, "Images.icl", value)
 }
-    
+
 ; Styles data
 {
     Class Styles {
@@ -112,10 +112,10 @@ for property, value in oImageControls.OwnProps(){
     Global aoWinStyles := Array()
     aoWinStyles.Push(Styles("WS_BORDER", "0x800000","+/-Border. Creates a window that has a thin-line border.", "Border","0xC00000"))
     aoWinStyles.Push(Styles("WS_POPUP", "0x80000000","Creates a pop-up window. This style cannot be used with the WS_CHILD style."))
-    aoWinStyles.Push(Styles("WS_CAPTION", "0xC00000","+/-Caption. Creates a window that has a title bar. This style is a numerical combination of WS_BORDER and WS_DLGFRAME.", "Caption","-Border -0x400000 +E0x10000 -E0x100")) 
-    aoWinStyles.Push(Styles("WS_CLIPSIBLINGS", "0x4000000","Clips child windows relative to each other; that is, when a particular child window receives a WM_PAINT message, the WS_CLIPSIBLINGS style clips all other overlapping child windows out of the region of the child window to be updated. If WS_CLIPSIBLINGS is not specified and child windows overlap, it is possible, when drawing within the client area of a child window, to draw within the client area of a neighboring child window.")) 
-    aoWinStyles.Push(Styles("WS_DISABLED", "0x8000000","+/-Disabled. Creates a window that is initially disabled.","Disabled")) 
-    aoWinStyles.Push(Styles("WS_DLGFRAME", "0x400000","Creates a window that has a border of a style typically used with dialog boxes.")) 
+    aoWinStyles.Push(Styles("WS_CAPTION", "0xC00000","+/-Caption. Creates a window that has a title bar. This style is a numerical combination of WS_BORDER and WS_DLGFRAME.", "Caption","-Border -0x400000 +E0x10000 -E0x100"))
+    aoWinStyles.Push(Styles("WS_CLIPSIBLINGS", "0x4000000","Clips child windows relative to each other; that is, when a particular child window receives a WM_PAINT message, the WS_CLIPSIBLINGS style clips all other overlapping child windows out of the region of the child window to be updated. If WS_CLIPSIBLINGS is not specified and child windows overlap, it is possible, when drawing within the client area of a child window, to draw within the client area of a neighboring child window."))
+    aoWinStyles.Push(Styles("WS_DISABLED", "0x8000000","+/-Disabled. Creates a window that is initially disabled.","Disabled"))
+    aoWinStyles.Push(Styles("WS_DLGFRAME", "0x400000","Creates a window that has a border of a style typically used with dialog boxes."))
     aoWinStyles.Push(Styles("WS_HSCROLL", "0x100000", "Creates a window that has a horizontal scroll bar."))
     aoWinStyles.Push(Styles("WS_MAXIMIZE", "0x1000000", "Creates a window that is initially maximized."))
     aoWinStyles.Push(Styles("WS_MAXIMIZEBOX", "0x10000", "+/-MaximizeBox. Creates a window that has a maximize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.","MaximizeBox"))
@@ -385,7 +385,7 @@ for property, value in oImageControls.OwnProps(){
     aoProgressStyles.Push(Styles("PBS_SMOOTH", "0x1",'+/-Smooth. The progress bar displays progress status in a smooth scrolling bar instead of the default segmented bar. When this style is present, the control automatically reverts to the Classic Theme appearance.',"Smooth"))
     aoProgressStyles.Push(Styles("PBS_VERTICAL", "0x4",'+/-Vertical. The progress bar displays progress status vertically, from bottom to top.',"Vertical"))
     aoProgressStyles.Push(Styles("PBS_MARQUEE", "0x8",'The progress bar moves like a marquee; that is, each change to its position causes the bar to slide further along its available length until it wraps around to the other side. A bar with this style has no defined position. Each attempt to change its position will instead slide the bar by one increment. This style is typically used to indicate an ongoing operation whose completion time is unknown.',""))
-    
+
     global aoTabStyles := Array()
     aoTabStyles.Push(Styles("TCS_SCROLLOPPOSITE", "0x1", 'Unneeded tabs scroll to the opposite side of the control when a tab is selected.', ""))
     aoTabStyles.Push(Styles("TCS_BOTTOM", "0x2", '+/-Bottom. Tabs appear at the bottom of the control instead of the top.', "Bottom"))
@@ -439,7 +439,7 @@ for property, value in oImageControls.OwnProps(){
 }
 
 global SettingsFile := Regexreplace(A_scriptName, "(.*)\..*", "$1.ini")
-;Load the existing settings 
+;Load the existing settings
 global oSettings := FileExist(SettingsFile) ? ReadINI(SettingsFile, oSettings_Default) : oSettings_Default
 global oSet := oSettings.MainGui
 
@@ -714,7 +714,7 @@ Gui_wInspector(*){
     ; ProcessList Section
 
     oGuiProcessList.posRef := oGuiWindow
-    oGuiProcessList.posRule := "Xxw Yy" 
+    oGuiProcessList.posRule := "Xxw Yy"
     ogGBProcessList := oGuiProcessList.addGroupBox("h311","ProcessList")
     ogGBProcessList.LeftMargin := 2
     ogGBProcessList.BottomMargin := 2
@@ -752,13 +752,13 @@ Gui_wInspector(*){
     ogEdit_win_search.SetCueText("Search")
     ogEdit_win_search.statusbar := "Type to filter the windows on specific words"
     ogEdit_win_search.OnEvent("Change",UpdateWinList)
-    ogCB_FilterWinVisible := oGuiWindowList.AddCheckbox("xp+210 yp+3 vfilter_win_visible Checked", "Visible") 
+    ogCB_FilterWinVisible := oGuiWindowList.AddCheckbox("xp+210 yp+3 vfilter_win_visible Checked", "Visible")
     ogCB_FilterWinVisible.OnEvent("Click",UpdateWinList)
     ogCB_FilterWinVisible.Statusbar := "Filter on only visible windows"
     ogCB_FilterWinTitle := oGuiWindowList.AddCheckbox("xp+60 yp vfilter_win_title Checked", "Title")
     ogCB_FilterWinTitle.OnEvent("Click", UpdateWinList)
     ogCB_FilterWinTitle.Statusbar := "Filter on windows with a title"
-    ogCB_FilterWinPID := oGuiWindowList.AddCheckbox("xp+60 yp vfilter_win_PID", "Process PID") 
+    ogCB_FilterWinPID := oGuiWindowList.AddCheckbox("xp+60 yp vfilter_win_PID", "Process PID")
     ogCB_FilterWinPID.OnEvent("Click", UpdateWinList)
     ogCB_FilterWinPID.Statusbar := "Filter on by selected PID in ProcessList"
     ogLV_WinList := oGuiWindowList.AddListView("xm+4 y+7 r14 w" (myGui.Width - 8 * 3) / 2 " vWinList section AltSubmit", ["Title", "Process", "ID", "Visible", "X", "Y", "W", "H", "Class"])
@@ -796,7 +796,7 @@ Gui_wInspector(*){
     ogCB_FilterCtrlVisible.OnEvent("Click", UpdateCtrlList)
     ogCB_FilterCtrlVisible.Statusbar := "Filter on only visible controls"
 
-    ogCB_FilterCtrlText := oGuiControlList.AddCheckbox("xp+60 yp vfilter_ctrl_text", "Text visible") 
+    ogCB_FilterCtrlText := oGuiControlList.AddCheckbox("xp+60 yp vfilter_ctrl_text", "Text visible")
     ogCB_FilterCtrlText.OnEvent("Click", UpdateCtrlList)
     ogCB_FilterCtrlText.statusbar := "Filter on controls with text"
     ogLV_CtrlList := oGuiControlList.AddListView("xm+4 y+7 r15 w" (myGui.Width-8*3)/2 " vCtrlList section AltSubmit", ["Class(NN)", "Hwnd", "Text", "Type", "X", "Y", "W", "H","Visible"])
@@ -912,7 +912,7 @@ ToggleSection(SectionTitle){
     oGui%SectionTitle%.Visible := oSet.Sect%SectionTitle%
     INI_File := Regexreplace(A_scriptName, "(.*)\..*", "$1.ini")
     IniWrite(oSet.Sect%SectionTitle%, INI_File, "MainGui", "Sect" SectionTitle)
-    SectionCorrections() 
+    SectionCorrections()
     ; GuiUpdate()
     Gui_Size(MyGui)
     return
@@ -949,13 +949,13 @@ CheckButtonClick(wParam :=0, lParam := 0, msg := 0, hwnd := 0){
             MouseGetPos(&MouseX, &MouseY, &MouseWinHwnd, &MouseControlHwnd, 2)
             Sleep(100)
             if (MouseControlHwnd_Prev != MouseControlHwnd and MouseControlHwnd!=""){
-                
+
                 if oSet.WinHighlight{
                     GuiBox.MoveToControl(MouseControlHwnd, MouseWinHwnd)
                     GuiBox.Show()
                 }
                 SetSelectedWindow(MouseWinHwnd)
-                SetSelectedControl(MouseControlHwnd) 
+                SetSelectedControl(MouseControlHwnd)
             }
             if (MouseX_Prev != MouseX or MouseY_Prev != MouseY){
                 SetSelectedMouse(MouseX, MouseY)
@@ -989,7 +989,7 @@ CheckButtonClick(wParam :=0, lParam := 0, msg := 0, hwnd := 0){
                 ogLV_AccProps.Add(, v, v = "Location" ? ("x: " %v%.x " y: " %v%.y " w: " %v%.w " h: " %v%.h) : %v%)
             }
         }
-        
+
     } else if (ogPic_Grid.hwnd = OutputVarControlHwnd){
         ; Hide the cross and get the selected pixel
         ogText_Line1.visible := 0
@@ -1006,7 +1006,7 @@ CheckButtonClick(wParam :=0, lParam := 0, msg := 0, hwnd := 0){
         ogText_Line3.visible := 1
         ogText_Line4.visible := 1
     }
-        
+
 }
 
 GetSelectedWindow(*){
@@ -1047,7 +1047,7 @@ SetSelectedControl(ctrl_id){
         ogEdit_cHeight.value := ""
         return
     }
-    
+
     ogEdit_cText.value := ControlGetText(ctrl_id)
     ogEdit_cClass.value := ControlGetClassNN(ctrl_id)
 
@@ -1057,7 +1057,7 @@ SetSelectedControl(ctrl_id){
     ogEdit_cYPos.value := cY
     ogEdit_cWidth.value := cW
     ogEdit_cHeight.value := cH
-    
+
     ogEdtControl.text := (oSet.ControlPar = "text" && ControlGetText(ctrl_id)!="") ? ControlGetText(ctrl_id) : (oSet.ControlPar = "hwnd") ? ctrl_id : ControlGetClassNN(ctrl_id)
 }
 
@@ -1154,7 +1154,7 @@ RClickWinList(*){
     if (State_AlwaysOnTop){
         myMenu.Check("AlwaysOnTop")
     }
-   
+
     if( WinGetStyle("ahk_id " win_hwnd) & 0x10000000){
         myMenu.Add("Visible", (*) => (WinHide("ahk_id " win_hwnd),UpdateWinList(), Tooltip2("WinHide('ahk_id '" win_hwnd ")")))
         myMenu.Check("Visible")
@@ -1164,7 +1164,7 @@ RClickWinList(*){
     myMenu.Add("Close", (*) => (WinClose("ahk_id " win_hwnd), UpdateWinList(), Tooltip2("WinClose('ahk_id '" win_hwnd ")")))
     myMenu.SetIcon("Close", "shell32.dll", 132)
     ; myMenu.Add("GetPID", (*) => (Tooltip2(WinGetPID("ahk_id " win_hwnd))))
-    
+
     myMenu.Show()
 }
 
@@ -1216,7 +1216,7 @@ DClickProcessList(LV,RowNumber){
     if (ogCB_FilterWinPID.value=1){
         UpdateWinList()
     }
-        
+
 }
 
 DClickWinList(LV,RowNumber) {
@@ -1313,7 +1313,7 @@ SectionCorrections(){
         ; oGuiWindowList.move(,,,HcmyGui/3)
         oGuiProcessList.HeigthMultiplier := 0.3
         oGuiWindowList.HeigthMultiplier := 0.3
-        
+
     } else if (!oSet.SectProcessList && oSet.SectWindowList && oSet.SectControlList){
         oGuiWindowList.move(,,,HcmyGui/2)
         oGuiWindowList.HeigthMultiplier := 0.4
@@ -1324,7 +1324,7 @@ SectionCorrections(){
     if((oSet.SectProcessList | oSet.SectWindowList | oSet.SectControlList) and wWin <700){
         MyGui.move(,,700)
     }
-    
+
     if (!oSet.SectWindowList && !oSet.SectControlList  && !oSet.SectProcessList){
         MyGui.move(,,320)
     }
@@ -1351,7 +1351,7 @@ Gui_Autosize(){
 
 UpdateProcessList(p*){
     ogLV_ProcessList.Delete()
-    
+
     ogLV_ProcessList.Opt("-Redraw")
     oProcessList := ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process")
 
@@ -1366,7 +1366,7 @@ UpdateProcessList(p*){
     IconIndex1 := IL_Add(ImageProcessList, "shell32.dll", 50) ; add empty image
     for oProcess in oProcessList
     {
-        
+
         if (ogEdit_Process_search.value="" or InStrSuffled(oProcess.Name oProcess.ExecutablePath,ogEdit_Process_search.value)){
             if (mapIL.Has(oProcess.Name)){
                 IconIndex := mapIL[oProcess.Name]
@@ -1378,7 +1378,7 @@ UpdateProcessList(p*){
                     mapIL[oProcess.Name] := IL_Add(ImageProcessList, oProcess.ExecutablePath)
                 }
             }
-            
+
             ; NewRowNumber :=ogLV_ProcessList.Add("Icon" mapIL[oProcess.Name], win_title, win_process, format("{:#x}", win_id), win_visible, win_x, win_y, win_w, win_h)
             NewRowNumber :=ogLV_ProcessList.Add("Icon" mapIL[oProcess.Name], oProcess.Name, oSet.IDHex ? format("{:#x}", oProcess.Handle) : oProcess.Handle, oProcess.ExecutablePath)
             if(oProcess.Handle = winPID){
@@ -1401,7 +1401,7 @@ UpdateWinList(p*){
     }
     ogLV_WinList.Opt("-Redraw")
     oWinList := WinGetList()
-    
+
     static ImageWinList := IL_Create(oWinList.Length)
     static mapIL := Map()
     ogLV_WinList.SetImageList(ImageWinList)
@@ -1414,7 +1414,7 @@ UpdateWinList(p*){
         try win_process := WinGetProcessName(win_id) ; Seems to fail in some situations
         win_PID := WinGetPID(win_id)
         WinGetClientPos(&win_x, &win_y, &win_w, &win_h, win_id)
-        
+
         win_visible := WinGetStyle(win_id) & 0x10000000 "" ? "Visible" : "Hidden"
         if (ogCB_FilterWinTitle.value=1 and win_title=""){
             continue
@@ -1435,14 +1435,14 @@ UpdateWinList(p*){
                     mapIL[win_id] := IL_Add(ImageWinList, ProcessPath)
                 }
             }
-            
+
             NewRowNumber :=ogLV_WinList.Add("Icon" mapIL[win_id], win_title, win_process, oSet.IDHex ? format("{:#x}", win_id) : win_id, win_visible, win_x, win_y, win_w, win_h, win_class)
             if(win_id = MyGui.win_hwnd){
                 ogLV_WinList.Modify(NewRowNumber, "Select Vis")
             }
         }
     }
-    
+
     ogLV_WinList.ModifyCol(5)
     ogLV_WinList.ModifyCol(6)
     ogLV_WinList.ModifyCol(7)
@@ -1472,7 +1472,7 @@ UpdateCtrlList(*){
             ; ControlType := ControlGetStyle(ctrl_hwnd) & 0xF
 
             ctrl_Type := ControlGetType(ctrl_hwnd)
-            
+
             ctrl_Visible := ControlGetVisible(ctrl_hwnd)
             if ((ogCB_FilterCtrlText.value = 1 and ctrl_text = "") or (ogCB_FilterCtrlVisible.value = 1 and !ctrl_Visible)){
                  continue
@@ -1485,7 +1485,7 @@ UpdateCtrlList(*){
             }
         }
     }
-    ; 
+    ;
     ;SetSelectedControl(isSet(Hwnd_selected) ? Hwnd_selected : "")
     ogLV_CtrlList.ModifyCol()
     ogLV_CtrlList.ModifyCol(3,200)
@@ -1566,7 +1566,7 @@ GuiUpdate(*){
             } else if (posRule = "Xx Yy"){
                 ogSection.move((X2 - XcmyGui)/ScreenScale, (Y2 - YcmyGui)/ScreenScale)
             }
-            
+
         }
         if (ogSection.Visible){
             WinGetClientPos(&x, &y, &w, &h, ogSection)
@@ -1599,7 +1599,7 @@ GuiSection_Size(thisGui, MinMax:=1, Width:="", Height:= "") {
         }
         if (GuiCtrlObj.HasProp("PosRef") && GuiCtrlObj.PosRef!="") {
             GuiCtrlPosRef := GuiCtrlObj.PosRef
-            
+
             loop{
                 if (GuiCtrlPosRef.Visible){
                     break
@@ -1607,7 +1607,7 @@ GuiSection_Size(thisGui, MinMax:=1, Width:="", Height:= "") {
                     if (GuiCtrlPosRef.hasProp("PosRef")){
                         GuiCtrlPosRef := GuiCtrlPosRef.PosRef
                     } else{
-                        
+
                         Break
                     }
                 }
@@ -1626,7 +1626,7 @@ GuiSection_Size(thisGui, MinMax:=1, Width:="", Height:= "") {
 
 ; Automatically change Sections positions
 Gui_Size(thisGui, MinMax:=1, Width:= 1, Height:= 1) {
-    
+
     if (WinExist("Highlight")){
         ; Hide the rectangle if window is moved
         WinHide("Highlight")
@@ -1649,7 +1649,7 @@ Gui_Size(thisGui, MinMax:=1, Width:= 1, Height:= 1) {
         if (ogSection.HasProp("BottomDistance") && ogSection.BottomDistance != ""){
             ogSection.move((XSection - XcmyGui)/ScreenScale, (YSection - YcmyGui)/ScreenScale,,(((YcmyGui+HcmyGui)-YcSection)/ScreenScale-ogSection.BottomDistance))
         } else if (ogSection.HasProp("HeigthMultiplier") && ogSection.HeigthMultiplier != ""){
-            
+
             ogSection.move((XSection - XcmyGui)/ScreenScale, (YSection - YcmyGui)/ScreenScale,,(HcmyGui*ogSection.HeigthMultiplier)/ScreenScale)
         }
     }
@@ -1657,7 +1657,7 @@ Gui_Size(thisGui, MinMax:=1, Width:= 1, Height:= 1) {
     DllCall("LockWindowUpdate", "Uint", 0)
 
     GuiUpdate()
-    
+
 }
 
 GuiStyles_Create(hwnd, ObjectType) {
@@ -1668,7 +1668,7 @@ GuiStyles_Create(hwnd, ObjectType) {
     }Catch{
         Object_ClassNN := WinGetTitle("ahk_id " hwnd)
     }
-    
+
     ObjectType := (ObjectType="Edit" and object_Style & 0x4) ? "editmultiLine" : ObjectType
 
     if !aoDefaultStyles.HasProp(ObjectType){
@@ -1723,24 +1723,24 @@ GuiStyles_Create(hwnd, ObjectType) {
     ; general style
     for index, oStyle in aoStyles{
         ogLVStyles.Add(((object_Style & oStyle.Hex) ? "Check" : ""),oStyle.Style,oStyle.Hex,(defaultStyle & oStyle.Hex) ? "true" : "false", oStyle.Description)
-        ; Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText) 
+        ; Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText)
         ; SkipOptions .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " (oStyle.SkipHex)
     }
 
-    
+
 
     ; object specific styles
     if (aoStyles_extra!=""){
         for index, oStyle in aoStyles_extra{
             ogLVStyles.Add(((object_Style & oStyle.Hex)? "Check" : ""),oStyle.Style,oStyle.Hex,(defaultStyle & oStyle.Hex) ? "true" : "false",oStyle.Description)
-            ; Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText) 
+            ; Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText)
             ; SkipOptions .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " (oStyle.SkipHex)
         }
     }
-    
+
     for index, oExStyle in aoWinExStyles{
         ogLVExStyles.Add(((object_ExStyle & oExStyle.Hex)? "Check" : ""),oExStyle.Style,oExStyle.Hex, (defaultExStyle & oExStyle.Hex) ? "true" : "false",oExStyle.Description)
-        ; Options .= (((defaultExStyle & oExStyle.Hex) && (object_ExStyle & oExStyle.Hex)) | (!(defaultExStyle & oExStyle.Hex) && !(object_ExStyle & oExStyle.Hex))) ? "" : " " ((defaultExStyle & oExStyle.Hex) ? "-" : "+") (oExStyle.OptionText="" ? "E" oExStyle.Hex : oExStyle.OptionText) 
+        ; Options .= (((defaultExStyle & oExStyle.Hex) && (object_ExStyle & oExStyle.Hex)) | (!(defaultExStyle & oExStyle.Hex) && !(object_ExStyle & oExStyle.Hex))) ? "" : " " ((defaultExStyle & oExStyle.Hex) ? "-" : "+") (oExStyle.OptionText="" ? "E" oExStyle.Hex : oExStyle.OptionText)
         ; SkipOptions .= (((defaultExStyle & oExStyle.Hex) && (object_ExStyle & oExStyle.Hex)) | (!(defaultStyle & oExStyle.Hex) && !(object_ExStyle & oExStyle.Hex))) ? "" : " " (oExStyle.SkipHex)
     }
 
@@ -1749,7 +1749,7 @@ GuiStyles_Create(hwnd, ObjectType) {
     ogLVStyles.ModifyCol(2, "Integer")
     ogLVExStyles.ModifyCol
     ogLVExStyles.ModifyCol(2, "Integer")
-    
+
     GuiStyles.Show("")
 
     ControlGetAHKOptions(ObjectType, object_Style, object_ExStyle){
@@ -1792,31 +1792,31 @@ GuiStyles_Create(hwnd, ObjectType) {
 
         ; general style
         for index, oStyle in aoStyles{
-            Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText) 
+            Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText)
             SkipOptions .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " (oStyle.SkipHex)
         }
 
         ; object specific styles
         if (aoStyles_extra!=""){
             for index, oStyle in aoStyles_extra{
-                Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText) 
+                Options .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " ((defaultStyle & oStyle.Hex) ? "-" : "+") (oStyle.OptionText="" ? oStyle.Hex : oStyle.OptionText)
                 SkipOptions .= (((defaultStyle & oStyle.Hex) && (object_Style & oStyle.Hex)) | (!(defaultStyle & oStyle.Hex) && !(object_Style & oStyle.Hex))) ? "" : " " (oStyle.SkipHex)
             }
         }
-        
+
         for index, oExStyle in aoWinExStyles{
-            Options .= (((defaultExStyle & oExStyle.Hex) && (object_ExStyle & oExStyle.Hex)) | (!(defaultExStyle & oExStyle.Hex) && !(object_ExStyle & oExStyle.Hex))) ? "" : " " ((defaultExStyle & oExStyle.Hex) ? "-" : "+") (oExStyle.OptionText="" ? "E" oExStyle.Hex : oExStyle.OptionText) 
+            Options .= (((defaultExStyle & oExStyle.Hex) && (object_ExStyle & oExStyle.Hex)) | (!(defaultExStyle & oExStyle.Hex) && !(object_ExStyle & oExStyle.Hex))) ? "" : " " ((defaultExStyle & oExStyle.Hex) ? "-" : "+") (oExStyle.OptionText="" ? "E" oExStyle.Hex : oExStyle.OptionText)
             SkipOptions .= (((defaultExStyle & oExStyle.Hex) && (object_ExStyle & oExStyle.Hex)) | (!(defaultStyle & oExStyle.Hex) && !(object_ExStyle & oExStyle.Hex))) ? "" : " " (oExStyle.SkipHex)
         }
 
-        
+
         Loop parse, Options, A_space{
             if !InStr(" " SkipOptions " ", " " A_LoopField " ",){
                 optionsBuffer .= A_LoopField " "
             }
         }
         optionsBuffer :=StrReplace(optionsBuffer,"+-", "-")
-        
+
 
         return optionsBuffer
     }
@@ -1825,7 +1825,7 @@ GuiStyles_Create(hwnd, ObjectType) {
 }
 
 GuiRectangle(x:= 0, y:= 0 ,w:= 100 ,h:=100 , Color:="Blue",Thickness := 2){
-    Static GuiBox := "" 
+    Static GuiBox := ""
     if IsObject(GuiBox){
         try GuiBox.Destroy()
     }
@@ -1848,14 +1848,14 @@ GuiRectangle(x:= 0, y:= 0 ,w:= 100 ,h:=100 , Color:="Blue",Thickness := 2){
     goColor := GuiBox.AddText("w" w " h" h " Background" Color)
     goTransp := GuiBox.AddText("x" Thickness " y" Thickness " w" w-Thickness*2 " h" h-Thickness*2 " BackgroundEEAA99")
     WinSetTransColor("EEAA99", GuiBox)
-    
+
     GuiBox.SetColor := SetColor
     GuiBox.SetThickness := SetThickness
     GuiBox.MovePos := MovePos
     GuiBox.MoveToControl := MoveToControl
     GuiBox.MoveToWindow := MoveToWindow
     GuiBox.Show("Hide x" x " y" y)
-    
+
     return GuiBox
 
     ; Set the color
@@ -1896,7 +1896,7 @@ GuiRectangle(x:= 0, y:= 0 ,w:= 100 ,h:=100 , Color:="Blue",Thickness := 2){
         goTransp.Move(Thickness, Thickness, w-Thickness*2, h-Thickness*2)
         goColor.Redraw()
         goTransp.Redraw()
-        
+
     }
 
     ; Set the rectangle arround a control
@@ -1919,7 +1919,6 @@ GuiRectangle(x:= 0, y:= 0 ,w:= 100 ,h:=100 , Color:="Blue",Thickness := 2){
                 winY:=winY+8
                 winW:=winW-8*2
                 winH:=winH-8*2
-
             }
             MovePos(GuiBox, winX, winY, winW, winH) ; Strangly, WinGetPos returned slightly offset values
         } Catch {
@@ -2172,7 +2171,7 @@ ReadINI(INI_File:="", oResult := "") {	; return 2D-array from INI-file
         }
 
         aPar.Push(ogEdtWindow.text)
-        
+
         Result := %SelFunction%(aPar*)
         if (Type(Result)="Array"){
             EditGui(Result)
@@ -2189,11 +2188,11 @@ ReadINI(INI_File:="", oResult := "") {	; return 2D-array from INI-file
             ogEdtResult.Move(,,,7+1*13)
             ogGbResult.Move(,,,26+1*13)
         }
-        
+
         ogEdtResult.text := Result
         GroupBoxAutosize(ogGBFunction)
         Gui_Size(myGui)
-        
+
     }
 
     ClickCopy(*){
@@ -2204,7 +2203,7 @@ ReadINI(INI_File:="", oResult := "") {	; return 2D-array from INI-file
         }
 
         oFunct := moFunctions[SelFunction]
-        
+
         Clipboard := (oFunct.HasProp("result") && oFunct.result) ? "Result := " : ""
         aPar := []
         if (oFunct.HasProp("var1")){
@@ -2244,263 +2243,263 @@ ReadINI(INI_File:="", oResult := "") {	; return 2D-array from INI-file
     UpdateLVMessages(*){
         msgList := "
         (
-            WM_NULL	0x0000	
-            WM_CREATE	0x0001	
-            WM_DESTROY	0x0002	
-            WM_MOVE	0x0003	
-            WM_SIZE	0x0005	
-            WM_ACTIVATE	0x0006	
-            WM_SETFOCUS	0x0007	
-            WM_KILLFOCUS	0x0008	
-            WM_ENABLE	0x000A	
-            WM_SETREDRAW	0x000B	
-            WM_SETTEXT	0x000C	
-            WM_GETTEXT	0x000D	
-            WM_GETTEXTLENGTH	0x000E	
-            WM_PAINT	0x000F	
-            WM_CLOSE	0x0010	
-            WM_QUERYENDSESSION	0x0011	
-            WM_QUERYOPEN	0x0013	
-            WM_ENDSESSION	0x0016	
-            WM_QUIT	0x0012	
-            WM_ERASEBKGND	0x0014	
-            WM_SYSCOLORCHANGE	0x0015	
-            WM_SHOWWINDOW	0x0018	
-            WM_WININICHANGE	0x001A	
-            WM_SETTINGCHANGE	WM_WININICHANGE	
-            WM_DEVMODECHANGE	0x001B	
-            WM_ACTIVATEAPP	0x001C	
-            WM_FONTCHANGE	0x001D	
-            WM_TIMECHANGE	0x001E	
-            WM_CANCELMODE	0x001F	
-            WM_SETCURSOR	0x0020	
-            WM_MOUSEACTIVATE	0x0021	
-            WM_CHILDACTIVATE	0x0022	
-            WM_QUEUESYNC	0x0023	
-            WM_GETMINMAXINFO	0x0024	
-            WM_PAINTICON	0x0026	
-            WM_ICONERASEBKGND	0x0027	
-            WM_NEXTDLGCTL	0x0028	
-            WM_SPOOLERSTATUS	0x002A	
-            WM_DRAWITEM	0x002B	
-            WM_MEASUREITEM	0x002C	
-            WM_DELETEITEM	0x002D	
-            WM_VKEYTOITEM	0x002E	
-            WM_CHARTOITEM	0x002F	
-            WM_SETFONT	0x0030	
-            WM_GETFONT	0x0031	
-            WM_SETHOTKEY	0x0032	
-            WM_GETHOTKEY	0x0033	
-            WM_QUERYDRAGICON	0x0037	
-            WM_COMPAREITEM	0x0039	
-            WM_GETOBJECT	0x003D	
-            WM_COMPACTING	0x0041	
-            WM_COMMNOTIFY	0x0044	
-            WM_WINDOWPOSCHANGING	0x0046	
-            WM_WINDOWPOSCHANGED	0x0047	
-            WM_POWER	0x0048	
-            WM_COPYDATA	0x004A	
-            WM_CANCELJOURNAL	0x004B	
-            WM_NOTIFY	0x004E	
-            WM_INPUTLANGCHANGEREQUEST	0x0050	
-            WM_INPUTLANGCHANGE	0x0051	
-            WM_TCARD	0x0052	
-            WM_HELP	0x0053	
-            WM_USERCHANGED	0x0054	
-            WM_NOTIFYFORMAT	0x0055	
-            WM_CONTEXTMENU	0x007B	
-            WM_STYLECHANGING	0x007C	
-            WM_STYLECHANGED	0x007D	
-            WM_DISPLAYCHANGE	0x007E	
-            WM_GETICON	0x007F	
-            WM_SETICON	0x0080	
-            WM_NCCREATE	0x0081	
-            WM_NCDESTROY	0x0082	
-            WM_NCCALCSIZE	0x0083	
-            WM_NCHITTEST	0x0084	
-            WM_NCPAINT	0x0085	
-            WM_NCACTIVATE	0x0086	
-            WM_GETDLGCODE	0x0087	
-            WM_SYNCPAINT	0x0088	
-            WM_NCMOUSEMOVE	0x00A0	
-            WM_NCLBUTTONDOWN	0x00A1	
-            WM_NCLBUTTONUP	0x00A2	
-            WM_NCLBUTTONDBLCLK	0x00A3	
-            WM_NCRBUTTONDOWN	0x00A4	
-            WM_NCRBUTTONUP	0x00A5	
-            WM_NCRBUTTONDBLCLK	0x00A6	
-            WM_NCMBUTTONDOWN	0x00A7	
-            WM_NCMBUTTONUP	0x00A8	
-            WM_NCMBUTTONDBLCLK	0x00A9	
-            WM_NCXBUTTONDOWN	0x00AB	
-            WM_NCXBUTTONUP	0x00AC	
-            WM_NCXBUTTONDBLCLK	0x00AD	
-            WM_INPUT_DEVICE_CHANGE	0x00FE	
-            WM_INPUT	0x00FF	
-            WM_KEYFIRST	0x0100	
-            WM_KEYDOWN	0x0100	
-            WM_KEYUP	0x0101	
-            WM_CHAR	0x0102	
-            WM_DEADCHAR	0x0103	
-            WM_SYSKEYDOWN	0x0104	
-            WM_SYSKEYUP	0x0105	
-            WM_SYSCHAR	0x0106	
-            WM_SYSDEADCHAR	0x0107	
-            WM_UNICHAR	0x0109	
-            WM_KEYLAST	0x0109	
-            WM_KEYLAST	0x0108	
-            WM_IME_STARTCOMPOSITION	0x010D	
-            WM_IME_ENDCOMPOSITION	0x010E	
-            WM_IME_COMPOSITION	0x010F	
-            WM_IME_KEYLAST	0x010F	
-            WM_INITDIALOG	0x0110	
-            WM_COMMAND	0x0111	
-            WM_SYSCOMMAND	0x0112	
-            WM_TIMER	0x0113	
-            WM_HSCROLL	0x0114	
-            WM_VSCROLL	0x0115	
-            WM_INITMENU	0x0116	
-            WM_INITMENUPOPUP	0x0117	
-            WM_GESTURE	0x0119	
-            WM_GESTURENOTIFY	0x011A	
-            WM_MENUSELECT	0x011F	
-            WM_MENUCHAR	0x0120	
-            WM_ENTERIDLE	0x0121	
-            WM_MENURBUTTONUP	0x0122	
-            WM_MENUDRAG	0x0123	
-            WM_MENUGETOBJECT	0x0124	
-            WM_UNINITMENUPOPUP	0x0125	
-            WM_MENUCOMMAND	0x0126	
-            WM_CHANGEUISTATE	0x0127	
-            WM_UPDATEUISTATE	0x0128	
-            WM_QUERYUISTATE	0x0129	
-            WM_CTLCOLORMSGBOX	0x0132	
-            WM_CTLCOLOREDIT	0x0133	
-            WM_CTLCOLORLISTBOX	0x0134	
-            WM_CTLCOLORBTN	0x0135	
-            WM_CTLCOLORDLG	0x0136	
-            WM_CTLCOLORSCROLLBAR	0x0137	
-            WM_CTLCOLORSTATIC	0x0138	
-            WM_MOUSEFIRST	0x0200	
-            WM_MOUSEMOVE	0x0200	
-            WM_LBUTTONDOWN	0x0201	
-            WM_LBUTTONUP	0x0202	
-            WM_LBUTTONDBLCLK	0x0203	
-            WM_RBUTTONDOWN	0x0204	
-            WM_RBUTTONUP	0x0205	
-            WM_RBUTTONDBLCLK	0x0206	
-            WM_MBUTTONDOWN	0x0207	
-            WM_MBUTTONUP	0x0208	
-            WM_MBUTTONDBLCLK	0x0209	
-            WM_MOUSEWHEEL	0x020A	
-            WM_XBUTTONDOWN	0x020B	
-            WM_XBUTTONUP	0x020C	
-            WM_XBUTTONDBLCLK	0x020D	
-            WM_MOUSEHWHEEL	0x020E	
-            WM_MOUSELAST	0x020E	
-            WM_MOUSELAST	0x020D	
-            WM_MOUSELAST	0x020A	
-            WM_MOUSELAST	0x0209	
-            WM_PARENTNOTIFY	0x0210	
-            WM_ENTERMENULOOP	0x0211	
-            WM_EXITMENULOOP	0x0212	
-            WM_NEXTMENU	0x0213	
-            WM_SIZING	0x0214	
-            WM_CAPTURECHANGED	0x0215	
-            WM_MOVING	0x0216	
-            WM_POWERBROADCAST	0x0218	
-            WM_DEVICECHANGE	0x0219	
-            WM_MDICREATE	0x0220	
-            WM_MDIDESTROY	0x0221	
-            WM_MDIACTIVATE	0x0222	
-            WM_MDIRESTORE	0x0223	
-            WM_MDINEXT	0x0224	
-            WM_MDIMAXIMIZE	0x0225	
-            WM_MDITILE	0x0226	
-            WM_MDICASCADE	0x0227	
-            WM_MDIICONARRANGE	0x0228	
-            WM_MDIGETACTIVE	0x0229	
-            WM_MDISETMENU	0x0230	
-            WM_ENTERSIZEMOVE	0x0231	
-            WM_EXITSIZEMOVE	0x0232	
-            WM_DROPFILES	0x0233	
-            WM_MDIREFRESHMENU	0x0234	
-            WM_POINTERDEVICECHANGE	0x238	
-            WM_POINTERDEVICEINRANGE	0x239	
-            WM_POINTERDEVICEOUTOFRANGE	0x23A	
-            WM_TOUCH	0x0240	
-            WM_NCPOINTERUPDATE	0x0241	
-            WM_NCPOINTERDOWN	0x0242	
-            WM_NCPOINTERUP	0x0243	
-            WM_POINTERUPDATE	0x0245	
-            WM_POINTERDOWN	0x0246	
-            WM_POINTERUP	0x0247	
-            WM_POINTERENTER	0x0249	
-            WM_POINTERLEAVE	0x024A	
-            WM_POINTERACTIVATE	0x024B	
-            WM_POINTERCAPTURECHANGED	0x024C	
-            WM_TOUCHHITTESTING	0x024D	
-            WM_POINTERWHEEL	0x024E	
-            WM_POINTERHWHEEL	0x024F	
-            WM_IME_SETCONTEXT	0x0281	
-            WM_IME_NOTIFY	0x0282	
-            WM_IME_CONTROL	0x0283	
-            WM_IME_COMPOSITIONFULL	0x0284	
-            WM_IME_SELECT	0x0285	
-            WM_IME_CHAR	0x0286	
-            WM_IME_REQUEST	0x0288	
-            WM_IME_KEYDOWN	0x0290	
-            WM_IME_KEYUP	0x0291	
-            WM_MOUSEHOVER	0x02A1	
-            WM_MOUSELEAVE	0x02A3	
-            WM_NCMOUSEHOVER	0x02A0	
-            WM_NCMOUSELEAVE	0x02A2	
-            WM_WTSSESSION_CHANGE	0x02B1	
-            WM_TABLET_FIRST	0x02c0	
-            WM_TABLET_LAST	0x02df	
-            WM_CUT	0x0300	
-            WM_COPY	0x0301	
-            WM_PASTE	0x0302	
-            WM_CLEAR	0x0303	
-            WM_UNDO	0x0304	
-            WM_RENDERFORMAT	0x0305	
-            WM_RENDERALLFORMATS	0x0306	
-            WM_DESTROYCLIPBOARD	0x0307	
-            WM_DRAWCLIPBOARD	0x0308	
-            WM_PAINTCLIPBOARD	0x0309	
-            WM_VSCROLLCLIPBOARD	0x030A	
-            WM_SIZECLIPBOARD	0x030B	
-            WM_ASKCBFORMATNAME	0x030C	
-            WM_CHANGECBCHAIN	0x030D	
-            WM_HSCROLLCLIPBOARD	0x030E	
-            WM_QUERYNEWPALETTE	0x030F	
-            WM_PALETTEISCHANGING	0x0310	
-            WM_PALETTECHANGED	0x0311	
-            WM_HOTKEY	0x0312	
-            WM_PRINT	0x0317	
-            WM_PRINTCLIENT	0x0318	
-            WM_APPCOMMAND	0x0319	
-            WM_THEMECHANGED	0x031A	
-            WM_CLIPBOARDUPDATE	0x031D	
-            WM_DWMCOMPOSITIONCHANGED	0x031E	
-            WM_DWMNCRENDERINGCHANGED	0x031F	
-            WM_DWMCOLORIZATIONCOLORCHANGED	0x0320	
-            WM_DWMWINDOWMAXIMIZEDCHANGE	0x0321	
-            WM_DWMSENDICONICTHUMBNAIL	0x0323	
-            WM_DWMSENDICONICLIVEPREVIEWBITMAP	0x0326	
-            WM_GETTITLEBARINFOEX	0x033F	
-            WM_HANDHELDFIRST	0x0358	
-            WM_HANDHELDLAST	0x035F	
-            WM_AFXFIRST	0x0360	
-            WM_AFXLAST	0x037F	
-            WM_PENWINFIRST	0x0380	
-            WM_PENWINLAST	0x038F	
-            WM_APP	0x8000	
+            WM_NULL	0x0000
+            WM_CREATE	0x0001
+            WM_DESTROY	0x0002
+            WM_MOVE	0x0003
+            WM_SIZE	0x0005
+            WM_ACTIVATE	0x0006
+            WM_SETFOCUS	0x0007
+            WM_KILLFOCUS	0x0008
+            WM_ENABLE	0x000A
+            WM_SETREDRAW	0x000B
+            WM_SETTEXT	0x000C
+            WM_GETTEXT	0x000D
+            WM_GETTEXTLENGTH	0x000E
+            WM_PAINT	0x000F
+            WM_CLOSE	0x0010
+            WM_QUERYENDSESSION	0x0011
+            WM_QUERYOPEN	0x0013
+            WM_ENDSESSION	0x0016
+            WM_QUIT	0x0012
+            WM_ERASEBKGND	0x0014
+            WM_SYSCOLORCHANGE	0x0015
+            WM_SHOWWINDOW	0x0018
+            WM_WININICHANGE	0x001A
+            WM_SETTINGCHANGE	WM_WININICHANGE
+            WM_DEVMODECHANGE	0x001B
+            WM_ACTIVATEAPP	0x001C
+            WM_FONTCHANGE	0x001D
+            WM_TIMECHANGE	0x001E
+            WM_CANCELMODE	0x001F
+            WM_SETCURSOR	0x0020
+            WM_MOUSEACTIVATE	0x0021
+            WM_CHILDACTIVATE	0x0022
+            WM_QUEUESYNC	0x0023
+            WM_GETMINMAXINFO	0x0024
+            WM_PAINTICON	0x0026
+            WM_ICONERASEBKGND	0x0027
+            WM_NEXTDLGCTL	0x0028
+            WM_SPOOLERSTATUS	0x002A
+            WM_DRAWITEM	0x002B
+            WM_MEASUREITEM	0x002C
+            WM_DELETEITEM	0x002D
+            WM_VKEYTOITEM	0x002E
+            WM_CHARTOITEM	0x002F
+            WM_SETFONT	0x0030
+            WM_GETFONT	0x0031
+            WM_SETHOTKEY	0x0032
+            WM_GETHOTKEY	0x0033
+            WM_QUERYDRAGICON	0x0037
+            WM_COMPAREITEM	0x0039
+            WM_GETOBJECT	0x003D
+            WM_COMPACTING	0x0041
+            WM_COMMNOTIFY	0x0044
+            WM_WINDOWPOSCHANGING	0x0046
+            WM_WINDOWPOSCHANGED	0x0047
+            WM_POWER	0x0048
+            WM_COPYDATA	0x004A
+            WM_CANCELJOURNAL	0x004B
+            WM_NOTIFY	0x004E
+            WM_INPUTLANGCHANGEREQUEST	0x0050
+            WM_INPUTLANGCHANGE	0x0051
+            WM_TCARD	0x0052
+            WM_HELP	0x0053
+            WM_USERCHANGED	0x0054
+            WM_NOTIFYFORMAT	0x0055
+            WM_CONTEXTMENU	0x007B
+            WM_STYLECHANGING	0x007C
+            WM_STYLECHANGED	0x007D
+            WM_DISPLAYCHANGE	0x007E
+            WM_GETICON	0x007F
+            WM_SETICON	0x0080
+            WM_NCCREATE	0x0081
+            WM_NCDESTROY	0x0082
+            WM_NCCALCSIZE	0x0083
+            WM_NCHITTEST	0x0084
+            WM_NCPAINT	0x0085
+            WM_NCACTIVATE	0x0086
+            WM_GETDLGCODE	0x0087
+            WM_SYNCPAINT	0x0088
+            WM_NCMOUSEMOVE	0x00A0
+            WM_NCLBUTTONDOWN	0x00A1
+            WM_NCLBUTTONUP	0x00A2
+            WM_NCLBUTTONDBLCLK	0x00A3
+            WM_NCRBUTTONDOWN	0x00A4
+            WM_NCRBUTTONUP	0x00A5
+            WM_NCRBUTTONDBLCLK	0x00A6
+            WM_NCMBUTTONDOWN	0x00A7
+            WM_NCMBUTTONUP	0x00A8
+            WM_NCMBUTTONDBLCLK	0x00A9
+            WM_NCXBUTTONDOWN	0x00AB
+            WM_NCXBUTTONUP	0x00AC
+            WM_NCXBUTTONDBLCLK	0x00AD
+            WM_INPUT_DEVICE_CHANGE	0x00FE
+            WM_INPUT	0x00FF
+            WM_KEYFIRST	0x0100
+            WM_KEYDOWN	0x0100
+            WM_KEYUP	0x0101
+            WM_CHAR	0x0102
+            WM_DEADCHAR	0x0103
+            WM_SYSKEYDOWN	0x0104
+            WM_SYSKEYUP	0x0105
+            WM_SYSCHAR	0x0106
+            WM_SYSDEADCHAR	0x0107
+            WM_UNICHAR	0x0109
+            WM_KEYLAST	0x0109
+            WM_KEYLAST	0x0108
+            WM_IME_STARTCOMPOSITION	0x010D
+            WM_IME_ENDCOMPOSITION	0x010E
+            WM_IME_COMPOSITION	0x010F
+            WM_IME_KEYLAST	0x010F
+            WM_INITDIALOG	0x0110
+            WM_COMMAND	0x0111
+            WM_SYSCOMMAND	0x0112
+            WM_TIMER	0x0113
+            WM_HSCROLL	0x0114
+            WM_VSCROLL	0x0115
+            WM_INITMENU	0x0116
+            WM_INITMENUPOPUP	0x0117
+            WM_GESTURE	0x0119
+            WM_GESTURENOTIFY	0x011A
+            WM_MENUSELECT	0x011F
+            WM_MENUCHAR	0x0120
+            WM_ENTERIDLE	0x0121
+            WM_MENURBUTTONUP	0x0122
+            WM_MENUDRAG	0x0123
+            WM_MENUGETOBJECT	0x0124
+            WM_UNINITMENUPOPUP	0x0125
+            WM_MENUCOMMAND	0x0126
+            WM_CHANGEUISTATE	0x0127
+            WM_UPDATEUISTATE	0x0128
+            WM_QUERYUISTATE	0x0129
+            WM_CTLCOLORMSGBOX	0x0132
+            WM_CTLCOLOREDIT	0x0133
+            WM_CTLCOLORLISTBOX	0x0134
+            WM_CTLCOLORBTN	0x0135
+            WM_CTLCOLORDLG	0x0136
+            WM_CTLCOLORSCROLLBAR	0x0137
+            WM_CTLCOLORSTATIC	0x0138
+            WM_MOUSEFIRST	0x0200
+            WM_MOUSEMOVE	0x0200
+            WM_LBUTTONDOWN	0x0201
+            WM_LBUTTONUP	0x0202
+            WM_LBUTTONDBLCLK	0x0203
+            WM_RBUTTONDOWN	0x0204
+            WM_RBUTTONUP	0x0205
+            WM_RBUTTONDBLCLK	0x0206
+            WM_MBUTTONDOWN	0x0207
+            WM_MBUTTONUP	0x0208
+            WM_MBUTTONDBLCLK	0x0209
+            WM_MOUSEWHEEL	0x020A
+            WM_XBUTTONDOWN	0x020B
+            WM_XBUTTONUP	0x020C
+            WM_XBUTTONDBLCLK	0x020D
+            WM_MOUSEHWHEEL	0x020E
+            WM_MOUSELAST	0x020E
+            WM_MOUSELAST	0x020D
+            WM_MOUSELAST	0x020A
+            WM_MOUSELAST	0x0209
+            WM_PARENTNOTIFY	0x0210
+            WM_ENTERMENULOOP	0x0211
+            WM_EXITMENULOOP	0x0212
+            WM_NEXTMENU	0x0213
+            WM_SIZING	0x0214
+            WM_CAPTURECHANGED	0x0215
+            WM_MOVING	0x0216
+            WM_POWERBROADCAST	0x0218
+            WM_DEVICECHANGE	0x0219
+            WM_MDICREATE	0x0220
+            WM_MDIDESTROY	0x0221
+            WM_MDIACTIVATE	0x0222
+            WM_MDIRESTORE	0x0223
+            WM_MDINEXT	0x0224
+            WM_MDIMAXIMIZE	0x0225
+            WM_MDITILE	0x0226
+            WM_MDICASCADE	0x0227
+            WM_MDIICONARRANGE	0x0228
+            WM_MDIGETACTIVE	0x0229
+            WM_MDISETMENU	0x0230
+            WM_ENTERSIZEMOVE	0x0231
+            WM_EXITSIZEMOVE	0x0232
+            WM_DROPFILES	0x0233
+            WM_MDIREFRESHMENU	0x0234
+            WM_POINTERDEVICECHANGE	0x238
+            WM_POINTERDEVICEINRANGE	0x239
+            WM_POINTERDEVICEOUTOFRANGE	0x23A
+            WM_TOUCH	0x0240
+            WM_NCPOINTERUPDATE	0x0241
+            WM_NCPOINTERDOWN	0x0242
+            WM_NCPOINTERUP	0x0243
+            WM_POINTERUPDATE	0x0245
+            WM_POINTERDOWN	0x0246
+            WM_POINTERUP	0x0247
+            WM_POINTERENTER	0x0249
+            WM_POINTERLEAVE	0x024A
+            WM_POINTERACTIVATE	0x024B
+            WM_POINTERCAPTURECHANGED	0x024C
+            WM_TOUCHHITTESTING	0x024D
+            WM_POINTERWHEEL	0x024E
+            WM_POINTERHWHEEL	0x024F
+            WM_IME_SETCONTEXT	0x0281
+            WM_IME_NOTIFY	0x0282
+            WM_IME_CONTROL	0x0283
+            WM_IME_COMPOSITIONFULL	0x0284
+            WM_IME_SELECT	0x0285
+            WM_IME_CHAR	0x0286
+            WM_IME_REQUEST	0x0288
+            WM_IME_KEYDOWN	0x0290
+            WM_IME_KEYUP	0x0291
+            WM_MOUSEHOVER	0x02A1
+            WM_MOUSELEAVE	0x02A3
+            WM_NCMOUSEHOVER	0x02A0
+            WM_NCMOUSELEAVE	0x02A2
+            WM_WTSSESSION_CHANGE	0x02B1
+            WM_TABLET_FIRST	0x02c0
+            WM_TABLET_LAST	0x02df
+            WM_CUT	0x0300
+            WM_COPY	0x0301
+            WM_PASTE	0x0302
+            WM_CLEAR	0x0303
+            WM_UNDO	0x0304
+            WM_RENDERFORMAT	0x0305
+            WM_RENDERALLFORMATS	0x0306
+            WM_DESTROYCLIPBOARD	0x0307
+            WM_DRAWCLIPBOARD	0x0308
+            WM_PAINTCLIPBOARD	0x0309
+            WM_VSCROLLCLIPBOARD	0x030A
+            WM_SIZECLIPBOARD	0x030B
+            WM_ASKCBFORMATNAME	0x030C
+            WM_CHANGECBCHAIN	0x030D
+            WM_HSCROLLCLIPBOARD	0x030E
+            WM_QUERYNEWPALETTE	0x030F
+            WM_PALETTEISCHANGING	0x0310
+            WM_PALETTECHANGED	0x0311
+            WM_HOTKEY	0x0312
+            WM_PRINT	0x0317
+            WM_PRINTCLIENT	0x0318
+            WM_APPCOMMAND	0x0319
+            WM_THEMECHANGED	0x031A
+            WM_CLIPBOARDUPDATE	0x031D
+            WM_DWMCOMPOSITIONCHANGED	0x031E
+            WM_DWMNCRENDERINGCHANGED	0x031F
+            WM_DWMCOLORIZATIONCOLORCHANGED	0x0320
+            WM_DWMWINDOWMAXIMIZEDCHANGE	0x0321
+            WM_DWMSENDICONICTHUMBNAIL	0x0323
+            WM_DWMSENDICONICLIVEPREVIEWBITMAP	0x0326
+            WM_GETTITLEBARINFOEX	0x033F
+            WM_HANDHELDFIRST	0x0358
+            WM_HANDHELDLAST	0x035F
+            WM_AFXFIRST	0x0360
+            WM_AFXLAST	0x037F
+            WM_PENWINFIRST	0x0380
+            WM_PENWINLAST	0x038F
+            WM_APP	0x8000
             WM_USER	0x0400
         )"
         ogLvMessages.Delete()
         ogLvMessages.Opt("-Redraw")
-    
+
         loop parse msgList, "`n", "`r"
         {
             if (ogEdtSearch.text="" || InStr(A_LoopField,ogEdtSearch.text)){
@@ -2509,11 +2508,11 @@ ReadINI(INI_File:="", oResult := "") {	; return 2D-array from INI-file
         }
         ogLvMessages.ModifyCol(1, 150)
         ogLvMessages.ModifyCol(2, 50)
-            
+
         ;SetSelectedControl(isSet(Hwnd_selected) ? Hwnd_selected : "")
 
         ogLvMessages.Opt("+Redraw")
-        
+
     }
 
     ; Update controls of function section to see what should be visible
@@ -2556,7 +2555,7 @@ ReadINI(INI_File:="", oResult := "") {	; return 2D-array from INI-file
 
         GuiSection_Size(oGuiFunction)
         GroupBoxAutosize(ogGBFunction)
-        
+
         Gui_Size(myGui)
     }
 
@@ -2584,9 +2583,9 @@ GroupBoxAutosize(ogGB){
         ControlGetPos(&xC,&yC,&wC,&hC, oControl)
         yMax := Max(yMax,yC+hC)
     }
-    
+
     WinGetPos(&xWin,&yWin,&wWin,&hWin, ogGB.Gui)
-    
+
     ControlMove(, , , yMax-yGB+5,ogGB)
     ogGB.gui.Show("Autosize")
 }
@@ -2671,7 +2670,7 @@ GuiAccViewer(Wintitle:="A", ControlHwnd:=""){
 
     LVAcc_Update(WinTitle:="", ControlID:=""){
         global Acc_Content
-        
+
         LVAcc.Delete()
         SearchText := ogEditSearch.text
         LVAcc.Opt("-Redraw")
@@ -2682,7 +2681,7 @@ GuiAccViewer(Wintitle:="A", ControlHwnd:=""){
         if (WinTitle != "") {
 
             Title := WinGetTitle(Wintitle)
-            
+
             if (ControlID!="" and ogCB_Control.Value){
                 ControlClass := ControlGetClassNN(ControlID)
                 Title := (ControlClass = "" ? "Control" : ControlClass) "] - [" Title
@@ -2692,7 +2691,7 @@ GuiAccViewer(Wintitle:="A", ControlHwnd:=""){
             }
 
             myAccGui.Title := "Acc Viewer - [" Title "]"
-            
+
             global Acc_Content := oAcc.DumpAll()
             myAccGui.WinTitle := Wintitle
         }
@@ -2736,7 +2735,7 @@ GuiAccViewer(Wintitle:="A", ControlHwnd:=""){
                 if (ogEditSearch.text != "" and !InStrSuffled(Path "." RoleText "." Role "." Name "." value "." Description "." StateText "." State "." KeyboardShortcut "." Help ,ogEditSearch.text )){
                     continue
                 }
-                if ((ogCB_Value.Value and value!="") or (ogCB_Visible.Value and x=0 and y=0 and w=0 and h=0)){
+                if ((ogCB_Value.Value and (value="" or value=" ")) or (ogCB_Visible.Value and x=0 and y=0 and w=0 and h=0)){
                     continue
                 }
                 RowNumber := LVAcc.Add(, Path, name, RoleText, Role, x, y, w, h,  value, StateText, State, Description, KeyboardShortcut, Help, ChildId)
@@ -2770,18 +2769,18 @@ GuiAccViewer(Wintitle:="A", ControlHwnd:=""){
     }
 
     LVAcc_ContextMenu(LVAcc, RowNumber, IsRightClick, X, Y){
-        RowNumber := 0  ; This causes the first loop iteration to start the search at the top of the list.
+        RowNumberCounter := 0  ; This causes the first loop iteration to start the search at the top of the list.
         Counter:=0
-        Loop{
-            RowNumber := LVAcc.GetNext(RowNumber)  ; Resume the search at the row after that found by the previous iteration.
-            if not RowNumber
+        Loop {
+            RowNumberCounter := LVAcc.GetNext(RowNumberCounter)  ; Resume the search at the row after that found by the previous iteration.
+            if not RowNumberCounter
                 break
             Counter++
         }
         if (Counter=1){
             path := LVAcc.GetText(RowNumber)
             MyMenu := Menu()
-            MyMenu.add "Copy Path", (*) =>(A_Clipboard :=path, Tooltip2("Copied [" A_Clipboard "]"))
+            MyMenu.add "Copy Path", (*) =>(A_Clipboard := path, Tooltip2("Copied [" path "]"))
             MyMenu.Show
         }
 
@@ -2806,7 +2805,7 @@ GuiAccViewer(Wintitle:="A", ControlHwnd:=""){
                     oAccp.Highlight(0)
                 }
             }
-    
+
             SetSystemCursor("Default")
             ; LVAcc_Update("ahk_id " MouseWinHwnd)
             LVAcc_Update("ahk_id " MouseWinHwnd, MouseControlHwnd)
@@ -2822,7 +2821,7 @@ GuiAccViewer(Wintitle:="A", ControlHwnd:=""){
     ;         A_Clipboard := Headers "`n" ListViewGetContent("Selected", LVAcc)
     ;     }
     ; }
- 
+
 }
 
 InStrSuffled(Haystack, Needles){
@@ -2834,7 +2833,7 @@ InStrSuffled(Haystack, Needles){
             Value := Value * InStr(Haystack, Arr_Needle[A_Index])
 		; Value := Value * RegExMatch(Haystack, "i)^(.*[^a-z]|)\Q" Arr_Needle[A_Index] "\E")
         }
-		
+
 	}
 	return Value
 }
