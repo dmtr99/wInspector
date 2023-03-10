@@ -3,7 +3,6 @@
 ; 2022-07-12 Added ChildGuis to handle different view options, included Function section to quickly run functions
 ; 2022-07-15 Added more functions and improved the function commands
 ; 2023-01-03 Added PID filtering
-; 2023-03-10 Corrected positioning and mouse settings
 
 #Requires AutoHotKey v2.0-
 #SingleInstance Force
@@ -499,112 +498,112 @@ Gui_wInspector(*){
     }
 
     ; Window Section
+    {
+        ogGB_Window := oGuiWindow.AddGroupBox("w300 h145 Section", "Window")
+        ogGB_Window.LeftMargin := 2
+        ogGB_Window.BottomMargin := 2
+        oGuiWindow.AddText("xp+3 yp+18", "Title")
+        ogEdit_wTitle := oGuiWindow.AddEdit("x42 yp-3 w255", "")
+        ogEdit_wTitle.StatusBar := "WinGetTitle(WinTitle, WinText, ExcludeTitle, ExcludeText)"
+        oGuiWindow.AddText("x6 y+5", "Class")
+        ogEdit_wClass := oGuiWindow.AddEdit("x42 yp-3 w170 vwClass +ReadOnly")
+        ogEdit_wClass.StatusBar := "WinGetClass(WinTitle, WinText, ExcludeTitle, ExcludeText)"
+        oGuiWindow.AddText("x+4 yp+3", "ID")
+        ogEdit_wID := oGuiWindow.AddEdit("x237 yp-3 Right vwID w60 +ReadOnly")
+        ogEdit_wID.StatusBar := "WinGetID(WinTitle, WinText, ExcludeTitle, ExcludeText)"
+        oGuiWindow.AddText("x4 y+5", "Process")
+        ogEdit_wProcess := oGuiWindow.AddEdit("x42 yp-3 w170 vwProcess +ReadOnly")
+        oGuiWindow.AddText("x+3 yp+3", "PID")
+        ogEdit_wPID := oGuiWindow.AddEdit("x237 yp-3 w60 Right vwPID +ReadOnly")
 
-    ogGB_Window := oGuiWindow.AddGroupBox("w300 h145 Section", "Window")
-    ogGB_Window.LeftMargin := 2
-    ogGB_Window.BottomMargin := 2
-    oGuiWindow.AddText("xp+3 yp+18", "Title")
-    ogEdit_wTitle := oGuiWindow.AddEdit("x42 yp-3 w255", "")
-    ogEdit_wTitle.StatusBar := "WinGetTitle(WinTitle, WinText, ExcludeTitle, ExcludeText)"
-    oGuiWindow.AddText("x6 y+5", "Class")
-    ogEdit_wClass := oGuiWindow.AddEdit("x42 yp-3 w170 vwClass +ReadOnly")
-    ogEdit_wClass.StatusBar := "WinGetClass(WinTitle, WinText, ExcludeTitle, ExcludeText)"
-    oGuiWindow.AddText("x+4 yp+3", "ID")
-    ogEdit_wID := oGuiWindow.AddEdit("x237 yp-3 Right vwID w60 +ReadOnly")
-    ogEdit_wID.StatusBar := "WinGetID(WinTitle, WinText, ExcludeTitle, ExcludeText)"
-    oGuiWindow.AddText("x4 y+5", "Process")
-    ogEdit_wProcess := oGuiWindow.AddEdit("x42 yp-3 w170 vwProcess +ReadOnly")
-    oGuiWindow.AddText("x+3 yp+3", "PID")
-    ogEdit_wPID := oGuiWindow.AddEdit("x237 yp-3 w60 Right vwPID +ReadOnly")
-
-    oGuiWindow.AddText("x30 y+5", "X")
-    ogEdit_wXPos := oGuiWindow.AddEdit("x42 yp-3 Right Number vwXPos w40")
-    oGuiWindow.AddText("x+5 yp+3", "Y")
-    ogEdit_wYPos := oGuiWindow.AddEdit("x+2 yp-3 Right Number vwYPos w40")
-    ogEdit_wYPos.StatusBar := "Y position of window"
-    oGuiWindow.AddText("x+5 yp+3", "W")
-    ogEdit_wWidth := oGuiWindow.AddEdit("x+2 yp-3 Right Number vwWPos w40")
-    oGuiWindow.AddText("x+5 yp+3", "H")
-    ogEdit_wHeight := oGuiWindow.AddEdit("x+2 yp-3 Right Number vwHPos w40")
-    ogButton_Move := oGuiWindow.AddButton("x258 yp-1 w40", "Move")
-    ogButton_Move.OnEvent("Click", (*) => (WinExist("ahk_id " ogEdit_wID.value) ? WinMove(ogEdit_wXPos.value, ogEdit_wYPos.value, ogEdit_wWidth.value, ogEdit_wHeight.value, "ahk_id " ogEdit_wID.value) : ""))
-    oGuiWindow.AddText("x8 y+4", "Transparent:")
-    ogSlider_Transparent := oGuiWindow.AddSlider("xp+60 vTransparent  Range0-255 ToolTip", "255")
-    ogSlider_Transparent.OnEvent("Change", (*) => (WinExist("ahk_id " ogEdit_wID.value) ? WinSetTransparent(ogSlider_Transparent.value, "ahk_id " ogEdit_wID.value) : ""))
-
+        oGuiWindow.AddText("x30 y+5", "X")
+        ogEdit_wXPos := oGuiWindow.AddEdit("x42 yp-3 Right Number vwXPos w40")
+        oGuiWindow.AddText("x+5 yp+3", "Y")
+        ogEdit_wYPos := oGuiWindow.AddEdit("x+2 yp-3 Right Number vwYPos w40")
+        ogEdit_wYPos.StatusBar := "Y position of window"
+        oGuiWindow.AddText("x+5 yp+3", "W")
+        ogEdit_wWidth := oGuiWindow.AddEdit("x+2 yp-3 Right Number vwWPos w40")
+        oGuiWindow.AddText("x+5 yp+3", "H")
+        ogEdit_wHeight := oGuiWindow.AddEdit("x+2 yp-3 Right Number vwHPos w40")
+        ogButton_Move := oGuiWindow.AddButton("x258 yp-1 w40", "Move")
+        ogButton_Move.OnEvent("Click", (*) => (WinExist("ahk_id " ogEdit_wID.value) ? WinMove(ogEdit_wXPos.value, ogEdit_wYPos.value, ogEdit_wWidth.value, ogEdit_wHeight.value, "ahk_id " ogEdit_wID.value) : ""))
+        oGuiWindow.AddText("x8 y+4", "Transparent:")
+        ogSlider_Transparent := oGuiWindow.AddSlider("xp+60 vTransparent  Range0-255 ToolTip", "255")
+        ogSlider_Transparent.OnEvent("Change", (*) => (WinExist("ahk_id " ogEdit_wID.value) ? WinSetTransparent(ogSlider_Transparent.value, "ahk_id " ogEdit_wID.value) : ""))
+}
     ; Control Section
+    {
+        oGuiControl.posRef := oGuiWindow
+        oGuiControl.posRule := "Xx Yyh Ww"
+        ogGB_Control := oGuiControl.AddGroupBox("xm w300 h88", "Control")
+        ogGB_Control.LeftMargin := 2
+        ogGB_Control.BottomMargin := 2
+        oGuiControl.AddText("xp+3 yp+18", "Text")
+        ogEdit_cText := oGuiControl.AddEdit("x42 yp-3 w255", "")
+        ogEdit_cText.StatusBar := "ControlGetText(Control, WinTitle, WinText, ExcludeTitle, ExcludeText)"
+        oGuiControl.AddText("x6 y+5", "Class")
+        ogEdit_cClass := oGuiControl.AddEdit("x42 yp-3 w178 vccClass +ReadOnly")
+        ogEdit_cClass.StatusBar := "ControlGetClassNN(Control , WinTitle, WinText, ExcludeTitle, ExcludeText)"
+        oGuiControl.AddText("x+4 yp+3", "ID")
+        ogEdit_cID := oGuiControl.AddEdit("x237 yp-3 w60 Right vcID +ReadOnly")
+        ogEdit_cID.StatusBar := "ControlGetHwnd(Control, WinTitle, WinText, ExcludeTitle, ExcludeText)"
 
-    oGuiControl.posRef := oGuiWindow
-    oGuiControl.posRule := "Xx Yyh Ww"
-    ogGB_Control := oGuiControl.AddGroupBox("xm w300 h88", "Control")
-    ogGB_Control.LeftMargin := 2
-    ogGB_Control.BottomMargin := 2
-    oGuiControl.AddText("xp+3 yp+18", "Text")
-    ogEdit_cText := oGuiControl.AddEdit("x42 yp-3 w255", "")
-    ogEdit_cText.StatusBar := "ControlGetText(Control, WinTitle, WinText, ExcludeTitle, ExcludeText)"
-    oGuiControl.AddText("x6 y+5", "Class")
-    ogEdit_cClass := oGuiControl.AddEdit("x42 yp-3 w178 vccClass +ReadOnly")
-    ogEdit_cClass.StatusBar := "ControlGetClassNN(Control , WinTitle, WinText, ExcludeTitle, ExcludeText)"
-    oGuiControl.AddText("x+4 yp+3", "ID")
-    ogEdit_cID := oGuiControl.AddEdit("x237 yp-3 w60 Right vcID +ReadOnly")
-    ogEdit_cID.StatusBar := "ControlGetHwnd(Control, WinTitle, WinText, ExcludeTitle, ExcludeText)"
-
-    oGuiControl.AddText("x30 y+5", "X")
-    ogEdit_cXPos := oGuiControl.AddEdit("x42 yp-3 Right Number vcXPos w40")
-    oGuiControl.AddText("x+5 yp+3", "Y")
-    ogEdit_cYPos := oGuiControl.AddEdit("x+2 yp-3 Right Number vcYPos w40")
-    oGuiControl.AddText("x+5 yp+3", "W")
-    ogEdit_cWidth := oGuiControl.AddEdit("x+2 yp-3 Right Number vcWPos w40")
-    oGuiControl.AddText("x+5 yp+3", "H")
-    ogEdit_cHeight := oGuiControl.AddEdit("x+2 yp-3 Right Number vcHPos w40")
-    ogButton_cMove := oGuiControl.AddButton("x258 yp-1 w40", "Move")
-    ogButton_cMove.OnEvent("Click", (*) => (ControlMove(ogEdit_cXPos.value, ogEdit_cYPos.value, ogEdit_cWidth.value, ogEdit_cHeight.value, ogEdit_cID.value + 0)))
-
+        oGuiControl.AddText("x30 y+5", "X")
+        ogEdit_cXPos := oGuiControl.AddEdit("x42 yp-3 Right Number vcXPos w40")
+        oGuiControl.AddText("x+5 yp+3", "Y")
+        ogEdit_cYPos := oGuiControl.AddEdit("x+2 yp-3 Right Number vcYPos w40")
+        oGuiControl.AddText("x+5 yp+3", "W")
+        ogEdit_cWidth := oGuiControl.AddEdit("x+2 yp-3 Right Number vcWPos w40")
+        oGuiControl.AddText("x+5 yp+3", "H")
+        ogEdit_cHeight := oGuiControl.AddEdit("x+2 yp-3 Right Number vcHPos w40")
+        ogButton_cMove := oGuiControl.AddButton("x258 yp-1 w40", "Move")
+        ogButton_cMove.OnEvent("Click", (*) => (ControlMove(ogEdit_cXPos.value, ogEdit_cYPos.value, ogEdit_cWidth.value, ogEdit_cHeight.value, ogEdit_cID.value + 0)))
+    }
     ; Acc Section
+    {
+        oGuiAcc.posRef := oGuiControl
+        oGuiAcc.posRule := "Xx Yyh Ww"
+        ogGB_Acc := oGuiAcc.AddGroupBox("xm w300", "Acc")
+        ogGB_Acc.LeftMargin := 2
+        ogGB_Acc.BottomMargin := 2
+        ogLV_AccProps := oGuiAcc.Add("ListView", "xp+3 yp+18 h220 w293", ["Property", "Value"])
+        ogLV_AccProps.ModifyCol(1, 100)
+        for i, v in ["RoleText", "Role", "Value", "Name", "Location", "StateText", "State", "DefaultAction", "Description", "KeyboardShortcut", "Help", "ChildId"]
+            ogLV_AccProps.Add(, v, "")
 
-    oGuiAcc.posRef := oGuiControl
-    oGuiAcc.posRule := "Xx Yyh Ww"
-    ogGB_Acc := oGuiAcc.AddGroupBox("xm w300", "Acc")
-    ogGB_Acc.LeftMargin := 2
-    ogGB_Acc.BottomMargin := 2
-    ogLV_AccProps := oGuiAcc.Add("ListView", "xp+3 yp+18 h220 w293", ["Property", "Value"])
-    ogLV_AccProps.ModifyCol(1, 100)
-    for i, v in ["RoleText", "Role", "Value", "Name", "Location", "StateText", "State", "DefaultAction", "Description", "KeyboardShortcut", "Help", "ChildId"]
-        ogLV_AccProps.Add(, v, "")
-
-    ogLV_AccProps.OnNotify(NM_RCLICK := -5, RClickAccList)
-
+        ogLV_AccProps.OnNotify(NM_RCLICK := -5, RClickAccList)
+    }
     ; Mouse Section
+    {
+        oGuiMouse.posRef := oGuiAcc
+        oGuiMouse.posRule := "Xx Yyh Ww"
+        ogGB_Mouse := oGuiMouse.AddGroupBox("xm w300", "Mouse")
+        ogGB_Mouse.LeftMargin := 2
+        ogGB_Mouse.BottomMargin := 2
+        oGuiMouse.AddText("xp+3 yp+18", "Pos")
+        ogEdit_mPos := oGuiMouse.AddEdit("x42 yp-3 w70", "")
+        ogDDL_MouseCoordMode := oGuiMouse.AddDropDownList("x+3 yp w70 vDDL_MouseCoordMode Choose1", ["Screen", "Window", "Client"])
+        ogBut_MouseMove := oGuiMouse.AddButton("x+3 yp-1 w50", "Move")
+        ogBut_MouseMove.OnEvent("Click", (*) => (CoordMode("Mouse", ogDDL_MouseCoordMode.Text), MouseMove(MyGui.MouseX+0,MyGui.MouseY+0)))
+        ogBut_MouseClick := oGuiMouse.AddButton("x+3 yp w50", "Click")
+        ogBut_MouseClick.OnEvent("Click", (*) => (CoordMode("Mouse", ogDDL_MouseCoordMode.Text), Mouseclick(,MyGui.MouseX+0,MyGui.MouseY+0)))
+        oGuiMouse.AddText("x6 y+4", "RGB")
+        ogEdit_mColor := oGuiMouse.AddEdit("x42 yp-3 w70", "")
+        ogText_mColor := oGuiMouse.AddText("x+3 yp w21 h21 BackgroundWhite +Border")
 
-    oGuiMouse.posRef := oGuiAcc
-    oGuiMouse.posRule := "Xx Yyh Ww"
-    ogGB_Mouse := oGuiMouse.AddGroupBox("xm w300", "Mouse")
-    ogGB_Mouse.LeftMargin := 2
-    ogGB_Mouse.BottomMargin := 2
-    oGuiMouse.AddText("xp+3 yp+18", "Pos")
-    ogEdit_mPos := oGuiMouse.AddEdit("x42 yp-3 w70", "")
-    ogDDL_MouseCoordMode := oGuiMouse.AddDropDownList("x+3 yp w70 vDDL_MouseCoordMode Choose1", ["Screen", "Window", "Client"])
-    ogBut_MouseMove := oGuiMouse.AddButton("x+3 yp-1 w50", "Move")
-    ogBut_MouseMove.OnEvent("Click", (*) => (CoordMode("Mouse", ogDDL_MouseCoordMode.Text), MouseMove(MyGui.MouseX+0,MyGui.MouseY+0)))
-    ogBut_MouseClick := oGuiMouse.AddButton("x+3 yp w50", "Click")
-    ogBut_MouseClick.OnEvent("Click", (*) => (CoordMode("Mouse", ogDDL_MouseCoordMode.Text), Mouseclick(,MyGui.MouseX+0,MyGui.MouseY+0)))
-    oGuiMouse.AddText("x6 y+4", "RGB")
-    ogEdit_mColor := oGuiMouse.AddEdit("x42 yp-3 w70", "")
-    ogText_mColor := oGuiMouse.AddText("x+3 yp w21 h21 BackgroundWhite +Border")
+        ogDDL_GridSize := oGuiMouse.AddDropDownList("x+3 yp w60 vDDL_GridSize" , ["1x1", "3x3","5x5", "9x9", "15x15"])
 
-    ogDDL_GridSize := oGuiMouse.AddDropDownList("x+3 yp w60 vDDL_GridSize" , ["1x1", "3x3","5x5", "9x9", "15x15"])
+        ogDDL_GridSize.text := oSet.MouseGrid "x" oSet.MouseGrid
+        ogDDL_GridSize.OnEvent("Change", GridSize_Change)
+        oGuiMouse.Grid := oSet.MouseGrid
 
-    ogDDL_GridSize.text := oSet.MouseGrid "x" oSet.MouseGrid
-    ogDDL_GridSize.OnEvent("Change", GridSize_Change)
-    oGuiMouse.Grid := oSet.MouseGrid
-
-    ogPic_Grid := oGuiMouse.AddPicture("x42 y+2 w" oGuiMouse.Grid*16 " h" oGuiMouse.Grid*16 " +0x40 +0xE +Border Section")
-    ogText_Line1 := oGuiMouse.AddText("xs+" (oGuiMouse.Grid-1) * 16/2 " ys+1 w1 h" oGuiMouse.Grid * 16-2 " backgroundWhite")
-    ogText_Line2 := oGuiMouse.AddText("xs+" (oGuiMouse.Grid+1) * 16/2 " ys+1 w1 h" oGuiMouse.Grid * 16-2 " backgroundWhite")
-    ogText_Line3 := oGuiMouse.AddText("xs+1 ys+" (oGuiMouse.Grid - 1) * 16 / 2 " w" oGuiMouse.Grid * 16-2 " h1 backgroundWhite")
-    ogText_Line4 := oGuiMouse.AddText("xs+1 ys+" (oGuiMouse.Grid + 1) * 16 / 2 " w" oGuiMouse.Grid * 16-2 " h1 backgroundWhite")
-    GridSize_Change()
-
+        ogPic_Grid := oGuiMouse.AddPicture("x42 y+2 w" oGuiMouse.Grid*16 " h" oGuiMouse.Grid*16 " +0x40 +0xE +Border Section")
+        ogText_Line1 := oGuiMouse.AddText("xs+" (oGuiMouse.Grid-1) * 16/2 " ys+1 w1 h" oGuiMouse.Grid * 16-2 " backgroundWhite")
+        ogText_Line2 := oGuiMouse.AddText("xs+" (oGuiMouse.Grid+1) * 16/2 " ys+1 w1 h" oGuiMouse.Grid * 16-2 " backgroundWhite")
+        ogText_Line3 := oGuiMouse.AddText("xs+1 ys+" (oGuiMouse.Grid - 1) * 16 / 2 " w" oGuiMouse.Grid * 16-2 " h1 backgroundWhite")
+        ogText_Line4 := oGuiMouse.AddText("xs+1 ys+" (oGuiMouse.Grid + 1) * 16 / 2 " w" oGuiMouse.Grid * 16-2 " h1 backgroundWhite")
+        GridSize_Change()
+    }
     ; Function Section
 
     oGuiFunction.posRef := oGuiMouse
@@ -1018,9 +1017,9 @@ CheckButtonClick(wParam :=0, lParam := 0, msg := 0, hwnd := 0){
         ogText_Line2.visible := 0
         ogText_Line3.visible := 0
         ogText_Line4.visible := 0
-        MouseGetPos(&MouseX, &MouseY, &MouseWinHwnd, &MouseControlHwnd, 2)
         CoordMode("Mouse", ogDDL_MouseCoordMode.Text)
         CoordMode("Pixel", ogDDL_MouseCoordMode.Text)
+        MouseGetPos(&MouseX, &MouseY, &MouseWinHwnd, &MouseControlHwnd, 2)
         A_Clipboard := PixelGetColor(MouseX, MouseY)
         Tooltip2("Copied [" A_Clipboard "]")
         ogText_Line1.visible := 1
