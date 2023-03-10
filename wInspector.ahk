@@ -3,6 +3,7 @@
 ; 2022-07-12 Added ChildGuis to handle different view options, included Function section to quickly run functions
 ; 2022-07-15 Added more functions and improved the function commands
 ; 2023-01-03 Added PID filtering
+; 2023-03-10 Corrected positioning and mouse settings
 
 #Requires AutoHotKey v2.0-
 #SingleInstance Force
@@ -455,12 +456,14 @@ Gui_wInspector()
 
 Gui_wInspector(*){
     global
-    if (IsSet(MyGui) and WinExist("wInspector ahk_exe autohotkey.exe")){
-        return
+    if (IsSet(MyGui) ){
+        Try{
+            MyGui.Show()
+            return
+        }
     }
 
     MyGui := Gui("+AlwaysOnTop +MinSize304x114", "wInspector")
-    MyGui.OnEvent("Close",(*)=>(myGui.Destroy()))
     oSet.WinResize=1 ? myGui.Opt("+Resize") : myGui.Opt("-Resize")
     oSet.WinAlwaysOnTop=1 ? myGui.Opt("+AlwaysOnTop") : myGui.Opt("-AlwaysOnTop")
     MyGui.MarginX := 2
@@ -848,7 +851,7 @@ Gui_wInspector(*){
     Menus := MenuBar()
     Menus.Add("&Settings", SettingsMenu)
     Menus.Add("&Help", HelpMenu)
-    Menus.Add( "&Reload", (*) => (Gui_Close(myGui), Reload()))
+    Menus.Add( "&Reload", (*) => (Gui_Close(MyGui), Reload()))
     MyGui.MenuBar := Menus
 
     ; Toolbar
@@ -874,10 +877,24 @@ Gui_wInspector(*){
 
     ; Create a Status Bar to give info about the number of files and their total size:
     SB := MyGui.Add("StatusBar")
-    MyGui.OnEvent("Size",Gui_Size)
-    MyGui.OnEvent("Close",Gui_Close)
+    MyGui.OnEvent("Size", Gui_Size)
+    MyGui.OnEvent("Close", Gui_Close)
 
-ControlGetPos( , , , &ToolbarHeight, oToolbar)
+    Gui_Close(GuiObj){
+        ; Save the position of the window
+        GuiObj.GetPos(&X,&Y)
+        GuiObj.GetClientPos(,,&W,&H)
+        oSet.WinX := X
+        oSet.WinY := Y
+        oSet.WinW := W
+        oSet.WinH := H
+        oSettings.MainGui := oSet
+        WriteINI(&oSettings)
+        MyGui.Destroy()
+        return true
+    }
+
+    ControlGetPos( , , , &ToolbarHeight, oToolbar)
     for index, oSection in myGui.aSections {
         SectionTitle := oSection.Title
         ; Show the sections
@@ -887,6 +904,11 @@ ControlGetPos( , , , &ToolbarHeight, oToolbar)
     }
 
     UpdateWinList()
+
+    ; Correct coordinates to a visible position inside the screens
+    oSet.WinX := (oSet.WinX<0) ? 0 : (oSet.WinX+oSet.WinW>SysGet(78)) ? SysGet(78)-oSet.WinW : oSet.WinX
+    oSet.WinY := (oSet.WinY<0) ? 0 : (oSet.WinY+oSet.WinH>SysGet(79)) ? SysGet(79)-oSet.WinH : oSet.WinY
+
     MyGui.Show("x" oSet.WinX " y" oSet.WinY " w" oSet.WinW " h" oSet.WinH)
 
     GroupBoxAutosize(ogGB_Mouse)
@@ -1016,6 +1038,7 @@ GetSelectedWindow(*){
 }
 
 SetSelectedWindow(win_id){
+    OutputDebug("SetSelectedWindow")
     if !WinExist(Win_id){
         UpdateWinList()
         return
@@ -1037,6 +1060,7 @@ SetSelectedWindow(win_id){
 }
 
 SetSelectedControl(ctrl_id){
+    OutputDebug("SetSelectedControl")
     if (ctrl_id=""){
         ogEdit_cText.value := ""
         ogEdit_cClass.value := ""
@@ -1279,7 +1303,6 @@ DClickCtrlList(LV, RowNumber){
     WinMoveTop("ahk_id " win_hwnd)
 }
 
-
 SectionCorrections(){
     myGui.GetPos(&xWin,&yWin,&wWin,&hWin)
     WinGetClientPos(&XcmyGui, &YcmyGui, &WcmyGui, &HcmyGui, myGui)
@@ -1493,6 +1516,7 @@ UpdateCtrlList(*){
 }
 
 GridSize_Change(*){
+    global oSet,oSettings
     mGrid := [0, 3, 5, 9, 15]
     oGuiMouse.Grid := mGrid[ogDDL_GridSize.value]
     oSet.MouseGrid := (oGuiMouse.Grid=0) ? 1 : oGuiMouse.Grid
@@ -1503,6 +1527,8 @@ GridSize_Change(*){
     ogText_Line3.Move(cx+1, cy+ (oGuiMouse.Grid - 1) * 16 / 2, oGuiMouse.Grid * 16 - 2 )
     ogText_Line4.Move(cx+1, cy+ (oGuiMouse.Grid + 1) * 16 / 2, oGuiMouse.Grid * 16 - 2)
     aControls := [ogPic_Grid,ogText_Line1,ogText_Line2,ogText_Line3,ogText_Line4]
+    oSettings.MainGui := oSet
+    WriteINI(&oSettings)
     for oControl in aControls{
         oControl.visible := (oGuiMouse.Grid = 0) ? false : true
     }
@@ -1511,18 +1537,7 @@ GridSize_Change(*){
     Gui_Autosize()
 }
 
-Gui_Close(GuiObj){
-    global
-    GuiObj.GetPos(&X,&Y)
-    GuiObj.GetClientPos(,,&W,&H)
-    oSet.WinX := X
-    oSet.WinY := Y
-    oSet.WinW := W
-    oSet.WinH := H
-    oSettings.MainGui := oSet
-    WriteINI(&oSettings)
-    return false
-}
+
 
 ; Updates the visibility and position of the sections of the gui
 GuiUpdate(*){
@@ -1919,6 +1934,7 @@ GuiRectangle(x:= 0, y:= 0 ,w:= 100 ,h:=100 , Color:="Blue",Thickness := 2){
                 winY:=winY+8
                 winW:=winW-8*2
                 winH:=winH-8*2
+
             }
             MovePos(GuiBox, winX, winY, winW, winH) ; Strangly, WinGetPos returned slightly offset values
         } Catch {
@@ -2735,7 +2751,7 @@ GuiAccViewer(Wintitle:="A", ControlHwnd:=""){
                 if (ogEditSearch.text != "" and !InStrSuffled(Path "." RoleText "." Role "." Name "." value "." Description "." StateText "." State "." KeyboardShortcut "." Help ,ogEditSearch.text )){
                     continue
                 }
-                if ((ogCB_Value.Value and (value="" or value=" ")) or (ogCB_Visible.Value and x=0 and y=0 and w=0 and h=0)){
+                if ((ogCB_Value.Value and value!="") or (ogCB_Visible.Value and x=0 and y=0 and w=0 and h=0)){
                     continue
                 }
                 RowNumber := LVAcc.Add(, Path, name, RoleText, Role, x, y, w, h,  value, StateText, State, Description, KeyboardShortcut, Help, ChildId)
@@ -2769,18 +2785,18 @@ GuiAccViewer(Wintitle:="A", ControlHwnd:=""){
     }
 
     LVAcc_ContextMenu(LVAcc, RowNumber, IsRightClick, X, Y){
-        RowNumberCounter := 0  ; This causes the first loop iteration to start the search at the top of the list.
+        RowNumber := 0  ; This causes the first loop iteration to start the search at the top of the list.
         Counter:=0
-        Loop {
-            RowNumberCounter := LVAcc.GetNext(RowNumberCounter)  ; Resume the search at the row after that found by the previous iteration.
-            if not RowNumberCounter
+        Loop{
+            RowNumber := LVAcc.GetNext(RowNumber)  ; Resume the search at the row after that found by the previous iteration.
+            if not RowNumber
                 break
             Counter++
         }
         if (Counter=1){
             path := LVAcc.GetText(RowNumber)
             MyMenu := Menu()
-            MyMenu.add "Copy Path", (*) =>(A_Clipboard := path, Tooltip2("Copied [" path "]"))
+            MyMenu.add "Copy Path", (*) =>(A_Clipboard :=path, Tooltip2("Copied [" A_Clipboard "]"))
             MyMenu.Show
         }
 
