@@ -48,7 +48,8 @@ oSettings_Default.MainGui := {
     WindowPar: "Title",
     MouseGrid: 1,
     Function: "ControlClick",
-    IDHex: true
+    IDHex: true,
+    Hotkey: "^i"
 }
 
 global IconLib := "Images.icl"
@@ -451,6 +452,11 @@ If !pToken := Gdip_Startup() {
 }
 OnExit((ExitReason, ExitCode) => Gdip_Shutdown(pToken))
 
+if (oSet.Hotkey!=""){
+    Hotkey(oSet.Hotkey, wInspector_Activate)
+}
+
+
 Gui_wInspector()
 
 Gui_wInspector(*){
@@ -712,7 +718,6 @@ Gui_wInspector(*){
     UpdateLVMessages()
     ogLvMessages.OnEvent("Click", DClickMsgList)
 
-
     ; ProcessList Section
 
     oGuiProcessList.posRef := oGuiWindow
@@ -780,37 +785,38 @@ Gui_wInspector(*){
     ogLV_WinList.BottomMargin := 8
 
     ; ControlList Section
+    {
+        oGuiControlList.posRef := oGuiWindowList
+        oGuiControlList.posRule := "Xx Yyh Ww"
+        oGuiControlList.LeftDistance := 0
+        oGuiControlList.BottomDistance := 0
+        ogGBControlList := oGuiControlList.addGroupBox(, "ControlList")
+        ogGBControlList.LeftMargin := 2
+        ogGBControlList.BottomMargin := 24
 
-    oGuiControlList.posRef := oGuiWindowList
-    oGuiControlList.posRule := "Xx Yyh Ww"
-    oGuiControlList.LeftDistance := 0
-    oGuiControlList.BottomDistance := 0
-    ogGBControlList := oGuiControlList.addGroupBox(, "ControlList")
-    ogGBControlList.LeftMargin := 2
-    ogGBControlList.BottomMargin := 24
+        ogEdit_ctrl_search := oGuiControlList.AddEdit("xp+4 yp+15 w200 vctrl_search")
+        ogEdit_ctrl_search.SetCueText("Search")
+        ogEdit_ctrl_search.OnEvent("Change", UpdateCtrlList)
+        ogEdit_ctrl_search.statusbar := "Type to filter the controls on specific words"
 
-    ogEdit_ctrl_search := oGuiControlList.AddEdit("xp+4 yp+15 w200 vctrl_search")
-    ogEdit_ctrl_search.SetCueText("Search")
-    ogEdit_ctrl_search.OnEvent("Change", UpdateCtrlList)
-    ogEdit_ctrl_search.statusbar := "Type to filter the controls on specific words"
+        ogCB_FilterCtrlVisible := oGuiControlList.AddCheckbox("xp+210 yp+3 vfilter_ctrl_visible", "Visible")
+        ogCB_FilterCtrlVisible.OnEvent("Click", UpdateCtrlList)
+        ogCB_FilterCtrlVisible.Statusbar := "Filter on only visible controls"
 
-    ogCB_FilterCtrlVisible := oGuiControlList.AddCheckbox("xp+210 yp+3 vfilter_ctrl_visible", "Visible")
-    ogCB_FilterCtrlVisible.OnEvent("Click", UpdateCtrlList)
-    ogCB_FilterCtrlVisible.Statusbar := "Filter on only visible controls"
-
-    ogCB_FilterCtrlText := oGuiControlList.AddCheckbox("xp+60 yp vfilter_ctrl_text", "Text visible")
-    ogCB_FilterCtrlText.OnEvent("Click", UpdateCtrlList)
-    ogCB_FilterCtrlText.statusbar := "Filter on controls with text"
-    ogLV_CtrlList := oGuiControlList.AddListView("xm+4 y+7 r15 w" (myGui.Width-8*3)/2 " vCtrlList section AltSubmit", ["Class(NN)", "Hwnd", "Text", "Type", "X", "Y", "W", "H","Visible"])
-    ogLV_CtrlList.Opt("Count100 -Multi")
-    ogLV_CtrlList.OnEvent("Click", DClickCtrlList)
-    ogLV_CtrlList.OnNotify(NM_RCLICK := -5, RClickCtrlList)
-    ogLV_CtrlList.LeftMargin := 5
-    ogLV_CtrlList.BottomMargin := 28
-
-
+        ogCB_FilterCtrlText := oGuiControlList.AddCheckbox("xp+60 yp vfilter_ctrl_text", "Text visible")
+        ogCB_FilterCtrlText.OnEvent("Click", UpdateCtrlList)
+        ogCB_FilterCtrlText.statusbar := "Filter on controls with text"
+        ogLV_CtrlList := oGuiControlList.AddListView("xm+4 y+7 r15 w" (myGui.Width-8*3)/2 " vCtrlList section AltSubmit", ["Class(NN)", "Hwnd", "Text", "Type", "X", "Y", "W", "H","Visible"])
+        ogLV_CtrlList.Opt("Count100 -Multi")
+        ogLV_CtrlList.OnEvent("Click", DClickCtrlList)
+        ogLV_CtrlList.OnNotify(NM_RCLICK := -5, RClickCtrlList)
+        ogLV_CtrlList.LeftMargin := 5
+        ogLV_CtrlList.BottomMargin := 28
+    }
     ; Menu definitions
     SettingsMenu := Menu()
+    SettingsMenu.Add("Options", Gui_Settings)
+    SettingsMenu.Add()
     SettingsMenu.Add("Resize", (ItemName, ItemPos, ItemMenu) => (ItemMenu.ToggleCheck(ItemName), oSet.WinResize:= !oSet.WinResize, oSet.WinResize ? myGui.Opt("+Resize") :  myGui.Opt("-Resize")))
     oSet.WinResize=1 ? SettingsMenu.Check("Resize") : ""
     SettingsMenu.Add("AlwaysOnTop", (ItemName, ItemPos, ItemMenu) => (ItemMenu.ToggleCheck(ItemName), oSet.WinAlwaysOnTop:= !oSet.WinAlwaysOnTop, oSet.WinAlwaysOnTop ? myGui.Opt("+AlwaysOnTop") :  myGui.Opt("-AlwaysOnTop")))
@@ -920,6 +926,29 @@ Gui_wInspector(*){
     SetSystemCursor("Default")
     OnMessage(WM_LBUTTONDOWN := 0x0201, CheckButtonClick)
     OnMessage(0x200, WM_MOUSEMOVE)
+
+    Gui_Settings(*){
+        ; Gui to set the hotkey, other settings can be added.
+        Hotkey(oSet.Hotkey, "Off")
+        gSettings := Gui(, "Settings")
+        ogHotKey := gSettings.AddHotkey("x16 y27", oSet.Hotkey)
+        ogHotKey.ToolTip := "Define hotkey to activate wInspector"
+        Grp1 := gSettings.AddGroupBox("x10 y8", "Hotkey")
+        BtnApply := gSettings.AddButton("x81 y73 w68 h23", "&Apply")
+        BtnApply.OnEvent("Click", Click_BtnApply)
+        gSettings.OnEvent("Close", (*)=>(Hotkey(oSet.Hotkey, wInspector_Activate),Hotkey(oSet.Hotkey, "On")))
+        gSettings.Show()
+        Return
+
+        Click_BtnApply(GuiObj,Info){
+            oSet.Hotkey := ogHotKey.Value
+            INI_File := Regexreplace(A_scriptName, "(.*)\..*", "$1.ini")
+            IniWrite(oSet.Hotkey, INI_File, "MainGui", "Hotkey")
+            Hotkey(oSet.Hotkey, wInspector_Activate)
+            Hotkey(oSet.Hotkey, "On")
+            gSettings.Destroy()
+        }
+    }
 }
 
 ~LButton::{
@@ -939,8 +968,7 @@ ToggleSection(SectionTitle){
     return
 }
 
-^i::
-{
+wInspector_Activate(ThisHotkey){
     MouseGetPos(&MouseX, &MouseY, &MouseWinHwnd, &MouseControlHwnd, 2)
 
     Gui_wInspector()
@@ -1027,7 +1055,6 @@ CheckButtonClick(wParam :=0, lParam := 0, msg := 0, hwnd := 0){
         ogText_Line3.visible := 1
         ogText_Line4.visible := 1
     }
-
 }
 
 GetSelectedWindow(*){
@@ -1355,6 +1382,7 @@ SectionCorrections(){
     GroupBoxAutosize(ogGBFunction)
     GuiUpdate()
     Gui_Size(myGui)
+    Gui_Autosize()
     WinRedraw(myGui)
 }
 
@@ -1535,7 +1563,6 @@ GridSize_Change(*){
     Gui_Size(myGui)
     Gui_Autosize()
 }
-
 
 
 ; Updates the visibility and position of the sections of the gui
