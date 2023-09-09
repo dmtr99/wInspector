@@ -636,6 +636,7 @@ Gui_wInspector(*){
     moFunctions["ListViewGetContent"] := {var1: "Options", var1Default: "", control:true, description:"Returns a list of items/rows from a ListView.", result: true}
     moFunctions["SendMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", control:true, result:true, description:"Sends a message to a window or control and waits for acknowledgement."}
     moFunctions["PostMessage"] := {var1:"Msg", var1Default: "", var2: "wParam", var2Default: "0", var3: "lParam", var3Default: "0", control:true, result:true, description:"Places a message in the message queue of a window or control."}
+    moFunctions["WinActivate"] := {description: "Activates the specified window."}
     moFunctions["WinClose"] := {description: "Closes the specified window."}
     moFunctions["WinGetControls"] := {description: "Returns the control names for all controls in the specified window.", result: true}
     moFunctions["WinGetCount"] := {description: "Returns the number of existing windows that match the specified criteria.", result: true}
