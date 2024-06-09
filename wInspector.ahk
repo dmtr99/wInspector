@@ -457,7 +457,7 @@ if (oSet.Hotkey!=""){
 }
 
 
-Gui_wInspector()
+SetTimer(Gui_wInspector, -1)
 
 Gui_wInspector(*){
     global
@@ -1058,10 +1058,10 @@ CheckButtonClick(wParam :=0, lParam := 0, msg := 0, hwnd := 0){
     }
 }
 
-GetSelectedWindow(*){
+GetSelectedWindow(*) {
     global MyGui
-    MyGui.win_hwnd := ogLV_WinList.GetText(ogLV_WinList.GetNext(), 3)
-    return MyGui.win_hwnd
+    if RowNumber := ogLV_WinList.GetNext()
+        return MyGui.win_hwnd := ogLV_WinList.GetText(RowNumber, 3)
 }
 
 SetSelectedWindow(win_id){
@@ -1181,10 +1181,8 @@ RClickProcessList(*){
 }
 
 RClickWinList(*){
-    if ogLV_WinList.GetNext(, "F") = 0 {
+    if !win_hwnd := GetSelectedWindow()
         return
-    }
-    win_hwnd := GetSelectedWindow()
     State_AlwaysOnTop := WinGetExStyle('ahk_id ' win_hwnd) & 0x8
 
     myMenu := Menu()
