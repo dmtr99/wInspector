@@ -456,8 +456,8 @@ if (oSet.Hotkey!=""){
     Hotkey(oSet.Hotkey, wInspector_Activate)
 }
 
-
-Gui_wInspector()
+; Gui_wInspector()
+SetTimer(Gui_wInspector, -1)
 
 Gui_wInspector(*){
     global
@@ -1020,7 +1020,7 @@ CheckButtonClick(wParam :=0, lParam := 0, msg := 0, hwnd := 0){
         MyGui.ctrl_hwnd := MouseControlHwnd
         MyGui.MouseX := MouseX
         MyGui.MouseY := MouseY
-	MyGui.PID := WinGetPID(MouseWinHwnd)
+	    MyGui.PID := WinGetPID(MouseWinHwnd)
         SetSelectedWindow(MouseWinHwnd)
         SetSelectedControl(MouseControlHwnd)
         UpdateProcessList()
@@ -1030,13 +1030,14 @@ CheckButtonClick(wParam :=0, lParam := 0, msg := 0, hwnd := 0){
         SetSystemCursor("Default")
         SetSelectedMouseGrid(MouseX, MouseY)
         if (oGuiAcc.Visible){
-            ; MsgBox("Text")
-            oAccp := Acc.ObjectFromPoint(MouseX, MouseY)
-            ogLV_AccProps.Delete()
-            Location := { x: 0, y: 0, w: 0, h: 0 }, RoleText := "", Role := "", Value := "", Name := "", StateText := "", State := "", DefaultAction := "", Description := "", KeyboardShortcut := "", Help := "", ChildId := ""
-            for _, v in ["RoleText", "Role", "Value", "Name", "Location", "StateText", "State", "DefaultAction", "Description", "KeyboardShortcut", "Help", "ChildId"] {
-                try %v% := oAccp.%v%
-                ogLV_AccProps.Add(, v, v = "Location" ? ("x: " %v%.x " y: " %v%.y " w: " %v%.w " h: " %v%.h) : %v%)
+            try{
+                oAccp := Acc.ObjectFromPoint(MouseX, MouseY)
+                ogLV_AccProps.Delete()
+                Location := { x: 0, y: 0, w: 0, h: 0 }, RoleText := "", Role := "", Value := "", Name := "", StateText := "", State := "", DefaultAction := "", Description := "", KeyboardShortcut := "", Help := "", ChildId := ""
+                for _, v in ["RoleText", "Role", "Value", "Name", "Location", "StateText", "State", "DefaultAction", "Description", "KeyboardShortcut", "Help", "ChildId"] {
+                    try %v% := oAccp.%v%
+                    ogLV_AccProps.Add(, v, v = "Location" ? ("x: " %v%.x " y: " %v%.y " w: " %v%.w " h: " %v%.h) : %v%)
+                }
             }
         }
 
@@ -1060,8 +1061,10 @@ CheckButtonClick(wParam :=0, lParam := 0, msg := 0, hwnd := 0){
 
 GetSelectedWindow(*){
     global MyGui
-    MyGui.win_hwnd := ogLV_WinList.GetText(ogLV_WinList.GetNext(), 3)
-    return MyGui.win_hwnd
+    ; MyGui.win_hwnd := ogLV_WinList.GetText(ogLV_WinList.GetNext(), 3)
+    ; return MyGui.win_hwnd
+    if RowNumber := ogLV_WinList.GetNext()
+        return MyGui.win_hwnd := ogLV_WinList.GetText(RowNumber, 3)
 }
 
 SetSelectedWindow(win_id){
@@ -1125,6 +1128,7 @@ SetSelectedMouseGrid(MouseX, MouseY){
     global oSet
     CoordMode("Mouse", "Screen")
     CoordMode("Pixel", "Screen")
+    MouseGetPos(&MouseX, &MouseY, &MouseWinHwnd, &MouseControlHwnd, 2)
     Grid := oGuiMouse.Grid
     pBitmap := Gdip_BitmapFromScreen(MouseX - (Grid-1)/2 "|" MouseY -(Grid - 1) / 2 "|" Grid "|" Grid)
     hBitmap := Gdip_CreateHBITMAPFromBitmap(pBitmap)
@@ -1181,10 +1185,12 @@ RClickProcessList(*){
 }
 
 RClickWinList(*){
-    if ogLV_WinList.GetNext(, "F") = 0 {
+    if !win_hwnd := GetSelectedWindow()
         return
-    }
-    win_hwnd := GetSelectedWindow()
+    ; if ogLV_WinList.GetNext(, "F") = 0 {
+    ;     return
+    ; }
+    ; win_hwnd := GetSelectedWindow()
     State_AlwaysOnTop := WinGetExStyle('ahk_id ' win_hwnd) & 0x8
 
     myMenu := Menu()
@@ -1564,7 +1570,6 @@ GridSize_Change(*){
     Gui_Size(myGui)
     Gui_Autosize()
 }
-
 
 ; Updates the visibility and position of the sections of the gui
 GuiUpdate(*){
